@@ -75,3 +75,8 @@ app/src/main/res
 │   └── styles.xml                  // Cả hai: Style
 └── navigation
     └── nav_graph.xml               // Việt Anh: Navigation component
+
+
+
+
+
