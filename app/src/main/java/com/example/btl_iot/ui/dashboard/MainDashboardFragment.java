@@ -1,4 +1,5 @@
 package com.example.btl_iot.ui.dashboard;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,6 +7,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import com.example.btl_iot.R;
+import com.example.btl_iot.ui.history.HistoryFragment;
+import com.example.btl_iot.ui.warnings.WarningsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainDashboardFragment extends Fragment {
@@ -17,37 +21,26 @@ public class MainDashboardFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_dashboard, container, false);
 
-        bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
-        setupBottomNavigation();
+        bottomNavigationView = view.findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.navigation_history) {
+                loadFragment(new HistoryFragment());
+                return true;
+            } else if (item.getItemId() == R.id.navigation_warnings) {
+                loadFragment(new WarningsFragment());
+                return true;
+            }
+            return false;
+        });
 
-        // Mặc định mở HistoryFragment
-        if (savedInstanceState == null) {
-            loadFragment(new HistoryFragment());
-        }
+        // Load mặc định
+        loadFragment(new HistoryFragment());
 
         return view;
     }
 
-    private void setupBottomNavigation() {
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
-            switch (item.getItemId()) {
-                case R.id.menu_history:
-                    selectedFragment = new HistoryFragment();
-                    break;
-                case R.id.menu_warnings:
-                    selectedFragment = new WarningsFragment();
-                    break;
-            }
-            if (selectedFragment != null) {
-                loadFragment(selectedFragment);
-            }
-            return true;
-        });
-    }
-
     private void loadFragment(Fragment fragment) {
-        getChildFragmentManager().beginTransaction()
+        requireActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
     }

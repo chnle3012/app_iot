@@ -1,5 +1,9 @@
 package com.example.btl_iot.ui.dashboard;
 
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+import com.example.btl_iot.R;
+
 public class MainDashboardActivity extends AppCompatActivity {
 
     @Override
