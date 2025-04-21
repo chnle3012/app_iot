@@ -22,18 +22,20 @@ public class MainDashboardFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main_dashboard, container, false);
 
         bottomNavigationView = view.findViewById(R.id.bottom_navigation);
+
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.navigation_history) {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_history) {
                 loadFragment(new HistoryFragment());
                 return true;
-            } else if (item.getItemId() == R.id.navigation_warnings) {
+            } else if (itemId == R.id.navigation_warnings) {
                 loadFragment(new WarningsFragment());
                 return true;
             }
             return false;
         });
 
-        // Load mặc định
+        // Load default fragment (HistoryFragment)
         loadFragment(new HistoryFragment());
 
         return view;
@@ -41,7 +43,7 @@ public class MainDashboardFragment extends Fragment {
 
     private void loadFragment(Fragment fragment) {
         requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, fragment)
+                .replace(R.id.main_dashboard_container, fragment)  // Sửa ở đây
                 .commit();
     }
 }

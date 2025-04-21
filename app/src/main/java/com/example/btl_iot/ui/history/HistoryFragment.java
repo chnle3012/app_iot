@@ -23,7 +23,7 @@ import com.example.btl_iot.viewmodel.HistoryViewModel;
 public class HistoryFragment extends Fragment {
 
     private HistoryViewModel historyViewModel;
-    private TextView textViewName, textViewAge, textViewMode, textViewTimestamp;
+    private TextView textViewName, textViewHistoryId, textViewMode, textViewTimestamp;
     private ImageView imageViewFace, imageViewHistory;
     private ProgressBar progressBar;
 
@@ -35,7 +35,7 @@ public class HistoryFragment extends Fragment {
 
         // Initialize views
         textViewName = view.findViewById(R.id.text_view_name);
-        textViewAge = view.findViewById(R.id.text_view_age);
+        textViewHistoryId = view.findViewById(R.id.text_view_history_id);
         textViewMode = view.findViewById(R.id.text_view_mode);
         textViewTimestamp = view.findViewById(R.id.text_view_timestamp);
         imageViewFace = view.findViewById(R.id.image_view_face);
@@ -46,7 +46,7 @@ public class HistoryFragment extends Fragment {
         historyViewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
 
         // Call API and observe data
-        long historyId = 1; // Replace with actual ID
+        long historyId = 2; // Replace with actual ID
         String token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoaWV1dDMiLCJpYXQiOjE3NDUyMTIzNTQsImV4cCI6MTc0NTI5ODc1NH0.0m-1DCeSFxWHtRBgiKKNGCARQe5fy7nOiCi2ePkSqN0"; // Replace with actual token
         observeHistoryData(historyId, token);
 
@@ -64,13 +64,13 @@ public class HistoryFragment extends Fragment {
                 if (historyResponse != null && historyResponse.isSuccess() && historyResponse.getData() != null) {
                     // Update UI with data
                     textViewName.setText(historyResponse.getData().getPeople().getName());
-                    textViewAge.setText(String.valueOf(historyResponse.getData().getPeople().getAge()));
+                    textViewHistoryId.setText("History id: " + historyResponse.getData().getHistoryId());
                     textViewMode.setText(historyResponse.getData().getMode());
                     textViewTimestamp.setText(historyResponse.getData().getTimestamp());
                 } else {
                     // Display "no history" message
                     textViewName.setText("chưa có lịch sử");
-                    textViewAge.setText("");
+                    textViewHistoryId.setText("");
                     textViewMode.setText("");
                     textViewTimestamp.setText("");
                 }
