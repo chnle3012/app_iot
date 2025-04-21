@@ -6,4 +6,11 @@
     </style>
 
     <style name="Theme.Btl_iot" parent="Base.Theme.Btl_iot" />
+
+    <!-- Splash Screen Theme -->
+    <style name="Theme.Btl_iot.NoActionBar" parent="Theme.Btl_iot">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
 </resources>
