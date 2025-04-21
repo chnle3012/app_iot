@@ -8,9 +8,13 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.example.btl_iot.MainActivity;
 import com.example.btl_iot.R;
+import com.example.btl_iot.data.model.LoginResponse;
+import com.example.btl_iot.data.repository.AuthRepository;
+import com.example.btl_iot.ui.dashboard.MainDashboardActivity;
+import com.example.btl_iot.viewmodel.AuthViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -20,6 +24,8 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText etUsername, etPassword;
     private Button btnLogin, btnGoToRegister;
     private ProgressBar progressBar;
+    
+    private AuthViewModel authViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +34,15 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialize views
         initViews();
+        
+        // Initialize ViewModel
+        authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+        
+        // Check if already logged in
+        if (authViewModel.isLoggedIn()) {
+            navigateToMainDashboard();
+            return;
+        }
         
         // Set up button click listeners
         setupListeners();
@@ -68,19 +83,44 @@ public class LoginActivity extends AppCompatActivity {
         if (isValid) {
             // Show progress
             progressBar.setVisibility(View.VISIBLE);
+            btnLogin.setEnabled(false);
             
-            // TODO: Implement actual login with API
-            // For now, simulate successful login after a delay
-            btnLogin.postDelayed(() -> {
+            // Call login API
+            authViewModel.login(username, password).observe(this, result -> {
+                // Hide progress
                 progressBar.setVisibility(View.GONE);
+                btnLogin.setEnabled(true);
                 
-                // Navigate to main screen on success
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            }, 1500);
+                if (result.getStatus() == AuthRepository.Resource.Status.SUCCESS) {
+                    // Login successful
+                    LoginResponse response = result.getData();
+                    if (response != null && response.getData() != null) {
+                        // Save token to SharedPreferences
+                        String token = response.getData().getFormattedToken();
+                        long expiration = response.getData().getExpiration();
+                        authViewModel.saveAuthToken(token, expiration);
+                        
+                        // Show success message
+                        Toast.makeText(LoginActivity.this, 
+                                "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                        
+                        // Navigate to main screen
+                        navigateToMainDashboard();
+                    }
+                } else if (result.getStatus() == AuthRepository.Resource.Status.ERROR) {
+                    // Show error message
+                    Toast.makeText(LoginActivity.this, 
+                            result.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
         }
+    }
+    
+    private void navigateToMainDashboard() {
+        Intent intent = new Intent(LoginActivity.this, MainDashboardActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private boolean validateInput(String username, String password) {
