@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.example.btl_iot.data.model.LoginResponse;
+import com.example.btl_iot.data.model.RegisterResponse;
 import com.example.btl_iot.data.repository.AuthRepository;
 import com.example.btl_iot.util.SharedPrefsUtils;
 
@@ -21,6 +22,10 @@ public class AuthViewModel extends AndroidViewModel {
     
     public LiveData<AuthRepository.Resource<LoginResponse>> login(String username, String password) {
         return authRepository.login(username, password);
+    }
+    
+    public LiveData<AuthRepository.Resource<RegisterResponse>> register(String username, String password) {
+        return authRepository.register(username, password);
     }
     
     public void saveAuthToken(String token, long expiration) {
