@@ -8,8 +8,11 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.btl_iot.R;
+import com.example.btl_iot.data.repository.AuthRepository;
+import com.example.btl_iot.viewmodel.AuthViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -19,12 +22,16 @@ public class RegisterActivity extends AppCompatActivity {
     private TextInputEditText etUsername, etPassword, etConfirmPassword;
     private Button btnRegister, btnBackToLogin;
     private ProgressBar progressBar;
+    private AuthViewModel authViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        // Initialize ViewModel
+        authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+        
         // Initialize views
         initViews();
         
@@ -70,21 +77,33 @@ public class RegisterActivity extends AppCompatActivity {
         if (isValid) {
             // Show progress
             progressBar.setVisibility(View.VISIBLE);
+            btnRegister.setEnabled(false);
             
-            // TODO: Implement actual registration with API
-            // For now, simulate successful registration after a delay
-            btnRegister.postDelayed(() -> {
+            // Call register API
+            authViewModel.register(username, password).observe(this, result -> {
+                // Hide progress
                 progressBar.setVisibility(View.GONE);
+                btnRegister.setEnabled(true);
                 
-                // Show success message
-                Toast.makeText(RegisterActivity.this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
-                
-                // Navigate to login screen
-                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
-            }, 1500);
+                if (result.getStatus() == AuthRepository.Resource.Status.SUCCESS) {
+                    // Registration successful
+                    String successMessage = result.getData() != null && result.getData().getMessage() != null 
+                            ? result.getData().getMessage() 
+                            : "Đăng ký thành công!";
+                    
+                    // Show success message
+                    Toast.makeText(RegisterActivity.this, successMessage, Toast.LENGTH_SHORT).show();
+                    
+                    // Navigate to login screen
+                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                } else if (result.getStatus() == AuthRepository.Resource.Status.ERROR) {
+                    // Show error message
+                    Toast.makeText(RegisterActivity.this, result.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 
