@@ -5,29 +5,26 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.btl_iot.R;
 import com.example.btl_iot.data.model.HistoryResponse;
-import com.example.btl_iot.data.repository.AuthRepository;
 import com.example.btl_iot.viewmodel.HistoryViewModel;
 
 import java.util.List;
 
 public class HistoryFragment extends Fragment {
 
-    private HistoryViewModel historyViewModel;
-    private TextView textViewName, textViewHistoryId, textViewMode, textViewTimestamp;
-    private ImageView imageViewFace, imageViewHistory;
     private ProgressBar progressBar;
+    private RecyclerView recyclerView;
+    private HistoryAdapter historyAdapter;
+    private HistoryViewModel historyViewModel;
 
     @SuppressLint("MissingInflatedId")
     @Nullable
@@ -35,24 +32,20 @@ public class HistoryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
 
-        // Initialize views
-        textViewName = view.findViewById(R.id.text_view_name);
-        textViewHistoryId = view.findViewById(R.id.text_view_history_id);
-        textViewMode = view.findViewById(R.id.text_view_mode);
-        textViewTimestamp = view.findViewById(R.id.text_view_timestamp);
-        imageViewFace = view.findViewById(R.id.image_view_face);
-        imageViewHistory = view.findViewById(R.id.image_view_history);
         progressBar = view.findViewById(R.id.progress_bar);
+        recyclerView = view.findViewById(R.id.recycler_view_history);
 
-        // Initialize ViewModel
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        historyAdapter = new HistoryAdapter(null); // Adapter ban đầu không có dữ liệu
+        recyclerView.setAdapter(historyAdapter);
+
         historyViewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
 
-        // Call API and observe data
-        String token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoaWV1dDUiLCJpYXQiOjE3NDUzMTEzOTUsImV4cCI6MTc0NTM5Nzc5NX0.gQpEVKihKJjUY3BvltEcHzFiQvz2nhPa9F5PmqafqhY"; // Replace with actual token
+        String token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoaWV1dDUiLCJpYXQiOjE3NDUzMTEzOTUsImV4cCI6MTc0NTM5Nzc5NX0.gQpEVKihKJjUY3BvltEcHzFiQvz2nhPa9F5PmqafqhY"; // Thay bằng token thực tế
         int page = 0;
-        int limit = 50;
-        String start = "2024-01-01"; // Replace with your actual start date
-        String end = "2025-12-31";   // Replace with your actual end date
+        int limit = 20;
+        String start = "2023-01-01";
+        String end = "2025-12-31";
 
         observeHistoryData(token, page, limit, start, end);
 
@@ -76,33 +69,17 @@ public class HistoryFragment extends Fragment {
                     if (historyResponse != null && historyResponse.isSuccess() && historyResponse.getData() != null) {
                         List<HistoryResponse.History> histories = historyResponse.getData().getContent();
                         if (histories != null && !histories.isEmpty()) {
-                            // Print the number of history objects
-                            int historyCount = histories.size();
-                            Toast.makeText(getContext(), "Number of histories: " + historyCount, Toast.LENGTH_SHORT).show();
-
-                            for (HistoryResponse.History history : histories) {
-                                String name = history.getPeople() != null ? history.getPeople().getName() : "Unknown";
-                                String historyId = "History id: " + history.getHistoryId();
-                                String mode = history.getMode();
-                                String timestamp = history.getTimestamp();
-
-                                // Example: Update UI or log the data
-                                textViewName.setText(name);
-                                textViewHistoryId.setText(historyId);
-                                textViewMode.setText(mode);
-                                textViewTimestamp.setText(timestamp);
-                            }
+                            historyAdapter.updateData(histories); // Cập nhật dữ liệu cho adapter
                         } else {
-                            showNoHistory();
+                            Toast.makeText(getContext(), "No history found", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        showNoHistory();
+                        Toast.makeText(getContext(), "Failed to load history", Toast.LENGTH_SHORT).show();
                     }
                     break;
 
                 case ERROR:
                     Toast.makeText(getContext(), resource.getMessage(), Toast.LENGTH_SHORT).show();
-                    showNoHistory();
                     break;
 
                 case LOADING:
@@ -110,12 +87,5 @@ public class HistoryFragment extends Fragment {
                     break;
             }
         });
-    }
-
-    private void showNoHistory() {
-        textViewName.setText("Chưa có lịch sử");
-        textViewHistoryId.setText("");
-        textViewMode.setText("");
-        textViewTimestamp.setText("");
     }
 }

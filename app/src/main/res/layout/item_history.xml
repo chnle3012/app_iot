@@ -1,7 +1,36 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/history_item_title"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:text="History item"
-    android:textSize="16sp"/>
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/history_item_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Timestamp"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/history_item_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/history_item_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="History ID"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/history_item_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mode"
+        android:textSize="14sp" />
+</LinearLayout>
