@@ -8,4 +8,8 @@
         android:id="@+id/navigation_warnings"
         android:icon="@drawable/ic_warning"
         android:title="@string/warnings" />
+    <item
+        android:id="@+id/navigation_people"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="People" />
 </menu>
