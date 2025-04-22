@@ -6,5 +6,13 @@
     <item
         android:id="@+id/navigation_warnings"
         android:icon="@drawable/ic_warning"
-        android:title="Warnings" />
+        android:title="@string/warnings" />
+    <item
+        android:id="@+id/navigation_people"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="People" />
+    <item
+        android:id="@+id/navigation_account"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="@string/account" />
 </menu>

@@ -43,7 +43,7 @@ public class MainDashboardFragment extends Fragment {
 
     private void loadFragment(Fragment fragment) {
         requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_dashboard_container, fragment)  // Sửa ở đây
+                .replace(R.id.nav_host_fragment, fragment)  // Sửa ở đây
                 .commit();
     }
 }

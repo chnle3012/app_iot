@@ -38,11 +38,18 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     
+    // SwipeRefreshLayout
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    
     // ViewModel and LiveData
     implementation("androidx.lifecycle:lifecycle-viewmodel:2.7.0")
     implementation("androidx.lifecycle:lifecycle-livedata:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0")
     implementation("androidx.lifecycle:lifecycle-common-java8:2.7.0")
+    
+    // Navigation Component
+    implementation("androidx.navigation:navigation-fragment:2.7.7")
+    implementation("androidx.navigation:navigation-ui:2.7.7")
     
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -52,6 +59,9 @@ dependencies {
     
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")
+    
+    // Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     
     // Testing
     testImplementation(libs.junit)
