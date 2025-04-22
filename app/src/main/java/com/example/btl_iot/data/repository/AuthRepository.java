@@ -7,6 +7,8 @@ import com.example.btl_iot.data.api.ApiClient;
 import com.example.btl_iot.data.api.ApiService;
 import com.example.btl_iot.data.model.LoginRequest;
 import com.example.btl_iot.data.model.LoginResponse;
+import com.example.btl_iot.data.model.RegisterRequest;
+import com.example.btl_iot.data.model.RegisterResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,6 +59,46 @@ public class AuthRepository {
         });
         
         return loginResult;
+    }
+    
+    public LiveData<Resource<RegisterResponse>> register(String username, String password) {
+        MutableLiveData<Resource<RegisterResponse>> registerResult = new MutableLiveData<>();
+        
+        // Show loading state
+        registerResult.setValue(Resource.loading(null));
+        
+        // Create register request
+        RegisterRequest registerRequest = new RegisterRequest(username, password);
+        
+        // Make API call
+        apiService.register(registerRequest).enqueue(new Callback<RegisterResponse>() {
+            @Override
+            public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    RegisterResponse registerResponse = response.body();
+                    if (registerResponse.isSuccess()) {
+                        // Success response
+                        registerResult.setValue(Resource.success(registerResponse));
+                    } else {
+                        // API returned an error message
+                        registerResult.setValue(Resource.error(registerResponse.getMessage(), null));
+                    }
+                } else {
+                    // HTTP error
+                    String errorMsg = "Registration failed. Please try again.";
+                    registerResult.setValue(Resource.error(errorMsg, null));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RegisterResponse> call, Throwable t) {
+                // Network or other error
+                String errorMsg = "Network error: " + t.getMessage();
+                registerResult.setValue(Resource.error(errorMsg, null));
+            }
+        });
+        
+        return registerResult;
     }
     
     // Resource class for handling loading, success, and error states
