@@ -42,7 +42,7 @@ public class PeopleManagementFragment extends Fragment implements PeopleAdapter.
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Use ApplicationContext to create the ViewModel
-        viewModel = new ViewModelProvider(this, 
+        viewModel = new ViewModelProvider(requireActivity(), 
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
                 .get(PeopleViewModel.class);
     }
@@ -85,6 +85,10 @@ public class PeopleManagementFragment extends Fragment implements PeopleAdapter.
     
     private void setupFab() {
         fabAddPerson.setOnClickListener(v -> {
+            // Reset người dùng đang chọn
+            viewModel.setSelectedPersonId(-1);
+            viewModel.setSelectedPerson(null);
+            
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
             navController.navigate(R.id.action_navigation_people_to_addEditPerson);
         });
@@ -129,7 +133,13 @@ public class PeopleManagementFragment extends Fragment implements PeopleAdapter.
 
     @Override
     public void onPersonClick(Person person) {
-        // Hiển thị thông tin chi tiết nếu cần
-        Toast.makeText(requireContext(), "Đã chọn: " + person.getName(), Toast.LENGTH_SHORT).show();
+        // Lưu thông tin người dùng đã chọn vào ViewModel
+        Log.d(TAG, "Person clicked: " + person.getName() + ", ID: " + person.getPeopleId());
+        viewModel.setSelectedPersonId(person.getPeopleId());
+        viewModel.setSelectedPerson(person);
+        
+        // Điều hướng đến màn hình chỉnh sửa
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_navigation_people_to_addEditPerson);
     }
 } 

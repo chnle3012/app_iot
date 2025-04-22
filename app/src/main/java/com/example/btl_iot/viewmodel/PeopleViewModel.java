@@ -17,6 +17,9 @@ public class PeopleViewModel extends AndroidViewModel {
     private final MutableLiveData<String> toastMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> addPersonSuccess = new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> updatePersonSuccess = new MutableLiveData<>(false);
+    private final MutableLiveData<Integer> selectedPersonId = new MutableLiveData<>(-1);
+    private final MutableLiveData<Person> selectedPerson = new MutableLiveData<>();
 
     public PeopleViewModel(Application application) {
         super(application);
@@ -27,8 +30,16 @@ public class PeopleViewModel extends AndroidViewModel {
         return repository.getPeopleList();
     }
     
+    public LiveData<PeopleRepository.Resource<Person>> getPersonDetail(int peopleId) {
+        return repository.getPersonDetail(peopleId);
+    }
+    
     public LiveData<PeopleRepository.Resource<Person>> addPerson(String name, int age, Uri imageUri) {
         return repository.addPerson(name, age, imageUri, getApplication());
+    }
+    
+    public LiveData<PeopleRepository.Resource<Person>> updatePerson(int peopleId, String name, int age, Uri imageUri) {
+        return repository.updatePerson(peopleId, name, age, imageUri, getApplication());
     }
 
     public LiveData<String> getToastMessage() {
@@ -45,6 +56,30 @@ public class PeopleViewModel extends AndroidViewModel {
     
     public void setAddPersonSuccess(boolean success) {
         addPersonSuccess.setValue(success);
+    }
+    
+    public LiveData<Boolean> getUpdatePersonSuccess() {
+        return updatePersonSuccess;
+    }
+    
+    public void setUpdatePersonSuccess(boolean success) {
+        updatePersonSuccess.setValue(success);
+    }
+    
+    public LiveData<Integer> getSelectedPersonId() {
+        return selectedPersonId;
+    }
+    
+    public void setSelectedPersonId(int id) {
+        selectedPersonId.setValue(id);
+    }
+    
+    public LiveData<Person> getSelectedPerson() {
+        return selectedPerson;
+    }
+    
+    public void setSelectedPerson(Person person) {
+        selectedPerson.setValue(person);
     }
 
     public void setToastMessage(String message) {

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.example.btl_iot.R;
+import com.example.btl_iot.data.model.Person;
 import com.example.btl_iot.data.repository.PeopleRepository;
 import com.example.btl_iot.viewmodel.PeopleViewModel;
 import com.google.android.material.textfield.TextInputEditText;
@@ -37,6 +39,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 public class AddEditPersonFragment extends Fragment {
 
+    private static final String TAG = "AddEditPersonFragment";
     private static final int REQUEST_STORAGE_PERMISSION = 100;
 
     private PeopleViewModel viewModel;
@@ -48,13 +51,15 @@ public class AddEditPersonFragment extends Fragment {
     private TextInputEditText ageEditText;
     private Button saveButton;
     private Button backButton;
+    private Button submitButton;
     private Button choosePhotoButton;
     private Button takePhotoButton;
-    private Button submitButton;
     private ImageView imageView;
     private ProgressBar progressBar;
     
     private Uri selectedImageUri = null;
+    private Person currentPerson = null;
+    private boolean isEditMode = false;
     
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -109,14 +114,67 @@ public class AddEditPersonFragment extends Fragment {
         progressBar = view.findViewById(R.id.progress_bar);
         submitButton = view.findViewById(R.id.btn_submit);
         
+        // Kiểm tra xem đang ở chế độ chỉnh sửa hay thêm mới
+        checkEditMode();
+        
         // Setup giao diện
         setupUI();
         observeViewModel();
     }
     
+    private void checkEditMode() {
+        Integer selectedId = viewModel.getSelectedPersonId().getValue();
+        Person selectedPerson = viewModel.getSelectedPerson().getValue();
+        
+        if (selectedId != null && selectedId > 0 && selectedPerson != null) {
+            isEditMode = true;
+            currentPerson = selectedPerson;
+            
+            // Trường hợp đã có dữ liệu chi tiết từ list
+            prepareEditMode(selectedPerson);
+        } else if (selectedId != null && selectedId > 0) {
+            isEditMode = true;
+            
+            // Trường hợp chỉ có ID, cần gọi API để lấy chi tiết
+            loadPersonDetail(selectedId);
+        } else {
+            isEditMode = false;
+        }
+    }
+    
+    private void loadPersonDetail(int personId) {
+        progressBar.setVisibility(View.VISIBLE);
+        viewModel.getPersonDetail(personId).observe(getViewLifecycleOwner(), resource -> {
+            progressBar.setVisibility(View.GONE);
+            
+            if (resource.getStatus() == PeopleRepository.Resource.Status.SUCCESS && resource.getData() != null) {
+                currentPerson = resource.getData();
+                prepareEditMode(currentPerson);
+            } else if (resource.getStatus() == PeopleRepository.Resource.Status.ERROR) {
+                Toast.makeText(requireContext(), "Lỗi: " + resource.getMessage(), Toast.LENGTH_LONG).show();
+                navigateBack();
+            }
+        });
+    }
+    
+    private void prepareEditMode(Person person) {
+        // Fill data vào form
+        if (nameEditText != null) nameEditText.setText(person.getName());
+        if (ageEditText != null) ageEditText.setText(String.valueOf(person.getAge()));
+        
+        // Load ảnh
+        if (person.getFaceImagePath() != null && !person.getFaceImagePath().isEmpty()) {
+            loadImage(Uri.parse(person.getFaceImagePath()));
+        }
+    }
+    
     private void setupUI() {
         // Hiển thị tiêu đề
-        titleTextView.setText("Thêm người dùng mới");
+        if (isEditMode) {
+            titleTextView.setText("Chỉnh sửa người dùng");
+        } else {
+            titleTextView.setText("Thêm người dùng mới");
+        }
         
         // Ẩn thông báo "chỉ hỗ trợ xem dữ liệu" vì bây giờ chúng ta đã hỗ trợ thêm mới
         if (messageTextView != null) {
@@ -143,6 +201,11 @@ public class AddEditPersonFragment extends Fragment {
         // Thiết lập nút submit
         if (submitButton != null) {
             submitButton.setVisibility(View.VISIBLE);
+            if (isEditMode) {
+                submitButton.setText("Cập nhật người dùng");
+            } else {
+                submitButton.setText("Thêm người dùng");
+            }
             submitButton.setOnClickListener(v -> validateAndSave());
         }
         
@@ -164,6 +227,16 @@ public class AddEditPersonFragment extends Fragment {
             if (success) {
                 // Reset flag
                 viewModel.setAddPersonSuccess(false);
+                // Refresh danh sách và quay lại
+                viewModel.refreshPeopleList();
+                navigateBack();
+            }
+        });
+        
+        viewModel.getUpdatePersonSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (success) {
+                // Reset flag
+                viewModel.setUpdatePersonSuccess(false);
                 // Refresh danh sách và quay lại
                 viewModel.refreshPeopleList();
                 navigateBack();
@@ -237,8 +310,8 @@ public class AddEditPersonFragment extends Fragment {
             return;
         }
         
-        // Validate image
-        if (selectedImageUri == null) {
+        // Validate image - chỉ bắt buộc khi thêm mới
+        if (!isEditMode && selectedImageUri == null) {
             Toast.makeText(requireContext(), "Vui lòng chọn ảnh", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -247,7 +320,15 @@ public class AddEditPersonFragment extends Fragment {
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
         submitButton.setEnabled(false);
         
-        // Call API
+        // Call API - phân biệt giữa thêm mới và cập nhật
+        if (isEditMode) {
+            updatePerson(name, age);
+        } else {
+            addPerson(name, age);
+        }
+    }
+    
+    private void addPerson(String name, int age) {
         viewModel.addPerson(name, age, selectedImageUri).observe(getViewLifecycleOwner(), result -> {
             // Hide progress
             if (progressBar != null) progressBar.setVisibility(View.GONE);
@@ -256,6 +337,21 @@ public class AddEditPersonFragment extends Fragment {
             if (result.getStatus() == PeopleRepository.Resource.Status.SUCCESS) {
                 Toast.makeText(requireContext(), "Thêm người dùng thành công", Toast.LENGTH_SHORT).show();
                 viewModel.setAddPersonSuccess(true);
+            } else if (result.getStatus() == PeopleRepository.Resource.Status.ERROR) {
+                Toast.makeText(requireContext(), "Lỗi: " + result.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+    
+    private void updatePerson(String name, int age) {
+        viewModel.updatePerson(currentPerson.getPeopleId(), name, age, selectedImageUri).observe(getViewLifecycleOwner(), result -> {
+            // Hide progress
+            if (progressBar != null) progressBar.setVisibility(View.GONE);
+            submitButton.setEnabled(true);
+            
+            if (result.getStatus() == PeopleRepository.Resource.Status.SUCCESS) {
+                Toast.makeText(requireContext(), "Cập nhật người dùng thành công", Toast.LENGTH_SHORT).show();
+                viewModel.setUpdatePersonSuccess(true);
             } else if (result.getStatus() == PeopleRepository.Resource.Status.ERROR) {
                 Toast.makeText(requireContext(), "Lỗi: " + result.getMessage(), Toast.LENGTH_LONG).show();
             }

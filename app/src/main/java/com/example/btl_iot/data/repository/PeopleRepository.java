@@ -12,6 +12,7 @@ import com.example.btl_iot.data.api.ApiService;
 import com.example.btl_iot.data.model.AddPersonResponse;
 import com.example.btl_iot.data.model.PeopleResponse;
 import com.example.btl_iot.data.model.Person;
+import com.example.btl_iot.data.model.PersonDetailResponse;
 import com.example.btl_iot.util.FileUtils;
 
 import java.io.File;
@@ -30,6 +31,8 @@ public class PeopleRepository {
     private final ApiService apiService;
     private final MutableLiveData<Resource<List<Person>>> peopleList = new MutableLiveData<>();
     private final MutableLiveData<Resource<Person>> addPersonResult = new MutableLiveData<>();
+    private final MutableLiveData<Resource<Person>> personDetailResult = new MutableLiveData<>();
+    private final MutableLiveData<Resource<Person>> updatePersonResult = new MutableLiveData<>();
 
     public PeopleRepository() {
         this.apiService = ApiClient.getApiService();
@@ -39,7 +42,40 @@ public class PeopleRepository {
         loadPeopleFromApi();
         return peopleList;
     }
-    
+
+    public LiveData<Resource<Person>> getPersonDetail(int peopleId) {
+        // Show loading state
+        personDetailResult.setValue(Resource.loading(null));
+        
+        // Make API call
+        apiService.getPersonDetail(peopleId).enqueue(new Callback<PersonDetailResponse>() {
+            @Override
+            public void onResponse(Call<PersonDetailResponse> call, Response<PersonDetailResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    PersonDetailResponse detailResponse = response.body();
+                    if (detailResponse.isSuccess() && detailResponse.getData() != null) {
+                        Person person = detailResponse.getData();
+                        personDetailResult.setValue(Resource.success(person));
+                    } else {
+                        String errorMsg = detailResponse.getMessage() != null ? 
+                                detailResponse.getMessage() : "Lỗi khi lấy chi tiết người dùng";
+                        personDetailResult.setValue(Resource.error(errorMsg, null));
+                    }
+                } else {
+                    personDetailResult.setValue(Resource.error("Lỗi: " + response.code(), null));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PersonDetailResponse> call, Throwable t) {
+                Log.e(TAG, "API call failed", t);
+                personDetailResult.setValue(Resource.error("Lỗi kết nối: " + t.getMessage(), null));
+            }
+        });
+        
+        return personDetailResult;
+    }
+
     public LiveData<Resource<Person>> addPerson(String name, int age, Uri imageUri, Context context) {
         // Show loading state
         addPersonResult.setValue(Resource.loading(null));
@@ -90,6 +126,65 @@ public class PeopleRepository {
         }
         
         return addPersonResult;
+    }
+    
+    public LiveData<Resource<Person>> updatePerson(int peopleId, String name, int age, Uri imageUri, Context context) {
+        // Show loading state
+        updatePersonResult.setValue(Resource.loading(null));
+        
+        try {
+            // Tạo RequestBody cho name và age
+            RequestBody nameBody = RequestBody.create(MediaType.parse("text/plain"), name);
+            RequestBody ageBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(age));
+            
+            // Tạo MultipartBody.Part cho file ảnh (nếu có)
+            MultipartBody.Part filePart = null;
+            if (imageUri != null) {
+                File imageFile = FileUtils.getFileFromUri(context, imageUri);
+                if (imageFile == null) {
+                    updatePersonResult.setValue(Resource.error("Không thể đọc file ảnh", null));
+                    return updatePersonResult;
+                }
+                
+                RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), imageFile);
+                filePart = MultipartBody.Part.createFormData("file", imageFile.getName(), requestFile);
+            } else {
+                // Tạo một phần trống nếu không có ảnh mới
+                RequestBody emptyBody = RequestBody.create(MediaType.parse("text/plain"), "");
+                filePart = MultipartBody.Part.createFormData("file", "", emptyBody);
+            }
+            
+            // Gọi API
+            apiService.updatePerson(peopleId, nameBody, ageBody, filePart).enqueue(new Callback<AddPersonResponse>() {
+                @Override
+                public void onResponse(Call<AddPersonResponse> call, Response<AddPersonResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        AddPersonResponse updateResponse = response.body();
+                        if (updateResponse.isSuccess() && updateResponse.getData() != null) {
+                            Person updatedPerson = updateResponse.getData();
+                            updatePersonResult.setValue(Resource.success(updatedPerson));
+                        } else {
+                            String errorMsg = updateResponse.getMessage() != null ? 
+                                    updateResponse.getMessage() : "Lỗi khi cập nhật người dùng";
+                            updatePersonResult.setValue(Resource.error(errorMsg, null));
+                        }
+                    } else {
+                        updatePersonResult.setValue(Resource.error("Lỗi: " + response.code(), null));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AddPersonResponse> call, Throwable t) {
+                    Log.e(TAG, "API call failed", t);
+                    updatePersonResult.setValue(Resource.error("Lỗi kết nối: " + t.getMessage(), null));
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating request", e);
+            updatePersonResult.setValue(Resource.error("Lỗi: " + e.getMessage(), null));
+        }
+        
+        return updatePersonResult;
     }
 
     private void loadPeopleFromApi() {

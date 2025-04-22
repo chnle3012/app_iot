@@ -20,6 +20,10 @@ public class Person {
     public int getId() {
         return id;
     }
+    
+    public int getPeopleId() {
+        return id;
+    }
 
     public String getName() {
         return name;
