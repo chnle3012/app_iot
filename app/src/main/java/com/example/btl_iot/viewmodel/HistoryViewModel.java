@@ -18,7 +18,10 @@ public class HistoryViewModel extends AndroidViewModel {
         historyRepository = new HistoryRepository();
     }
 
-    public LiveData<AuthRepository.Resource<HistoryResponse>> getHistory(long historyId, String token) {
-        return historyRepository.getHistory(historyId, token);
+    // 5 tham số: token, page, limit, start, end
+    public LiveData<AuthRepository.Resource<HistoryResponse>> getHistory(
+            String token, Integer page, Integer limit, String start, String end
+    ) {
+        return historyRepository.getHistory(token, page, limit, start, end);
     }
 }

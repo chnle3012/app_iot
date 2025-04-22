@@ -20,6 +20,8 @@ import com.example.btl_iot.data.model.HistoryResponse;
 import com.example.btl_iot.data.repository.AuthRepository;
 import com.example.btl_iot.viewmodel.HistoryViewModel;
 
+import java.util.List;
+
 public class HistoryFragment extends Fragment {
 
     private HistoryViewModel historyViewModel;
@@ -46,38 +48,74 @@ public class HistoryFragment extends Fragment {
         historyViewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
 
         // Call API and observe data
-        long historyId = 2; // Replace with actual ID
-        String token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoaWV1dDMiLCJpYXQiOjE3NDUyMTIzNTQsImV4cCI6MTc0NTI5ODc1NH0.0m-1DCeSFxWHtRBgiKKNGCARQe5fy7nOiCi2ePkSqN0"; // Replace with actual token
-        observeHistoryData(historyId, token);
+        String token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoaWV1dDUiLCJpYXQiOjE3NDUzMTEzOTUsImV4cCI6MTc0NTM5Nzc5NX0.gQpEVKihKJjUY3BvltEcHzFiQvz2nhPa9F5PmqafqhY"; // Replace with actual token
+        int page = 0;
+        int limit = 50;
+        String start = "2024-01-01"; // Replace with your actual start date
+        String end = "2025-12-31";   // Replace with your actual end date
+
+        observeHistoryData(token, page, limit, start, end);
 
         return view;
     }
 
-    private void observeHistoryData(long historyId, String token) {
+    private void observeHistoryData(String token, int page, int limit, String start, String end) {
         progressBar.setVisibility(View.VISIBLE);
 
-        historyViewModel.getHistory(historyId, token).observe(getViewLifecycleOwner(), resource -> {
+        historyViewModel.getHistory(token, page, limit, start, end).observe(getViewLifecycleOwner(), resource -> {
             progressBar.setVisibility(View.GONE);
 
-            if (resource.getStatus() == AuthRepository.Resource.Status.SUCCESS) {
-                HistoryResponse historyResponse = resource.getData();
-                if (historyResponse != null && historyResponse.isSuccess() && historyResponse.getData() != null) {
-                    // Update UI with data
-                    textViewName.setText(historyResponse.getData().getPeople().getName());
-                    textViewHistoryId.setText("History id: " + historyResponse.getData().getHistoryId());
-                    textViewMode.setText(historyResponse.getData().getMode());
-                    textViewTimestamp.setText(historyResponse.getData().getTimestamp());
-                } else {
-                    // Display "no history" message
-                    textViewName.setText("chưa có lịch sử");
-                    textViewHistoryId.setText("");
-                    textViewMode.setText("");
-                    textViewTimestamp.setText("");
-                }
-            } else if (resource.getStatus() == AuthRepository.Resource.Status.ERROR) {
-                // Display error
-                Toast.makeText(getContext(), resource.getMessage(), Toast.LENGTH_SHORT).show();
+            if (resource == null) {
+                Toast.makeText(getContext(), "No data available", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            switch (resource.getStatus()) {
+                case SUCCESS:
+                    HistoryResponse historyResponse = resource.getData();
+                    if (historyResponse != null && historyResponse.isSuccess() && historyResponse.getData() != null) {
+                        List<HistoryResponse.History> histories = historyResponse.getData().getContent();
+                        if (histories != null && !histories.isEmpty()) {
+                            // Print the number of history objects
+                            int historyCount = histories.size();
+                            Toast.makeText(getContext(), "Number of histories: " + historyCount, Toast.LENGTH_SHORT).show();
+
+                            for (HistoryResponse.History history : histories) {
+                                String name = history.getPeople() != null ? history.getPeople().getName() : "Unknown";
+                                String historyId = "History id: " + history.getHistoryId();
+                                String mode = history.getMode();
+                                String timestamp = history.getTimestamp();
+
+                                // Example: Update UI or log the data
+                                textViewName.setText(name);
+                                textViewHistoryId.setText(historyId);
+                                textViewMode.setText(mode);
+                                textViewTimestamp.setText(timestamp);
+                            }
+                        } else {
+                            showNoHistory();
+                        }
+                    } else {
+                        showNoHistory();
+                    }
+                    break;
+
+                case ERROR:
+                    Toast.makeText(getContext(), resource.getMessage(), Toast.LENGTH_SHORT).show();
+                    showNoHistory();
+                    break;
+
+                case LOADING:
+                    progressBar.setVisibility(View.VISIBLE);
+                    break;
             }
         });
+    }
+
+    private void showNoHistory() {
+        textViewName.setText("Chưa có lịch sử");
+        textViewHistoryId.setText("");
+        textViewMode.setText("");
+        textViewTimestamp.setText("");
     }
 }

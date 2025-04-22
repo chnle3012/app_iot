@@ -10,14 +10,18 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Header;
+import retrofit2.http.Query;
 
 public interface ApiService {
     @POST("api/auth/login")
     Call<LoginResponse> login(@Body LoginRequest loginRequest);
 
-    @GET("api/history/{historyId}")
+    @GET("api/history")
     Call<HistoryResponse> getHistory(
-            @Path("historyId") long historyId,
-            @Header("Authorization") String token
+            @Header("Authorization") String token,
+            @Query("page") Integer page,
+            @Query("limit") Integer limit,
+            @Query("start") String start,
+            @Query("end") String end
     );
 }

@@ -18,14 +18,14 @@ public class HistoryRepository {
         this.apiService = ApiClient.getApiService();
     }
 
-    public LiveData<AuthRepository.Resource<HistoryResponse>> getHistory(long historyId, String token) {
+    // 5 tham số: token, page, limit, start, end
+    public LiveData<AuthRepository.Resource<HistoryResponse>> getHistory(
+            String token, Integer page, Integer limit, String start, String end
+    ) {
         MutableLiveData<AuthRepository.Resource<HistoryResponse>> historyResult = new MutableLiveData<>();
         historyResult.setValue(AuthRepository.Resource.loading(null));
 
-        // Thêm tiền tố "Bearer " vào token
-        String bearerToken =  token;
-
-        apiService.getHistory(historyId, bearerToken).enqueue(new Callback<HistoryResponse>() {
+        apiService.getHistory(token, page, limit, start, end).enqueue(new Callback<HistoryResponse>() {
             @Override
             public void onResponse(Call<HistoryResponse> call, Response<HistoryResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
