@@ -47,6 +47,9 @@ public class MainDashboardActivity extends AppCompatActivity implements BottomNa
         } else if (itemId == R.id.navigation_people) {
             navController.navigate(R.id.navigation_people);
             return true;
+        } else if (itemId == R.id.navigation_account) {
+            navController.navigate(R.id.navigation_account);
+            return true;
         }
         
         return false;

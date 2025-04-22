@@ -35,4 +35,8 @@ public class AuthViewModel extends AndroidViewModel {
     public boolean isLoggedIn() {
         return SharedPrefsUtils.isLoggedIn(getApplication());
     }
+    
+    public void logout() {
+        SharedPrefsUtils.clearAuthToken(getApplication());
+    }
 } 
