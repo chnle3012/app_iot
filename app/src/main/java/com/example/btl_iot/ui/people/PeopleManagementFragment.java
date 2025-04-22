@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -21,6 +23,7 @@ import com.example.btl_iot.R;
 import com.example.btl_iot.data.model.Person;
 import com.example.btl_iot.data.repository.PeopleRepository;
 import com.example.btl_iot.viewmodel.PeopleViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
@@ -33,6 +36,7 @@ public class PeopleManagementFragment extends Fragment implements PeopleAdapter.
     private PeopleAdapter adapter;
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private FloatingActionButton fabAddPerson;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,9 +62,11 @@ public class PeopleManagementFragment extends Fragment implements PeopleAdapter.
         emptyView = view.findViewById(R.id.txt_empty_view);
         progressBar = view.findViewById(R.id.progress_bar);
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
+        fabAddPerson = view.findViewById(R.id.fab_add_person);
         
         setupRecyclerView();
         setupSwipeRefresh();
+        setupFab();
         observeViewModel();
     }
 
@@ -74,6 +80,13 @@ public class PeopleManagementFragment extends Fragment implements PeopleAdapter.
     private void setupSwipeRefresh() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             viewModel.refreshPeopleList();
+        });
+    }
+    
+    private void setupFab() {
+        fabAddPerson.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+            navController.navigate(R.id.action_navigation_people_to_addEditPerson);
         });
     }
 
@@ -116,7 +129,7 @@ public class PeopleManagementFragment extends Fragment implements PeopleAdapter.
 
     @Override
     public void onPersonClick(Person person) {
-        // Handle person click if needed
-        Toast.makeText(requireContext(), "Clicked: " + person.getName(), Toast.LENGTH_SHORT).show();
+        // Hiển thị thông tin chi tiết nếu cần
+        Toast.makeText(requireContext(), "Đã chọn: " + person.getName(), Toast.LENGTH_SHORT).show();
     }
 } 

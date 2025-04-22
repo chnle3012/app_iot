@@ -22,6 +22,19 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:text="Add Person" />
 
+        <TextView
+            android:id="@+id/txt_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="#F44336"
+            android:textStyle="italic"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@id/txt_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="API chỉ hỗ trợ xem dữ liệu" />
+
         <ImageView
             android:id="@+id/img_person_avatar"
             android:layout_width="150dp"
@@ -30,7 +43,7 @@
             android:contentDescription="Person avatar"
             android:scaleType="centerCrop"
             android:background="#EEEEEE"
-            app:layout_constraintTop_toBottomOf="@id/txt_title"
+            app:layout_constraintTop_toBottomOf="@id/txt_message"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:src="@android:drawable/ic_menu_camera" />
@@ -62,11 +75,11 @@
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_layout_name"
+            android:id="@+id/layout_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:hint="Name"
+            android:hint="Tên"
             app:layout_constraintTop_toBottomOf="@id/layout_photo_buttons">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -77,12 +90,12 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_layout_age"
+            android:id="@+id/layout_age"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Age"
-            app:layout_constraintTop_toBottomOf="@id/input_layout_name">
+            android:hint="Tuổi"
+            app:layout_constraintTop_toBottomOf="@id/layout_name">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_age"
@@ -97,20 +110,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/input_layout_age"
+            app:layout_constraintTop_toBottomOf="@id/layout_age"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="1.0">
 
             <Button
-                android:id="@+id/btn_delete"
+                android:id="@+id/btn_back"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="Delete"
-                android:backgroundTint="#F44336"
-                android:visibility="invisible"
-                tools:visibility="visible" />
+                android:text="Quay lại"
+                android:backgroundTint="#9E9E9E" />
 
             <Button
                 android:id="@+id/btn_save"
@@ -118,8 +129,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:text="Save" />
+                android:text="Lưu" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Xóa"
+            android:backgroundTint="#F44336"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/layout_age"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView> 

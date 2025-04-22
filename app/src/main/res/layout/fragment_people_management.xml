@@ -37,6 +37,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
@@ -76,11 +77,12 @@
         android:id="@+id/fab_add_person"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:contentDescription="Add new person"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="88dp"
+        android:contentDescription="Thêm người dùng mới"
         android:src="@android:drawable/ic_input_add"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/buttonsLayout"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout> 

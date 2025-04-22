@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,12 +17,21 @@ import androidx.navigation.Navigation;
 
 import com.example.btl_iot.R;
 import com.example.btl_iot.viewmodel.PeopleViewModel;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class AddEditPersonFragment extends Fragment {
 
     private PeopleViewModel viewModel;
+    private TextView titleTextView;
     private TextView messageTextView;
+    private TextInputLayout nameLayout;
+    private TextInputEditText nameEditText;
+    private TextInputLayout ageLayout;
+    private TextInputEditText ageEditText;
+    private Button saveButton;
     private Button backButton;
+    private ImageView imageView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,31 +50,51 @@ public class AddEditPersonFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        // Hiển thị thông báo
-        messageTextView = view.findViewById(R.id.txt_title);
-        messageTextView.setText("Chức năng này đã bị vô hiệu hóa. API chỉ hỗ trợ xem dữ liệu.");
-
-        // Ẩn các control không cần thiết
-        hideUnnecessaryControls(view);
+        // Khởi tạo các view
+        titleTextView = view.findViewById(R.id.txt_title);
+        messageTextView = view.findViewById(R.id.txt_message);
+        nameLayout = view.findViewById(R.id.layout_name);
+        nameEditText = view.findViewById(R.id.input_name);
+        ageLayout = view.findViewById(R.id.layout_age);
+        ageEditText = view.findViewById(R.id.input_age);
+        saveButton = view.findViewById(R.id.btn_save);
+        backButton = view.findViewById(R.id.btn_back);
+        imageView = view.findViewById(R.id.img_person_avatar);
         
-        // Thêm nút quay lại
-        backButton = view.findViewById(R.id.btn_save);
-        backButton.setText("Quay lại");
-        backButton.setOnClickListener(v -> navigateBack());
+        // Setup giao diện
+        setupUI();
     }
     
-    private void hideUnnecessaryControls(View view) {
-        View inputName = view.findViewById(R.id.input_name);
-        View inputAge = view.findViewById(R.id.input_age);
-        View btnChooseImage = view.findViewById(R.id.btn_choose_image);
-        View btnTakePhoto = view.findViewById(R.id.btn_take_photo);
-        View btnDelete = view.findViewById(R.id.btn_delete);
+    private void setupUI() {
+        // Hiển thị tiêu đề
+        titleTextView.setText("Thêm người dùng mới");
         
-        if (inputName != null) inputName.setVisibility(View.GONE);
-        if (inputAge != null) inputAge.setVisibility(View.GONE);
-        if (btnChooseImage != null) btnChooseImage.setVisibility(View.GONE);
-        if (btnTakePhoto != null) btnTakePhoto.setVisibility(View.GONE);
-        if (btnDelete != null) btnDelete.setVisibility(View.GONE);
+        // Hiển thị thông báo rằng API chỉ hỗ trợ xem dữ liệu
+        if (messageTextView != null) {
+            messageTextView.setVisibility(View.VISIBLE);
+            messageTextView.setText("Lưu ý: API hiện tại chỉ hỗ trợ xem dữ liệu người dùng. Chức năng thêm mới sẽ không hoạt động.");
+        }
+        
+        // Thiết lập các trường nhập liệu (demo UI)
+        if (nameLayout != null) nameLayout.setVisibility(View.VISIBLE);
+        if (nameEditText != null) nameEditText.setVisibility(View.VISIBLE);
+        if (ageLayout != null) ageLayout.setVisibility(View.VISIBLE);
+        if (ageEditText != null) ageEditText.setVisibility(View.VISIBLE);
+        
+        // Thiết lập nút lưu
+        if (saveButton != null) {
+            saveButton.setText("Lưu");
+            saveButton.setOnClickListener(v -> {
+                Toast.makeText(requireContext(), "API chưa hỗ trợ chức năng thêm mới người dùng", Toast.LENGTH_LONG).show();
+            });
+        }
+        
+        // Thiết lập nút quay lại
+        if (backButton != null) {
+            backButton.setVisibility(View.VISIBLE);
+            backButton.setText("Quay lại");
+            backButton.setOnClickListener(v -> navigateBack());
+        }
     }
 
     private void navigateBack() {
