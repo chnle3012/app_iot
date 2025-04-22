@@ -1,6 +1,7 @@
 package com.example.btl_iot.data.repository;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -8,11 +9,17 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.btl_iot.data.api.ApiClient;
 import com.example.btl_iot.data.api.ApiService;
+import com.example.btl_iot.data.model.AddPersonResponse;
 import com.example.btl_iot.data.model.PeopleResponse;
 import com.example.btl_iot.data.model.Person;
+import com.example.btl_iot.util.FileUtils;
 
+import java.io.File;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -22,6 +29,7 @@ public class PeopleRepository {
     
     private final ApiService apiService;
     private final MutableLiveData<Resource<List<Person>>> peopleList = new MutableLiveData<>();
+    private final MutableLiveData<Resource<Person>> addPersonResult = new MutableLiveData<>();
 
     public PeopleRepository() {
         this.apiService = ApiClient.getApiService();
@@ -30,6 +38,58 @@ public class PeopleRepository {
     public LiveData<Resource<List<Person>>> getPeopleList() {
         loadPeopleFromApi();
         return peopleList;
+    }
+    
+    public LiveData<Resource<Person>> addPerson(String name, int age, Uri imageUri, Context context) {
+        // Show loading state
+        addPersonResult.setValue(Resource.loading(null));
+        
+        try {
+            // Tạo RequestBody cho name và age
+            RequestBody nameBody = RequestBody.create(MediaType.parse("text/plain"), name);
+            RequestBody ageBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(age));
+            
+            // Tạo MultipartBody.Part cho file ảnh
+            File imageFile = FileUtils.getFileFromUri(context, imageUri);
+            if (imageFile == null) {
+                addPersonResult.setValue(Resource.error("Không thể đọc file ảnh", null));
+                return addPersonResult;
+            }
+            
+            RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), imageFile);
+            MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", imageFile.getName(), requestFile);
+            
+            // Gọi API
+            apiService.addPerson(nameBody, ageBody, filePart).enqueue(new Callback<AddPersonResponse>() {
+                @Override
+                public void onResponse(Call<AddPersonResponse> call, Response<AddPersonResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        AddPersonResponse addResponse = response.body();
+                        if (addResponse.isSuccess() && addResponse.getData() != null) {
+                            Person newPerson = addResponse.getData();
+                            addPersonResult.setValue(Resource.success(newPerson));
+                        } else {
+                            String errorMsg = addResponse.getMessage() != null ? 
+                                    addResponse.getMessage() : "Lỗi khi thêm người dùng";
+                            addPersonResult.setValue(Resource.error(errorMsg, null));
+                        }
+                    } else {
+                        addPersonResult.setValue(Resource.error("Lỗi: " + response.code(), null));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AddPersonResponse> call, Throwable t) {
+                    Log.e(TAG, "API call failed", t);
+                    addPersonResult.setValue(Resource.error("Lỗi kết nối: " + t.getMessage(), null));
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating request", e);
+            addPersonResult.setValue(Resource.error("Lỗi: " + e.getMessage(), null));
+        }
+        
+        return addPersonResult;
     }
 
     private void loadPeopleFromApi() {

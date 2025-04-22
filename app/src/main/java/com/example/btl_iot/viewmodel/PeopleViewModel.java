@@ -1,6 +1,7 @@
 package com.example.btl_iot.viewmodel;
 
 import android.app.Application;
+import android.net.Uri;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -15,6 +16,7 @@ public class PeopleViewModel extends AndroidViewModel {
     private final PeopleRepository repository;
     private final MutableLiveData<String> toastMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> addPersonSuccess = new MutableLiveData<>(false);
 
     public PeopleViewModel(Application application) {
         super(application);
@@ -24,6 +26,10 @@ public class PeopleViewModel extends AndroidViewModel {
     public LiveData<PeopleRepository.Resource<List<Person>>> getPeopleList() {
         return repository.getPeopleList();
     }
+    
+    public LiveData<PeopleRepository.Resource<Person>> addPerson(String name, int age, Uri imageUri) {
+        return repository.addPerson(name, age, imageUri, getApplication());
+    }
 
     public LiveData<String> getToastMessage() {
         return toastMessage;
@@ -31,6 +37,14 @@ public class PeopleViewModel extends AndroidViewModel {
 
     public LiveData<Boolean> getIsLoading() {
         return isLoading;
+    }
+    
+    public LiveData<Boolean> getAddPersonSuccess() {
+        return addPersonSuccess;
+    }
+    
+    public void setAddPersonSuccess(boolean success) {
+        addPersonSuccess.setValue(success);
     }
 
     public void setToastMessage(String message) {

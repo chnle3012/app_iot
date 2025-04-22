@@ -29,7 +29,7 @@
             android:layout_marginTop="8dp"
             android:textColor="#F44336"
             android:textStyle="italic"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/txt_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -40,7 +40,7 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_marginTop="24dp"
-            android:contentDescription="Person avatar"
+            android:contentDescription="Ảnh đại diện người dùng"
             android:scaleType="centerCrop"
             android:background="#EEEEEE"
             app:layout_constraintTop_toBottomOf="@id/txt_message"
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="Choose Photo" />
+                android:text="Chọn ảnh" />
 
             <Button
                 android:id="@+id/btn_take_photo"
@@ -71,7 +71,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:text="Take Photo" />
+                android:text="Chụp ảnh"
+                android:visibility="gone" />
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -104,13 +105,28 @@
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <Button
+            android:id="@+id/btn_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Thêm người dùng"
+            android:drawableStart="@android:drawable/ic_menu_add"
+            android:drawablePadding="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:backgroundTint="#4CAF50"
+            app:layout_constraintTop_toBottomOf="@id/layout_age"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <LinearLayout
             android:id="@+id/layout_action_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/layout_age"
+            app:layout_constraintTop_toBottomOf="@id/btn_submit"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="1.0">
 
@@ -142,6 +158,16 @@
             app:layout_constraintTop_toBottomOf="@id/layout_age"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView> 
