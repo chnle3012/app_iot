@@ -133,13 +133,18 @@ public class PeopleRepository {
         updatePersonResult.setValue(Resource.loading(null));
         
         try {
-            // Tạo RequestBody cho name và age
-            RequestBody nameBody = RequestBody.create(MediaType.parse("text/plain"), name);
-            RequestBody ageBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(age));
+            // Kiểm tra xem có ảnh mới cần upload không
+            boolean hasNewImage = imageUri != null && !imageUri.toString().startsWith("http");
             
-            // Tạo MultipartBody.Part cho file ảnh (nếu có)
-            MultipartBody.Part filePart = null;
-            if (imageUri != null) {
+            if (hasNewImage) {
+                // Có ảnh mới, sử dụng API updatePerson có kèm file
+                Log.d(TAG, "Đang cập nhật người dùng với ảnh mới");
+                
+                // Tạo RequestBody cho name và age
+                RequestBody nameBody = RequestBody.create(MediaType.parse("text/plain"), name);
+                RequestBody ageBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(age));
+                
+                // Tạo MultipartBody.Part cho file ảnh mới
                 File imageFile = FileUtils.getFileFromUri(context, imageUri);
                 if (imageFile == null) {
                     updatePersonResult.setValue(Resource.error("Không thể đọc file ảnh", null));
@@ -147,44 +152,77 @@ public class PeopleRepository {
                 }
                 
                 RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), imageFile);
-                filePart = MultipartBody.Part.createFormData("file", imageFile.getName(), requestFile);
-            } else {
-                // Tạo một phần trống nếu không có ảnh mới
-                RequestBody emptyBody = RequestBody.create(MediaType.parse("text/plain"), "");
-                filePart = MultipartBody.Part.createFormData("file", "", emptyBody);
-            }
-            
-            // Gọi API
-            apiService.updatePerson(peopleId, nameBody, ageBody, filePart).enqueue(new Callback<AddPersonResponse>() {
-                @Override
-                public void onResponse(Call<AddPersonResponse> call, Response<AddPersonResponse> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        AddPersonResponse updateResponse = response.body();
-                        if (updateResponse.isSuccess() && updateResponse.getData() != null) {
-                            Person updatedPerson = updateResponse.getData();
-                            updatePersonResult.setValue(Resource.success(updatedPerson));
-                        } else {
-                            String errorMsg = updateResponse.getMessage() != null ? 
-                                    updateResponse.getMessage() : "Lỗi khi cập nhật người dùng";
-                            updatePersonResult.setValue(Resource.error(errorMsg, null));
-                        }
-                    } else {
-                        updatePersonResult.setValue(Resource.error("Lỗi: " + response.code(), null));
+                MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", imageFile.getName(), requestFile);
+                Log.d(TAG, "Đang upload ảnh mới: " + imageFile.getName());
+                
+                // Gọi API với ảnh
+                apiService.updatePerson(peopleId, nameBody, ageBody, filePart).enqueue(new Callback<AddPersonResponse>() {
+                    @Override
+                    public void onResponse(Call<AddPersonResponse> call, Response<AddPersonResponse> response) {
+                        handleUpdateResponse(response);
                     }
-                }
 
-                @Override
-                public void onFailure(Call<AddPersonResponse> call, Throwable t) {
-                    Log.e(TAG, "API call failed", t);
-                    updatePersonResult.setValue(Resource.error("Lỗi kết nối: " + t.getMessage(), null));
-                }
-            });
+                    @Override
+                    public void onFailure(Call<AddPersonResponse> call, Throwable t) {
+                        Log.e(TAG, "API call failed", t);
+                        updatePersonResult.setValue(Resource.error("Lỗi kết nối: " + t.getMessage(), null));
+                    }
+                });
+            } else {
+                // Không có ảnh mới, chỉ cập nhật thông tin cơ bản
+                Log.d(TAG, "Đang cập nhật người dùng không kèm ảnh mới");
+                
+                // Gọi API không kèm ảnh
+                apiService.updatePersonWithoutImage(peopleId, name, age).enqueue(new Callback<AddPersonResponse>() {
+                    @Override
+                    public void onResponse(Call<AddPersonResponse> call, Response<AddPersonResponse> response) {
+                        handleUpdateResponse(response);
+                    }
+
+                    @Override
+                    public void onFailure(Call<AddPersonResponse> call, Throwable t) {
+                        Log.e(TAG, "API call failed", t);
+                        updatePersonResult.setValue(Resource.error("Lỗi kết nối: " + t.getMessage(), null));
+                    }
+                });
+            }
         } catch (Exception e) {
             Log.e(TAG, "Error creating request", e);
             updatePersonResult.setValue(Resource.error("Lỗi: " + e.getMessage(), null));
         }
         
         return updatePersonResult;
+    }
+    
+    // Phương thức xử lý response chung cho cả hai trường hợp
+    private void handleUpdateResponse(Response<AddPersonResponse> response) {
+        if (response.isSuccessful() && response.body() != null) {
+            AddPersonResponse updateResponse = response.body();
+            if (updateResponse.isSuccess() && updateResponse.getData() != null) {
+                Person updatedPerson = updateResponse.getData();
+                updatePersonResult.setValue(Resource.success(updatedPerson));
+            } else {
+                String errorMsg = updateResponse.getMessage() != null ? 
+                        updateResponse.getMessage() : "Lỗi khi cập nhật người dùng";
+                updatePersonResult.setValue(Resource.error(errorMsg, null));
+            }
+        } else {
+            String errorBody = null;
+            try {
+                if (response.errorBody() != null) {
+                    errorBody = response.errorBody().string();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Không thể đọc error body", e);
+            }
+            
+            String errorMsg = "Lỗi: " + response.code();
+            if (errorBody != null && !errorBody.isEmpty()) {
+                errorMsg += " - " + errorBody;
+            }
+            
+            updatePersonResult.setValue(Resource.error(errorMsg, null));
+        }
     }
 
     private void loadPeopleFromApi() {

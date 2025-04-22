@@ -60,6 +60,7 @@ public class AddEditPersonFragment extends Fragment {
     private Uri selectedImageUri = null;
     private Person currentPerson = null;
     private boolean isEditMode = false;
+    private boolean hasSelectedNewImage = false;
     
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -67,7 +68,9 @@ public class AddEditPersonFragment extends Fragment {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     Uri imageUri = result.getData().getData();
                     if (imageUri != null) {
+                        Log.d(TAG, "Đã chọn ảnh mới từ gallery: " + imageUri);
                         selectedImageUri = imageUri;
+                        hasSelectedNewImage = true;
                         loadImage(imageUri);
                     }
                 }
@@ -162,9 +165,10 @@ public class AddEditPersonFragment extends Fragment {
         if (nameEditText != null) nameEditText.setText(person.getName());
         if (ageEditText != null) ageEditText.setText(String.valueOf(person.getAge()));
         
-        // Load ảnh
+        // Load ảnh và lưu URI
         if (person.getFaceImagePath() != null && !person.getFaceImagePath().isEmpty()) {
-            loadImage(Uri.parse(person.getFaceImagePath()));
+            selectedImageUri = Uri.parse(person.getFaceImagePath());
+            loadImage(selectedImageUri);
         }
     }
     
@@ -176,9 +180,15 @@ public class AddEditPersonFragment extends Fragment {
             titleTextView.setText("Thêm người dùng mới");
         }
         
-        // Ẩn thông báo "chỉ hỗ trợ xem dữ liệu" vì bây giờ chúng ta đã hỗ trợ thêm mới
+        // Ẩn thông báo
         if (messageTextView != null) {
-            messageTextView.setVisibility(View.GONE);
+            if (isEditMode) {
+                messageTextView.setVisibility(View.VISIBLE);
+                messageTextView.setText("Bạn có thể chỉ cập nhật tên và tuổi mà không cần chọn ảnh mới.");
+                messageTextView.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_blue_dark));
+            } else {
+                messageTextView.setVisibility(View.GONE);
+            }
         }
         
         // Thiết lập các trường nhập liệu
@@ -344,16 +354,26 @@ public class AddEditPersonFragment extends Fragment {
     }
     
     private void updatePerson(String name, int age) {
-        viewModel.updatePerson(currentPerson.getPeopleId(), name, age, selectedImageUri).observe(getViewLifecycleOwner(), result -> {
+        Log.d(TAG, "Gọi API cập nhật người dùng, ID: " + currentPerson.getPeopleId() + 
+                ", Tên: " + name + ", Tuổi: " + age + 
+                ", Đã chọn ảnh mới: " + hasSelectedNewImage);
+                
+        // Nếu đã chọn ảnh mới, gửi ảnh đó. Nếu không, gửi null để chỉ cập nhật tên và tuổi
+        Uri imageToUpload = hasSelectedNewImage ? selectedImageUri : null;
+        
+        viewModel.updatePerson(currentPerson.getPeopleId(), name, age, imageToUpload).observe(getViewLifecycleOwner(), result -> {
             // Hide progress
             if (progressBar != null) progressBar.setVisibility(View.GONE);
             submitButton.setEnabled(true);
             
             if (result.getStatus() == PeopleRepository.Resource.Status.SUCCESS) {
                 Toast.makeText(requireContext(), "Cập nhật người dùng thành công", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Cập nhật người dùng thành công: " + result.getData().getName());
                 viewModel.setUpdatePersonSuccess(true);
             } else if (result.getStatus() == PeopleRepository.Resource.Status.ERROR) {
-                Toast.makeText(requireContext(), "Lỗi: " + result.getMessage(), Toast.LENGTH_LONG).show();
+                String errorMsg = "Lỗi: " + result.getMessage();
+                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show();
+                Log.e(TAG, errorMsg);
             }
         });
     }
