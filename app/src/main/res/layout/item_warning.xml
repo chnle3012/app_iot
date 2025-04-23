@@ -1,15 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:padding="16dp"
-    android:orientation="vertical">
+    android:background="?android:attr/selectableItemBackground"
+    android:layout_marginBottom="8dp">
 
+    <!-- ID cảnh báo -->
     <TextView
-        android:id="@+id/text_warning"
+        android:id="@+id/warning_item_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sample Warning"
-        android:textSize="16sp"/>
+        android:text="ID: 123"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray" />
+
+    <!-- Tin nhắn cảnh báo -->
+    <TextView
+        android:id="@+id/warning_item_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Infor: Warning message here"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="8dp" />
+
+    <!-- Thời gian cảnh báo -->
+    <TextView
+        android:id="@+id/warning_item_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Timestamp"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="4dp" />
+
 </LinearLayout>

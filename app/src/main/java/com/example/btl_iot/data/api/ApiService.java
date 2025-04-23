@@ -8,6 +8,7 @@ import com.example.btl_iot.data.model.PeopleResponse;
 import com.example.btl_iot.data.model.PersonDetailResponse;
 import com.example.btl_iot.data.model.RegisterRequest;
 import com.example.btl_iot.data.model.RegisterResponse;
+import com.example.btl_iot.data.model.WarningResponse;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -64,6 +65,15 @@ public interface ApiService {
 
     @GET("api/history")
     Call<HistoryResponse> getHistory(
+            @Header("Authorization") String token,
+            @Query("page") Integer page,
+            @Query("limit") Integer limit,
+            @Query("start") String start,
+            @Query("end") String end
+    );
+
+    @GET("api/warning")
+    Call<WarningResponse> getWarning(
             @Header("Authorization") String token,
             @Query("page") Integer page,
             @Query("limit") Integer limit,

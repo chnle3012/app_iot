@@ -106,7 +106,7 @@ public class AuthRepository {
         public enum Status { SUCCESS, ERROR, LOADING }
         
         private final Status status;
-        private final T data;
+        public final T data;
         private final String message;
         
         private Resource(Status status, T data, String message) {

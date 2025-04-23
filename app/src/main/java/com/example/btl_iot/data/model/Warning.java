@@ -1,13 +1,19 @@
 package com.example.btl_iot.data.model;
 
 public class Warning {
-    private String message;
+    private String timestamp;
+    private String imagePath;
+    private String info;
 
-    public Warning(String message) {
-        this.message = message;
+    public String getTimestamp() {
+        return timestamp;
     }
 
-    public String getMessage() {
-        return message;
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public String getInfo() {
+        return info;
     }
 }
