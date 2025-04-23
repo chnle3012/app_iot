@@ -19,8 +19,6 @@ public class WarningResponse {
         return data;
     }
 
-
-
     public static class Data {
         private List<Warning> content;
         private int totalElements;
@@ -51,10 +49,11 @@ public class WarningResponse {
 
     public static class Warning {
         private int id;
-        private String message;
+        private String info; // Thay từ message thành info
         private String timestamp;
+        private String imagePath; // Thêm imagePath nếu cần sử dụng
 
-        // Getter and Setter for id
+        // Getter và Setter cho id
         public int getId() {
             return id;
         }
@@ -63,22 +62,31 @@ public class WarningResponse {
             this.id = id;
         }
 
-        // Getter and Setter for message
-        public String getMessage() {
-            return message;
+        // Getter và Setter cho info (thay vì message)
+        public String getInfo() {
+            return info;
         }
 
-        public void setMessage(String message) {
-            this.message = message;
+        public void setInfo(String info) {
+            this.info = info;
         }
 
-        // Getter and Setter for timestamp
+        // Getter và Setter cho timestamp
         public String getTimestamp() {
             return timestamp;
         }
 
         public void setTimestamp(String timestamp) {
             this.timestamp = timestamp;
+        }
+
+        // Getter và Setter cho imagePath (nếu cần)
+        public String getImagePath() {
+            return imagePath;
+        }
+
+        public void setImagePath(String imagePath) {
+            this.imagePath = imagePath;
         }
     }
 }

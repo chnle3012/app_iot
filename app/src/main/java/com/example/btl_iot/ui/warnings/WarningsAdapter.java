@@ -40,7 +40,7 @@ public class WarningsAdapter extends RecyclerView.Adapter<WarningsAdapter.Warnin
         WarningResponse.Warning warning = warningList.get(position);
 
         // Gán dữ liệu vào các TextView trong item
-        holder.message.setText("Infor: " + warning.getMessage());
+        holder.message.setText("Infor: " + warning.getInfo());
         holder.timestamp.setText(warning.getTimestamp());
         holder.id.setText("ID: " + warning.getId());
     }
