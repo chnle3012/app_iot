@@ -1,6 +1,8 @@
 package com.example.btl_iot.ui.warnings;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.btl_iot.R;
 import com.example.btl_iot.data.model.WarningResponse;
+import com.example.btl_iot.util.Constants;
 import com.example.btl_iot.viewmodel.WarningViewModel;
 
 import java.util.List;
@@ -42,7 +45,7 @@ public class WarningsFragment extends Fragment {
 
         warningViewModel = new ViewModelProvider(this).get(WarningViewModel.class);
 
-        String token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoaWV1dDEiLCJpYXQiOjE3NDUzNjY3OTcsImV4cCI6MTc0NTQ1MzE5N30.wGzYDx_mdRboCWXx2fhC84mrq8DZ0lWbpweQrhbHN-Y"; // Replace with actual token
+        String token = getAuthToken(); // Replace with actual token
         int page = 0;
         int limit = 20;
         String start = "2023-01-01";
@@ -52,6 +55,17 @@ public class WarningsFragment extends Fragment {
 
         return view;
     }
+
+    private String getAuthToken() {
+        SharedPreferences prefs = requireContext().getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        String rawToken = prefs.getString(Constants.KEY_AUTH_TOKEN, null);
+        if (rawToken != null) {
+            return "Bearer " + rawToken;
+        } else {
+            return null;
+        }
+    }
+
     private void observeWarningData(String token, int page, int limit, String start, String end) {
         progressBar.setVisibility(View.VISIBLE);
 
