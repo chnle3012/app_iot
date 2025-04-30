@@ -1,6 +1,8 @@
 package com.example.btl_iot.ui.history;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.btl_iot.R;
 import com.example.btl_iot.data.model.HistoryResponse;
+import com.example.btl_iot.util.Constants;
 import com.example.btl_iot.viewmodel.HistoryViewModel;
 
 import java.util.List;
@@ -41,7 +44,12 @@ public class HistoryFragment extends Fragment {
 
         historyViewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
 
-        String token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoaWV1dDUiLCJpYXQiOjE3NDUzMTEzOTUsImV4cCI6MTc0NTM5Nzc5NX0.gQpEVKihKJjUY3BvltEcHzFiQvz2nhPa9F5PmqafqhY"; // Thay bằng token thực tế
+        String token = getAuthToken(); // Lấy token từ SharedPreferences
+        if (token == null || token.isEmpty()) {
+            Toast.makeText(getContext(), "Token not found. Please log in again.", Toast.LENGTH_SHORT).show();
+            return view;
+        }
+
         int page = 0;
         int limit = 20;
         String start = "2023-01-01";
@@ -50,6 +58,16 @@ public class HistoryFragment extends Fragment {
         observeHistoryData(token, page, limit, start, end);
 
         return view;
+    }
+
+    private String getAuthToken() {
+        SharedPreferences prefs = requireContext().getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        String rawToken = prefs.getString(Constants.KEY_AUTH_TOKEN, null);
+        if (rawToken != null) {
+            return "Bearer " + rawToken;
+        } else {
+            return null;
+        }
     }
 
     private void observeHistoryData(String token, int page, int limit, String start, String end) {

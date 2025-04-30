@@ -2,7 +2,7 @@ package com.example.btl_iot.util;
 
 public class Constants {
     // API Base URL
-    public static final String BASE_URL = "http://159.223.90.88/";
+    public static final String BASE_URL = "http://209.97.160.79/";
     
     // SharedPreferences
     public static final String PREF_NAME = "btl_iot_prefs";
