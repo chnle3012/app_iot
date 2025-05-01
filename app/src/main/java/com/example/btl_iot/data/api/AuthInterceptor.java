@@ -21,6 +21,14 @@ public class AuthInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
         
+        // Kiểm tra URL của request để xác định có cần thêm token hay không
+        String url = originalRequest.url().toString();
+        
+        // Không thêm token cho các API login và register
+        if (url.contains("api/auth/login") || url.contains("api/auth/register")) {
+            return chain.proceed(originalRequest);
+        }
+        
         // Get token from SharedPreferences
         String token = SharedPrefsUtils.getAuthToken(context);
         
