@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/history_item_icon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_history"
+            android:contentDescription="History Icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/history_item_title" />
+
+        <TextView
+            android:id="@+id/history_item_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/history_item_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/history_item_icon"
+            app:layout_constraintBottom_toTopOf="@id/history_item_name"
+            tools:text="Timestamp" />
+
+        <TextView
+            android:id="@+id/history_item_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:textColor="#757575"
+            app:layout_constraintStart_toEndOf="@id/history_item_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/history_item_title"
+            app:layout_constraintBottom_toTopOf="@id/history_item_id"
+            tools:text="Name" />
+
+        <TextView
+            android:id="@+id/history_item_id"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:textColor="#757575"
+            app:layout_constraintStart_toEndOf="@id/history_item_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/history_item_name"
+            app:layout_constraintBottom_toTopOf="@id/history_item_mode"
+            tools:text="History ID" />
+
+        <TextView
+            android:id="@+id/history_item_mode"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:textColor="#757575"
+            app:layout_constraintStart_toEndOf="@id/history_item_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/history_item_id"
+            app:layout_constraintBottom_toBottomOf="@id/history_item_icon"
+            tools:text="Mode" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

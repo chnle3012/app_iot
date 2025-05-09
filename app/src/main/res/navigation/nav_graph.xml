@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/navigation_history">
+
+    <!-- History Fragment -->
+    <fragment
+        android:id="@+id/navigation_history"
+        android:name="com.example.btl_iot.ui.history.HistoryFragment"
+        android:label="History"
+        tools:layout="@layout/fragment_history" />
+
+    <!-- Warnings Fragment -->
+    <fragment
+        android:id="@+id/navigation_warnings"
+        android:name="com.example.btl_iot.ui.warnings.WarningsFragment"
+        android:label="Warnings"
+        tools:layout="@layout/fragment_warnings" />
+        
+    <!-- People Management Fragment -->
+    <fragment
+        android:id="@+id/navigation_people"
+        android:name="com.example.btl_iot.ui.people.PeopleManagementFragment"
+        android:label="People Management"
+        tools:layout="@layout/fragment_people_management">
+        <action
+            android:id="@+id/action_navigation_people_to_addEditPerson"
+            app:destination="@id/addEditPersonFragment" />
+    </fragment>
+
+    <!-- Add/Edit Person Fragment -->
+    <fragment
+        android:id="@+id/addEditPersonFragment"
+        android:name="com.example.btl_iot.ui.people.AddEditPersonFragment"
+        android:label="Add/Edit Person"
+        tools:layout="@layout/fragment_add_edit_person">
+        <argument
+            android:name="personId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
+    
+    <!-- Account Fragment -->
+    <fragment
+        android:id="@+id/navigation_account"
+        android:name="com.example.btl_iot.ui.account.AccountFragment"
+        android:label="Account"
+        tools:layout="@layout/fragment_account" />
+</navigation> 

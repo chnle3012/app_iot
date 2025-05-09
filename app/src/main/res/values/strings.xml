@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">btl_iot</string>
+    <string name="warnings">Warnings</string>
+    <string name="history">History</string>
+    <string name="btn_add_sample_data">Add Sample Data</string>
+    <string name="btn_clear_data">Clear Data</string>
+    <string name="no_people_found">No people found. Click + to add someone.</string>
+    <string name="confirm_clear_data">Are you sure you want to delete all people? This action cannot be undone.</string>
+    <string name="clear_all_data">Clear All Data</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="sample_data_added">Sample data added</string>
+    <string name="all_data_cleared">All data cleared</string>
+    <string name="no_data_to_clear">No data to clear</string>
+    <string name="account">Tài khoản</string>
+    <string name="logout">Đăng xuất</string>
+</resources>
