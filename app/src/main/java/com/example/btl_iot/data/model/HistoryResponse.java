@@ -76,10 +76,29 @@ public class HistoryResponse {
     }
 
     public static class People {
+
+        private int peopleId;
         private String name;
+
+        private int age;
+
+        private String imagePath;
+
+       public int getPeopleId() {
+           return peopleId;
+       }
 
         public String getName() {
             return name;
         }
+
+        public int getAge() {
+           return age;
+        }
+
+        public String getFaceImagePath() {
+            return imagePath;
+        }
+
     }
 }
