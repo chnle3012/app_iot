@@ -29,29 +29,37 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     public HistoryAdapter(List<HistoryResponse.History> historyList, HistoryItemListener listener) {
         this.historyList = historyList != null ? historyList : new ArrayList<>();
         this.listener = listener;
+        android.util.Log.d("HistoryAdapter", "Adapter created with initial list size: " + this.historyList.size());
     }
 
     public void updateData(List<HistoryResponse.History> newHistoryList) {
+        android.util.Log.d("HistoryAdapter", "updateData called with list size: " + 
+            (newHistoryList != null ? newHistoryList.size() : "null"));
         this.historyList = newHistoryList != null ? newHistoryList : new ArrayList<>();
         notifyDataSetChanged();
+        android.util.Log.d("HistoryAdapter", "notifyDataSetChanged called");
     }
 
     @NonNull
     @Override
     public HistoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        android.util.Log.d("HistoryAdapter", "onCreateViewHolder called");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_history, parent, false);
         return new HistoryViewHolder(view, listener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
+        android.util.Log.d("HistoryAdapter", "onBindViewHolder called for position: " + position);
         HistoryResponse.History history = historyList.get(position);
         holder.bind(history);
     }
 
     @Override
     public int getItemCount() {
-        return historyList.size();
+        int count = historyList.size();
+        android.util.Log.d("HistoryAdapter", "getItemCount: " + count);
+        return count;
     }
 
     static class HistoryViewHolder extends RecyclerView.ViewHolder {
@@ -77,11 +85,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         }
 
         public void bind(HistoryResponse.History history) {
+            android.util.Log.d("HistoryAdapter", "Binding history item: " + history.getHistoryId());
+            
             // Format timestamp to be more readable if needed
             title.setText(history.getTimestamp());
             
             // Set person name if available
-            name.setText(history.getPeople() != null ? history.getPeople().getName() : "Unknown");
+            String personName = history.getPeople() != null ? history.getPeople().getName() : "Unknown";
+            name.setText(personName);
             
             // Set history ID
             historyId.setText("ID: " + history.getHistoryId());
@@ -113,6 +124,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
                     itemListener.onDeleteClick(history);
                 }
             });
+            
+            android.util.Log.d("HistoryAdapter", "Binding complete for history item: " + history.getHistoryId());
         }
     }
 }

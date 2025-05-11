@@ -74,6 +74,8 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
 
+        android.util.Log.d("HistoryFragment", "onCreateView called");
+
         // Initialize UI components
         progressBar = view.findViewById(R.id.progress_bar);
         recyclerView = view.findViewById(R.id.recycler_view_history);
@@ -87,10 +89,16 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
         clearFilterButton = view.findViewById(R.id.btn_clear_filter);
         toolbar = view.findViewById(R.id.toolbar_history);
 
+        // Set initial visibility
+        emptyView.setVisibility(View.GONE);
+        swipeRefreshLayout.setVisibility(View.VISIBLE);
+
         // Setup RecyclerView
+        android.util.Log.d("HistoryFragment", "Setting up RecyclerView");
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        historyAdapter = new HistoryAdapter(null, this);
+        historyAdapter = new HistoryAdapter(new ArrayList<>(), this);
         recyclerView.setAdapter(historyAdapter);
+        android.util.Log.d("HistoryFragment", "RecyclerView setup complete");
 
         // Setup ViewModel
         historyViewModel = new ViewModelProvider(requireActivity()).get(HistoryViewModel.class);
@@ -160,7 +168,37 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
         int page = 0;
         int limit = 20; // Get more records to enable better filtering
 
+        // Update date filter button text to show current filter
+        updateDateFilterButtonText();
+
         fetchHistoryData(token, page, limit, startDateFilter, endDateFilter);
+    }
+    
+    private void updateDateFilterButtonText() {
+        try {
+            // Check if using default dates
+            boolean isDefault = startDateFilter.equals("2023-01-01") && 
+                            endDateFilter.equals(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
+            
+            if (isDefault) {
+                dateFilterButton.setText("Date Filter");
+            } else {
+                // Format dates for display
+                SimpleDateFormat apiFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                SimpleDateFormat displayFormat = new SimpleDateFormat("dd/MM", Locale.getDefault());
+                
+                Date startDate = apiFormat.parse(startDateFilter);
+                Date endDate = apiFormat.parse(endDateFilter);
+                
+                if (startDate != null && endDate != null) {
+                    String buttonText = displayFormat.format(startDate) + " - " + displayFormat.format(endDate);
+                    dateFilterButton.setText(buttonText);
+                }
+            }
+        } catch (Exception e) {
+            android.util.Log.e("HistoryFragment", "Error updating date filter button: " + e.getMessage());
+            dateFilterButton.setText("Date Filter");
+        }
     }
     
     private void refreshHistoryData() {
@@ -183,24 +221,50 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
     private void fetchHistoryData(String token, int page, int limit, String start, String end) {
         progressBar.setVisibility(View.VISIBLE);
         emptyView.setVisibility(View.GONE);
+        swipeRefreshLayout.setVisibility(View.VISIBLE);
+
+        android.util.Log.d("HistoryFragment", "Fetching history with token: " + token);
+        android.util.Log.d("HistoryFragment", "Parameters: page=" + page + ", limit=" + limit + 
+                       ", start=" + start + ", end=" + end);
 
         historyViewModel.getHistory(token, page, limit, start, end).observe(getViewLifecycleOwner(), resource -> {
             progressBar.setVisibility(View.GONE);
             swipeRefreshLayout.setRefreshing(false);
 
             if (resource == null) {
+                android.util.Log.e("HistoryFragment", "Resource is null");
                 showEmptyView("No data available");
                 return;
             }
 
+            android.util.Log.d("HistoryFragment", "Response status: " + resource.getStatus());
+
+
             switch (resource.getStatus()) {
                 case SUCCESS:
                     HistoryResponse historyResponse = resource.getData();
+                    android.util.Log.d("HistoryFragment", "History response: " + (historyResponse != null ? "not null" : "null"));
+                    
+                    if (historyResponse != null) {
+                        android.util.Log.d("HistoryFragment", "History success: " + historyResponse.isSuccess());
+                        android.util.Log.d("HistoryFragment", "History data: " + (historyResponse.getData() != null ? "not null" : "null"));
+                        
+                        if (historyResponse.getData() != null) {
+                            List<HistoryResponse.History> content = historyResponse.getData().getContent();
+                            android.util.Log.d("HistoryFragment", "Content: " + (content != null ? ("size=" + content.size()) : "null"));
+                            
+                            if (content != null && !content.isEmpty()) {
+                                android.util.Log.d("HistoryFragment", "First item id: " + content.get(0).getHistoryId());
+                            }
+                        }
+                    }
+                    
                     if (historyResponse != null && historyResponse.isSuccess() && historyResponse.getData() != null) {
                         List<HistoryResponse.History> histories = historyResponse.getData().getContent();
                         if (histories != null && !histories.isEmpty()) {
                             // Store all history records
                             allHistoryList = new ArrayList<>(histories);
+                            android.util.Log.d("HistoryFragment", "All history list updated with " + allHistoryList.size() + " items");
                             
                             // Apply current filters
                             filterHistoryList();
@@ -208,18 +272,22 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
                             // Update statistics
                             updateStatistics();
                         } else {
+                            android.util.Log.d("HistoryFragment", "No histories in response");
                             showEmptyView("No history found");
                         }
                     } else {
+                        android.util.Log.d("HistoryFragment", "Invalid history response structure");
                         showEmptyView("Failed to load history");
                     }
                     break;
 
                 case ERROR:
+                    android.util.Log.e("HistoryFragment", "Error: " + resource.getMessage());
                     showEmptyView(resource.getMessage());
                     break;
 
                 case LOADING:
+                    android.util.Log.d("HistoryFragment", "Loading...");
                     progressBar.setVisibility(View.VISIBLE);
                     break;
             }
@@ -227,6 +295,9 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
     }
     
     private void filterHistoryList() {
+        android.util.Log.d("HistoryFragment", "Filtering history list, allHistoryList size: " + 
+            (allHistoryList != null ? allHistoryList.size() : "null"));
+        
         if (allHistoryList == null || allHistoryList.isEmpty()) {
             filteredHistoryList = new ArrayList<>();
             historyAdapter.updateData(filteredHistoryList);
@@ -253,49 +324,138 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
                 })
                 .collect(Collectors.toList());
         
+        android.util.Log.d("HistoryFragment", "Filtered list size after filtering: " + filteredHistoryList.size());
+        
         // Update adapter with filtered list
         historyAdapter.updateData(filteredHistoryList);
+        android.util.Log.d("HistoryFragment", "Updated adapter with filtered data");
         
         // Show empty view if needed
         if (filteredHistoryList.isEmpty()) {
+            android.util.Log.d("HistoryFragment", "Filtered list is empty, showing empty view");
             showEmptyView("No matching records found");
         } else {
+            android.util.Log.d("HistoryFragment", "Filtered list has data, hiding empty view");
             hideEmptyView();
         }
     }
     
     private void showDateFilterDialog() {
-        // Show date range picker dialog
+        // Inflate custom dialog layout
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_date_filter, null);
+        
+        // Create dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+        
+        // Get current date
         final Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        final SimpleDateFormat displayFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        final SimpleDateFormat apiFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         
-        // First show start date picker
-        DatePickerDialog startDatePicker = new DatePickerDialog(requireContext(), 
-                (view, selectedYear, selectedMonth, selectedDay) -> {
-                    // Format selected start date
-                    Calendar startCal = Calendar.getInstance();
-                    startCal.set(selectedYear, selectedMonth, selectedDay);
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                    startDateFilter = sdf.format(startCal.getTime());
-                    
-                    // Then show end date picker
-                    DatePickerDialog endDatePicker = new DatePickerDialog(requireContext(),
-                            (endView, endYear, endMonth, endDay) -> {
-                                // Format selected end date
-                                Calendar endCal = Calendar.getInstance();
-                                endCal.set(endYear, endMonth, endDay);
-                                endDateFilter = sdf.format(endCal.getTime());
-                                
-                                // Apply date filter
-                                refreshHistoryData();
-                            }, year, month, day);
-                    
-                    endDatePicker.show();
-                }, year, month, day);
+        // Set initial values
+        TextView txtStartDate = dialogView.findViewById(R.id.txt_start_date);
+        TextView txtEndDate = dialogView.findViewById(R.id.txt_end_date);
         
-        startDatePicker.show();
+        // Convert stored dates to display format
+        try {
+            Date startDate = apiFormat.parse(startDateFilter);
+            Date endDate = apiFormat.parse(endDateFilter);
+            if (startDate != null && endDate != null) {
+                txtStartDate.setText(displayFormat.format(startDate));
+                txtEndDate.setText(displayFormat.format(endDate));
+            }
+        } catch (Exception e) {
+            android.util.Log.e("HistoryFragment", "Date parsing error: " + e.getMessage());
+        }
+        
+        // Set click listeners for date fields
+        txtStartDate.setOnClickListener(v -> {
+            Calendar cal = Calendar.getInstance();
+            try {
+                Date date = displayFormat.parse(txtStartDate.getText().toString());
+                if (date != null) {
+                    cal.setTime(date);
+                }
+            } catch (Exception e) {
+                android.util.Log.e("HistoryFragment", "Date parsing error: " + e.getMessage());
+            }
+            
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    requireContext(),
+                    (view, year, month, dayOfMonth) -> {
+                        Calendar selectedDate = Calendar.getInstance();
+                        selectedDate.set(year, month, dayOfMonth);
+                        txtStartDate.setText(displayFormat.format(selectedDate.getTime()));
+                    },
+                    cal.get(Calendar.YEAR),
+                    cal.get(Calendar.MONTH),
+                    cal.get(Calendar.DAY_OF_MONTH)
+            );
+            datePickerDialog.show();
+        });
+        
+        txtEndDate.setOnClickListener(v -> {
+            Calendar cal = Calendar.getInstance();
+            try {
+                Date date = displayFormat.parse(txtEndDate.getText().toString());
+                if (date != null) {
+                    cal.setTime(date);
+                }
+            } catch (Exception e) {
+                android.util.Log.e("HistoryFragment", "Date parsing error: " + e.getMessage());
+            }
+            
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    requireContext(),
+                    (view, year, month, dayOfMonth) -> {
+                        Calendar selectedDate = Calendar.getInstance();
+                        selectedDate.set(year, month, dayOfMonth);
+                        txtEndDate.setText(displayFormat.format(selectedDate.getTime()));
+                    },
+                    cal.get(Calendar.YEAR),
+                    cal.get(Calendar.MONTH),
+                    cal.get(Calendar.DAY_OF_MONTH)
+            );
+            datePickerDialog.show();
+        });
+        
+        // Set click listeners for action buttons
+        Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        Button btnApply = dialogView.findViewById(R.id.btn_apply);
+        
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        
+        btnApply.setOnClickListener(v -> {
+            try {
+                // Parse selected dates
+                Date startDate = displayFormat.parse(txtStartDate.getText().toString());
+                Date endDate = displayFormat.parse(txtEndDate.getText().toString());
+                
+                if (startDate != null && endDate != null) {
+                    // Convert to API format
+                    startDateFilter = apiFormat.format(startDate);
+                    endDateFilter = apiFormat.format(endDate);
+                    
+                    android.util.Log.d("HistoryFragment", "Applying date filter: " + startDateFilter + " to " + endDateFilter);
+                    
+                    // Update filter button text
+                    updateDateFilterButtonText();
+                    
+                    // Apply filter
+                    refreshHistoryData();
+                }
+            } catch (Exception e) {
+                Toast.makeText(requireContext(), "Invalid date format", Toast.LENGTH_SHORT).show();
+                android.util.Log.e("HistoryFragment", "Date parsing error: " + e.getMessage());
+            }
+            
+            dialog.dismiss();
+        });
+        
+        // Show dialog
+        dialog.show();
     }
     
     private void clearFilters() {
@@ -306,6 +466,9 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
         // Reset date filters to default
         startDateFilter = "2023-01-01";
         endDateFilter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        
+        // Update date filter button text
+        updateDateFilterButtonText();
         
         // Refresh data
         refreshHistoryData();
@@ -353,18 +516,24 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
     }
     
     private void showEmptyView(String message) {
+        android.util.Log.d("HistoryFragment", "Showing empty view with message: " + message);
         if (emptyView != null) {
             emptyView.setText(message);
             emptyView.setVisibility(View.VISIBLE);
         }
-        recyclerView.setVisibility(View.GONE);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setVisibility(View.GONE);
+        }
     }
     
     private void hideEmptyView() {
+        android.util.Log.d("HistoryFragment", "Hiding empty view");
         if (emptyView != null) {
             emptyView.setVisibility(View.GONE);
         }
-        recyclerView.setVisibility(View.VISIBLE);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     // HistoryItemListener implementation
