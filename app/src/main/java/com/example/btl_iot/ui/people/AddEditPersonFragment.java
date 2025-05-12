@@ -127,11 +127,14 @@ public class AddEditPersonFragment extends Fragment {
         takePhotoButton = view.findViewById(R.id.btn_take_photo);
         progressBar = view.findViewById(R.id.progress_bar);
         submitButton = view.findViewById(R.id.btn_submit);
-        
-        // Kiểm tra xem đang ở chế độ chỉnh sửa hay thêm mới
+
+        identificationEditText.setEnabled(false);
+
+        birthdayEditText.setFocusable(false);
+        birthdayEditText.setClickable(true);
+        birthdayEditText.setOnClickListener(v -> showDatePickerDialog());
+
         checkEditMode();
-        
-        // Setup giao diện
         setupUI();
         observeViewModel();
     }
