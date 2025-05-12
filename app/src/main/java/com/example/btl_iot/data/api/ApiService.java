@@ -37,21 +37,25 @@ public interface ApiService {
     
     @GET("api/people/{peopleId}")
     Call<PersonDetailResponse> getPersonDetail(@Path("peopleId") int peopleId);
-    
+
     @Multipart
     @POST("api/people")
     Call<AddPersonResponse> addPerson(
             @Part("name") RequestBody name,
-            @Part("age") RequestBody age,
+            @Part("identificationId") RequestBody identificationId,
+            @Part("gender") RequestBody gender,
+            @Part("birthday") RequestBody birthday,
             @Part MultipartBody.Part file
     );
-    
+
     @Multipart
     @PUT("api/people/{peopleId}")
     Call<AddPersonResponse> updatePerson(
             @Path("peopleId") int peopleId,
             @Part("name") RequestBody name,
-            @Part("age") RequestBody age,
+            @Part("identificationId") RequestBody identificationId,
+            @Part("gender") RequestBody gender,
+            @Part("birthday") RequestBody birthday,
             @Part MultipartBody.Part file
     );
     
@@ -60,7 +64,9 @@ public interface ApiService {
     Call<AddPersonResponse> updatePersonWithoutImage(
             @Path("peopleId") int peopleId,
             @Field("name") String name,
-            @Field("age") int age
+            @Part("identificationId") String identificationId,
+            @Part("gender") String gender,
+            @Part("birthday") String birthday
     );
 
     @GET("api/history")
