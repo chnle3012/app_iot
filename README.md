@@ -1,4 +1,4 @@
-# Ứng dụng quản lý hệ thống cửa thông minh
+## Ứng dụng quản lý hệ thống cửa thông minh
 
 ## Overview
 This Android application provides a user interface for IoT device management and monitoring. The app allows users to login, register, and interact with IoT devices through a dashboard interface.
