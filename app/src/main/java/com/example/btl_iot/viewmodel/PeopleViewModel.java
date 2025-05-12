@@ -34,12 +34,12 @@ public class PeopleViewModel extends AndroidViewModel {
         return repository.getPersonDetail(peopleId);
     }
     
-    public LiveData<PeopleRepository.Resource<Person>> addPerson(String name, int age, Uri imageUri) {
-        return repository.addPerson(name, age, imageUri, getApplication());
+    public LiveData<PeopleRepository.Resource<Person>> addPerson(String name, String identificationId, String gender, String birthday, Uri imageUri) {
+        return repository.addPerson(name, identificationId, gender, birthday, imageUri, getApplication());
     }
     
-    public LiveData<PeopleRepository.Resource<Person>> updatePerson(int peopleId, String name, int age, Uri imageUri) {
-        return repository.updatePerson(peopleId, name, age, imageUri, getApplication());
+    public LiveData<PeopleRepository.Resource<Person>> updatePerson(int peopleId, String name, String identificationId, String gender, String birthday, Uri imageUri) {
+        return repository.updatePerson(peopleId, name, identificationId, gender, birthday, imageUri, getApplication());
     }
 
     public LiveData<String> getToastMessage() {

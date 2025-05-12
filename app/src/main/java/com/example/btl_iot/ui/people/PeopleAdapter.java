@@ -64,27 +64,35 @@ public class PeopleAdapter extends RecyclerView.Adapter<PeopleAdapter.PersonView
     static class PersonViewHolder extends RecyclerView.ViewHolder {
         private final ImageView avatarImageView;
         private final TextView nameTextView;
-        private final TextView ageGenderTextView;
+        private final TextView detailsTextView;
 
         public PersonViewHolder(@NonNull View itemView) {
             super(itemView);
             avatarImageView = itemView.findViewById(R.id.img_person_avatar);
             nameTextView = itemView.findViewById(R.id.txt_person_name);
-            ageGenderTextView = itemView.findViewById(R.id.txt_person_details);
+            detailsTextView = itemView.findViewById(R.id.txt_person_details);
         }
 
         public void bind(Person person, PersonClickListener listener) {
             nameTextView.setText(person.getName());
-            
-            // Format age info
-            String details = person.getAge() + " years";
-            ageGenderTextView.setText(details);
-            
+
+            String details = "";
+            if (person.getIdentificationId() != null) {
+                details += person.getIdentificationId();
+            }
+            if (person.getGender() != null) {
+                if (!details.isEmpty()) details += ", ";
+                details += person.getGender();
+            }
+            if (person.getBirthday() != null) {
+                if (!details.isEmpty()) details += ", ";
+                details += person.getBirthday();
+            }
+            detailsTextView.setText(details);
+
             String imagePath = person.getFaceImagePath();
-            Context context = itemView.getContext();
-            
+            Context context  = itemView.getContext();
             if (imagePath != null && !imagePath.isEmpty()) {
-                // Load image from URL with Glide
                 Glide.with(context)
                         .load(imagePath)
                         .placeholder(android.R.drawable.ic_menu_gallery)
@@ -92,7 +100,6 @@ public class PeopleAdapter extends RecyclerView.Adapter<PeopleAdapter.PersonView
                         .centerCrop()
                         .into(avatarImageView);
             } else {
-                // Default image
                 avatarImageView.setImageResource(android.R.drawable.ic_menu_camera);
             }
 
