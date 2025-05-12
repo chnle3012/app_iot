@@ -160,7 +160,7 @@ public class PeopleRepository {
                 Log.d(TAG, "Đang upload ảnh mới: " + imageFile.getName());
                 
                 // Gọi API với ảnh
-                apiService.updatePerson(peopleId, nameBody, idBody, genderBody, birthdayBody, filePart).enqueue(new Callback<AddPersonResponse>() {
+                apiService.updatePerson(peopleId, nameBody, genderBody, birthdayBody, filePart).enqueue(new Callback<AddPersonResponse>() {
                     @Override
                     public void onResponse(Call<AddPersonResponse> call, Response<AddPersonResponse> response) {
                         handleUpdateResponse(response);
@@ -177,7 +177,7 @@ public class PeopleRepository {
                 Log.d(TAG, "Đang cập nhật người dùng không kèm ảnh mới");
                 
                 // Gọi API không kèm ảnh
-                apiService.updatePersonWithoutImage(peopleId, name, identificationId, gender, birthday).enqueue(new Callback<AddPersonResponse>() {
+                apiService.updatePersonWithoutImage(peopleId, name, gender, birthday).enqueue(new Callback<AddPersonResponse>() {
                     @Override
                     public void onResponse(Call<AddPersonResponse> call, Response<AddPersonResponse> response) {
                         handleUpdateResponse(response);
