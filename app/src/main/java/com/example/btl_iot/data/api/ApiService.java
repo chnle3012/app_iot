@@ -53,7 +53,6 @@ public interface ApiService {
     Call<AddPersonResponse> updatePerson(
             @Path("peopleId") int peopleId,
             @Part("name") RequestBody name,
-            @Part("identificationId") RequestBody identificationId,
             @Part("gender") RequestBody gender,
             @Part("birthday") RequestBody birthday,
             @Part MultipartBody.Part file
@@ -64,7 +63,6 @@ public interface ApiService {
     Call<AddPersonResponse> updatePersonWithoutImage(
             @Path("peopleId") int peopleId,
             @Field("name") String name,
-            @Part("identificationId") String identificationId,
             @Part("gender") String gender,
             @Part("birthday") String birthday
     );
