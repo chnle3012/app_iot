@@ -23,7 +23,7 @@
             android:layout_height="60dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_history"
-            android:contentDescription="History Icon"
+            android:contentDescription="Biểu tượng lịch sử"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
