@@ -13,7 +13,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="General Statistics"
+            android:text="Thống kê tổng quan"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
@@ -39,7 +39,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Total Records:" />
+                        android:text="Tổng số bản ghi:" />
 
                     <TextView
                         android:id="@+id/stat_total_records"
@@ -59,7 +59,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Today's Records:" />
+                        android:text="Bản ghi hôm nay:" />
 
                     <TextView
                         android:id="@+id/stat_today_records"
@@ -79,7 +79,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="This Week's Records:" />
+                        android:text="Bản ghi tuần này:" />
 
                     <TextView
                         android:id="@+id/stat_week_records"
@@ -98,7 +98,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="This Month's Records:" />
+                        android:text="Bản ghi tháng này:" />
 
                     <TextView
                         android:id="@+id/stat_month_records"
@@ -113,7 +113,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="People Statistics"
+            android:text="Thống kê cá nhân"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
@@ -139,7 +139,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Unique People:" />
+                        android:text="Số người khác nhau:" />
 
                     <TextView
                         android:id="@+id/stat_unique_people"
@@ -159,7 +159,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Most Frequent Person:" />
+                        android:text="Người xuất hiện thường xuyên nhất:" />
 
                     <TextView
                         android:id="@+id/stat_most_frequent"
@@ -174,7 +174,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Mode Statistics"
+            android:text="Thống kê chế độ"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
@@ -199,7 +199,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Recognition Mode:" />
+                        android:text="Chế độ nhận diện:" />
 
                     <TextView
                         android:id="@+id/stat_recognition_mode"
@@ -218,7 +218,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Other Modes:" />
+                        android:text="Chế độ khác:" />
 
                     <TextView
                         android:id="@+id/stat_other_modes"

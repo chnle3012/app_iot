@@ -122,7 +122,7 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
     }
     
     private void setupToolbar() {
-        toolbar.setTitle("History Management");
+        toolbar.setTitle("Quản lý lịch sử");
         toolbar.inflateMenu(R.menu.history_menu);
         toolbar.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
@@ -161,7 +161,7 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
     private void loadHistoryData() {
         String token = getAuthToken();
         if (token == null || token.isEmpty()) {
-            Toast.makeText(getContext(), "Token not found. Please log in again.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Không tìm thấy token. Vui lòng đăng nhập lại.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -181,7 +181,7 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
                             endDateFilter.equals(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
             
             if (isDefault) {
-                dateFilterButton.setText("Date Filter");
+                dateFilterButton.setText("Lọc ngày");
             } else {
                 // Format dates for display
                 SimpleDateFormat apiFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -197,7 +197,7 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
             }
         } catch (Exception e) {
             android.util.Log.e("HistoryFragment", "Error updating date filter button: " + e.getMessage());
-            dateFilterButton.setText("Date Filter");
+            dateFilterButton.setText("Lọc ngày");
         }
     }
     
@@ -233,7 +233,7 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
 
             if (resource == null) {
                 android.util.Log.e("HistoryFragment", "Resource is null");
-                showEmptyView("No data available");
+                showEmptyView("Không có dữ liệu");
                 return;
             }
 
@@ -273,11 +273,11 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
                             updateStatistics();
                         } else {
                             android.util.Log.d("HistoryFragment", "No histories in response");
-                            showEmptyView("No history found");
+                            showEmptyView("Không tìm thấy lịch sử");
                         }
                     } else {
                         android.util.Log.d("HistoryFragment", "Invalid history response structure");
-                        showEmptyView("Failed to load history");
+                        showEmptyView("Không thể tải lịch sử");
                     }
                     break;
 
@@ -301,7 +301,7 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
         if (allHistoryList == null || allHistoryList.isEmpty()) {
             filteredHistoryList = new ArrayList<>();
             historyAdapter.updateData(filteredHistoryList);
-            showEmptyView("No history records found");
+            showEmptyView("Không tìm thấy bản ghi lịch sử");
             return;
         }
         
@@ -333,7 +333,7 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
         // Show empty view if needed
         if (filteredHistoryList.isEmpty()) {
             android.util.Log.d("HistoryFragment", "Filtered list is empty, showing empty view");
-            showEmptyView("No matching records found");
+            showEmptyView("Không tìm thấy bản ghi phù hợp");
         } else {
             android.util.Log.d("HistoryFragment", "Filtered list has data, hiding empty view");
             hideEmptyView();
@@ -505,7 +505,7 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
     private void showStatisticsDialog() {
         // Create a dialog to show more detailed statistics
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("History Statistics");
+        builder.setTitle("Thống kê lịch sử");
         
         View view = getLayoutInflater().inflate(R.layout.dialog_history_statistics, null);
         // TODO: Add statistics data to the view
@@ -570,10 +570,10 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
     
     private void confirmDeleteHistory(HistoryResponse.History history) {
         new AlertDialog.Builder(requireContext())
-                .setTitle("Delete History")
-                .setMessage("Are you sure you want to delete this history record?")
-                .setPositiveButton("Delete", (dialog, which) -> deleteHistory(history))
-                .setNegativeButton("Cancel", null)
+                .setTitle("Xóa lịch sử")
+                .setMessage("Bạn có chắc chắn muốn xóa bản ghi lịch sử này?")
+                .setPositiveButton("Xóa", (dialog, which) -> deleteHistory(history))
+                .setNegativeButton("Hủy", null)
                 .show();
     }
     
@@ -585,7 +585,7 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
             progressBar.setVisibility(View.GONE);
             
             if (result.isSuccess()) {
-                Toast.makeText(requireContext(), "History deleted successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Xóa lịch sử thành công", Toast.LENGTH_SHORT).show();
                 
                 // Remove from lists and update adapter
                 allHistoryList.remove(history);
@@ -597,10 +597,10 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
                 
                 // Show empty view if needed
                 if (filteredHistoryList.isEmpty()) {
-                    showEmptyView("No history records found");
+                    showEmptyView("Không tìm thấy bản ghi lịch sử");
                 }
             } else {
-                Toast.makeText(requireContext(), "Failed to delete history: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Xóa lịch sử thất bại: " + result.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -5,18 +5,18 @@
     <item
         android:id="@+id/menu_refresh"
         android:icon="@android:drawable/ic_popup_sync"
-        android:title="Refresh"
+        android:title="Làm mới"
         app:showAsAction="ifRoom" />
     
     <item
         android:id="@+id/menu_statistics"
         android:icon="@android:drawable/ic_menu_info_details"
-        android:title="Statistics"
+        android:title="Thống kê"
         app:showAsAction="ifRoom" />
     
     <item
         android:id="@+id/menu_export"
         android:icon="@android:drawable/ic_menu_share"
-        android:title="Export Data"
+        android:title="Xuất dữ liệu"
         app:showAsAction="never" />
 </menu> 
