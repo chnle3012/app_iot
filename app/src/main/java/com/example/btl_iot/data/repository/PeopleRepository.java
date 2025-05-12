@@ -76,14 +76,16 @@ public class PeopleRepository {
         return personDetailResult;
     }
 
-    public LiveData<Resource<Person>> addPerson(String name, int age, Uri imageUri, Context context) {
+    public LiveData<Resource<Person>> addPerson(String name, String identificationId, String gender, String birthday, Uri imageUri, Context context) {
         // Show loading state
         addPersonResult.setValue(Resource.loading(null));
         
         try {
             // Tạo RequestBody cho name và age
             RequestBody nameBody = RequestBody.create(MediaType.parse("text/plain"), name);
-            RequestBody ageBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(age));
+            RequestBody idBody = RequestBody.create(MediaType.parse("text/plain"), identificationId);
+            RequestBody genderBody = RequestBody.create(MediaType.parse("text/plain"), gender);
+            RequestBody birthdayBody = RequestBody.create(MediaType.parse("text/plain"), birthday);
             
             // Tạo MultipartBody.Part cho file ảnh
             File imageFile = FileUtils.getFileFromUri(context, imageUri);
@@ -96,7 +98,7 @@ public class PeopleRepository {
             MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", imageFile.getName(), requestFile);
             
             // Gọi API
-            apiService.addPerson(nameBody, ageBody, filePart).enqueue(new Callback<AddPersonResponse>() {
+            apiService.addPerson(nameBody, idBody, genderBody, birthdayBody, filePart).enqueue(new Callback<AddPersonResponse>() {
                 @Override
                 public void onResponse(Call<AddPersonResponse> call, Response<AddPersonResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
@@ -128,7 +130,7 @@ public class PeopleRepository {
         return addPersonResult;
     }
     
-    public LiveData<Resource<Person>> updatePerson(int peopleId, String name, int age, Uri imageUri, Context context) {
+    public LiveData<Resource<Person>> updatePerson(int peopleId, String name, String identificationId, String gender, String birthday, Uri imageUri, Context context) {
         // Show loading state
         updatePersonResult.setValue(Resource.loading(null));
         
@@ -142,7 +144,9 @@ public class PeopleRepository {
                 
                 // Tạo RequestBody cho name và age
                 RequestBody nameBody = RequestBody.create(MediaType.parse("text/plain"), name);
-                RequestBody ageBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(age));
+                RequestBody idBody = RequestBody.create(MediaType.parse("text/plain"), identificationId);
+                RequestBody genderBody = RequestBody.create(MediaType.parse("text/plain"), gender);
+                RequestBody birthdayBody = RequestBody.create(MediaType.parse("text/plain"), birthday);
                 
                 // Tạo MultipartBody.Part cho file ảnh mới
                 File imageFile = FileUtils.getFileFromUri(context, imageUri);
@@ -156,7 +160,7 @@ public class PeopleRepository {
                 Log.d(TAG, "Đang upload ảnh mới: " + imageFile.getName());
                 
                 // Gọi API với ảnh
-                apiService.updatePerson(peopleId, nameBody, ageBody, filePart).enqueue(new Callback<AddPersonResponse>() {
+                apiService.updatePerson(peopleId, nameBody, idBody, genderBody, birthdayBody, filePart).enqueue(new Callback<AddPersonResponse>() {
                     @Override
                     public void onResponse(Call<AddPersonResponse> call, Response<AddPersonResponse> response) {
                         handleUpdateResponse(response);
@@ -173,7 +177,7 @@ public class PeopleRepository {
                 Log.d(TAG, "Đang cập nhật người dùng không kèm ảnh mới");
                 
                 // Gọi API không kèm ảnh
-                apiService.updatePersonWithoutImage(peopleId, name, age).enqueue(new Callback<AddPersonResponse>() {
+                apiService.updatePersonWithoutImage(peopleId, name, identificationId, gender, birthday).enqueue(new Callback<AddPersonResponse>() {
                     @Override
                     public void onResponse(Call<AddPersonResponse> call, Response<AddPersonResponse> response) {
                         handleUpdateResponse(response);

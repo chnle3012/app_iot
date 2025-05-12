@@ -2,6 +2,7 @@ package com.example.btl_iot.ui.people;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -14,8 +15,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +41,9 @@ import com.example.btl_iot.viewmodel.PeopleViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Calendar;
+import java.util.Locale;
+
 public class AddEditPersonFragment extends Fragment {
 
     private static final String TAG = "AddEditPersonFragment";
@@ -47,8 +54,11 @@ public class AddEditPersonFragment extends Fragment {
     private TextView messageTextView;
     private TextInputLayout nameLayout;
     private TextInputEditText nameEditText;
-    private TextInputLayout ageLayout;
-    private TextInputEditText ageEditText;
+    private TextInputLayout identificationLayout;
+    private TextInputEditText identificationEditText;
+    private TextInputLayout birthdayLayout;
+    private TextInputEditText birthdayEditText;
+    private RadioGroup genderGroup;
     private Button saveButton;
     private Button backButton;
     private Button submitButton;
@@ -107,8 +117,9 @@ public class AddEditPersonFragment extends Fragment {
         messageTextView = view.findViewById(R.id.txt_message);
         nameLayout = view.findViewById(R.id.layout_name);
         nameEditText = view.findViewById(R.id.input_name);
-        ageLayout = view.findViewById(R.id.layout_age);
-        ageEditText = view.findViewById(R.id.input_age);
+        identificationEditText = view.findViewById(R.id.input_identification_id);
+        birthdayEditText = view.findViewById(R.id.input_birthday);
+        genderGroup = view.findViewById(R.id.radio_group_gender);
         saveButton = view.findViewById(R.id.btn_save);
         backButton = view.findViewById(R.id.btn_back);
         imageView = view.findViewById(R.id.img_person_avatar);
@@ -124,24 +135,33 @@ public class AddEditPersonFragment extends Fragment {
         setupUI();
         observeViewModel();
     }
-    
+
     private void checkEditMode() {
         Integer selectedId = viewModel.getSelectedPersonId().getValue();
         Person selectedPerson = viewModel.getSelectedPerson().getValue();
-        
         if (selectedId != null && selectedId > 0 && selectedPerson != null) {
             isEditMode = true;
             currentPerson = selectedPerson;
-            
-            // Trường hợp đã có dữ liệu chi tiết từ list
             prepareEditMode(selectedPerson);
         } else if (selectedId != null && selectedId > 0) {
             isEditMode = true;
-            
-            // Trường hợp chỉ có ID, cần gọi API để lấy chi tiết
             loadPersonDetail(selectedId);
-        } else {
-            isEditMode = false;
+        }
+    }
+
+    private void prepareEditMode(Person person) {
+        nameEditText.setText(person.getName());
+        identificationEditText.setText(person.getIdentificationId());
+        birthdayEditText.setText(String.valueOf(person.getBirthday()));
+        String gender = person.getGender();
+        if (gender != null) {
+            if (gender.equalsIgnoreCase("Nam")) genderGroup.check(R.id.radio_male);
+            else if (gender.equalsIgnoreCase("Nữ")) genderGroup.check(R.id.radio_female);
+        }
+
+        if (person.getFaceImagePath() != null) {
+            selectedImageUri = Uri.parse(person.getFaceImagePath());
+            loadImage(selectedImageUri);
         }
     }
     
@@ -159,85 +179,24 @@ public class AddEditPersonFragment extends Fragment {
             }
         });
     }
-    
-    private void prepareEditMode(Person person) {
-        // Fill data vào form
-        if (nameEditText != null) nameEditText.setText(person.getName());
-        if (ageEditText != null) ageEditText.setText(String.valueOf(person.getAge()));
-        
-        // Load ảnh và lưu URI
-        if (person.getFaceImagePath() != null && !person.getFaceImagePath().isEmpty()) {
-            selectedImageUri = Uri.parse(person.getFaceImagePath());
-            loadImage(selectedImageUri);
-        }
-    }
-    
+
+
     private void setupUI() {
-        // Hiển thị tiêu đề
-        if (isEditMode) {
-            titleTextView.setText("Chỉnh sửa người dùng");
-        } else {
-            titleTextView.setText("Thêm người dùng mới");
-        }
-        
-        // Ẩn thông báo
-        if (messageTextView != null) {
-            if (isEditMode) {
-                messageTextView.setVisibility(View.VISIBLE);
-                messageTextView.setText("Bạn có thể chỉ cập nhật tên và tuổi mà không cần chọn ảnh mới.");
-                messageTextView.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_blue_dark));
-            } else {
-                messageTextView.setVisibility(View.GONE);
-            }
-        }
-        
-        // Thiết lập các trường nhập liệu
-        if (nameLayout != null) nameLayout.setVisibility(View.VISIBLE);
-        if (nameEditText != null) nameEditText.setVisibility(View.VISIBLE);
-        if (ageLayout != null) ageLayout.setVisibility(View.VISIBLE);
-        if (ageEditText != null) ageEditText.setVisibility(View.VISIBLE);
-        
-        // Thiết lập nút chọn ảnh
-        if (choosePhotoButton != null) {
-            choosePhotoButton.setVisibility(View.VISIBLE);
-            choosePhotoButton.setOnClickListener(v -> checkAndRequestStoragePermission());
-        }
-        
-        // Ẩn nút chụp ảnh (để đơn giản hóa, chỉ sử dụng gallery)
-        if (takePhotoButton != null) {
-            takePhotoButton.setVisibility(View.GONE);
-        }
-        
-        // Thiết lập nút submit
-        if (submitButton != null) {
-            submitButton.setVisibility(View.VISIBLE);
-            if (isEditMode) {
-                submitButton.setText("Cập nhật người dùng");
-            } else {
-                submitButton.setText("Thêm người dùng");
-            }
-            submitButton.setOnClickListener(v -> validateAndSave());
-        }
-        
-        // Thiết lập nút lưu (ẩn đi vì đã có nút submit)
-        if (saveButton != null) {
-            saveButton.setVisibility(View.GONE);
-        }
-        
-        // Thiết lập nút quay lại
-        if (backButton != null) {
-            backButton.setVisibility(View.VISIBLE);
-            backButton.setText("Quay lại");
-            backButton.setOnClickListener(v -> navigateBack());
-        }
+        titleTextView.setText(isEditMode? "Chỉnh sửa người dùng" : "Thêm người dùng mới");
+        messageTextView.setVisibility(isEditMode? View.VISIBLE: View.GONE);
+
+        // Buttons
+        choosePhotoButton.setOnClickListener(v -> checkAndRequestStoragePermission());
+        takePhotoButton.setVisibility(View.GONE);
+        submitButton.setOnClickListener(v -> validateAndSave());
+        saveButton.setVisibility(View.GONE);
+        backButton.setOnClickListener(v -> navigateBack());
     }
     
     private void observeViewModel() {
         viewModel.getAddPersonSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success) {
-                // Reset flag
                 viewModel.setAddPersonSuccess(false);
-                // Refresh danh sách và quay lại
                 viewModel.refreshPeopleList();
                 navigateBack();
             }
@@ -245,82 +204,35 @@ public class AddEditPersonFragment extends Fragment {
         
         viewModel.getUpdatePersonSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success) {
-                // Reset flag
                 viewModel.setUpdatePersonSuccess(false);
-                // Refresh danh sách và quay lại
                 viewModel.refreshPeopleList();
                 navigateBack();
             }
         });
     }
     
-    private void checkAndRequestStoragePermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Android 13+ uses READ_MEDIA_IMAGES instead of READ_EXTERNAL_STORAGE
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
-            } else {
-                openGallery();
-            }
-        } else {
-            // For older Android versions
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
-            } else {
-                openGallery();
-            }
-        }
-    }
-    
-    private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        galleryLauncher.launch(intent);
-    }
-    
-    private void loadImage(Uri imageUri) {
-        Glide.with(requireContext())
-                .load(imageUri)
-                .placeholder(android.R.drawable.ic_menu_gallery)
-                .error(android.R.drawable.ic_menu_camera)
-                .centerCrop()
-                .into(imageView);
-    }
-    
     private void validateAndSave() {
-        String name = nameEditText.getText() != null ? nameEditText.getText().toString().trim() : "";
-        String ageText = ageEditText.getText() != null ? ageEditText.getText().toString().trim() : "";
-        
-        // Validate name
+        String name = nameEditText.getText().toString().trim();
+        String identificationId = identificationEditText.getText().toString().trim();
+        String birthday = birthdayEditText.getText().toString().trim();
+        int genderId = genderGroup.getCheckedRadioButtonId();
+
         if (TextUtils.isEmpty(name)) {
             nameLayout.setError("Vui lòng nhập tên");
             return;
-        } else {
-            nameLayout.setError(null);
-        }
-        
-        // Validate age
-        if (TextUtils.isEmpty(ageText)) {
-            ageLayout.setError("Vui lòng nhập tuổi");
+        } else nameLayout.setError(null);
+
+        if (TextUtils.isEmpty(birthday)) {
+            birthdayEditText.setError("Vui lòng chọn ngày sinh");
             return;
-        } else {
-            ageLayout.setError(null);
-        }
-        
-        int age;
-        try {
-            age = Integer.parseInt(ageText);
-            if (age <= 0 || age > 120) {
-                ageLayout.setError("Tuổi phải từ 1-120");
-                return;
-            }
-        } catch (NumberFormatException e) {
-            ageLayout.setError("Tuổi không hợp lệ");
+        } else birthdayEditText.setError(null);
+
+        if (genderId == -1) {
+            Toast.makeText(requireContext(), "Vui lòng chọn giới tính", Toast.LENGTH_SHORT).show();
             return;
         }
-        
-        // Validate image - chỉ bắt buộc khi thêm mới
+        String gender = ((RadioButton) requireView().findViewById(genderId)).getText().toString();
+
         if (!isEditMode && selectedImageUri == null) {
             Toast.makeText(requireContext(), "Vui lòng chọn ảnh", Toast.LENGTH_SHORT).show();
             return;
@@ -332,51 +244,84 @@ public class AddEditPersonFragment extends Fragment {
         
         // Call API - phân biệt giữa thêm mới và cập nhật
         if (isEditMode) {
-            updatePerson(name, age);
+            viewModel.updatePerson(currentPerson.getPeopleId(), name, identificationId, gender, birthday, hasSelectedNewImage?selectedImageUri:null)
+                    .observe(getViewLifecycleOwner(), this::handleResult);
         } else {
-            addPerson(name, age);
+            viewModel.addPerson(name, identificationId, gender, birthday, selectedImageUri)
+                    .observe(getViewLifecycleOwner(), this::handleResult);
+        }
+//        if (isEditMode) {
+//            updatePerson(name, age);
+//        } else {
+//            addPerson(name, age);
+//        }
+    }
+
+    private void handleResult(PeopleRepository.Resource<Person> result){
+        progressBar.setVisibility(View.GONE);
+        submitButton.setEnabled(true);
+        if (result.getStatus()==PeopleRepository.Resource.Status.SUCCESS) {
+            Toast.makeText(requireContext(), isEditMode?"Cập nhật thành công":"Thêm thành công", Toast.LENGTH_SHORT).show();
+            if (isEditMode) viewModel.setUpdatePersonSuccess(true); else viewModel.setAddPersonSuccess(true);
+        } else {
+            Toast.makeText(requireContext(), "Lỗi: " + result.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-    
-    private void addPerson(String name, int age) {
-        viewModel.addPerson(name, age, selectedImageUri).observe(getViewLifecycleOwner(), result -> {
-            // Hide progress
-            if (progressBar != null) progressBar.setVisibility(View.GONE);
-            submitButton.setEnabled(true);
-            
-            if (result.getStatus() == PeopleRepository.Resource.Status.SUCCESS) {
-                Toast.makeText(requireContext(), "Thêm người dùng thành công", Toast.LENGTH_SHORT).show();
-                viewModel.setAddPersonSuccess(true);
-            } else if (result.getStatus() == PeopleRepository.Resource.Status.ERROR) {
-                Toast.makeText(requireContext(), "Lỗi: " + result.getMessage(), Toast.LENGTH_LONG).show();
+
+    private void checkAndRequestStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
+            } else {
+                openGallery();
             }
-        });
-    }
-    
-    private void updatePerson(String name, int age) {
-        Log.d(TAG, "Gọi API cập nhật người dùng, ID: " + currentPerson.getPeopleId() + 
-                ", Tên: " + name + ", Tuổi: " + age + 
-                ", Đã chọn ảnh mới: " + hasSelectedNewImage);
-                
-        // Nếu đã chọn ảnh mới, gửi ảnh đó. Nếu không, gửi null để chỉ cập nhật tên và tuổi
-        Uri imageToUpload = hasSelectedNewImage ? selectedImageUri : null;
-        
-        viewModel.updatePerson(currentPerson.getPeopleId(), name, age, imageToUpload).observe(getViewLifecycleOwner(), result -> {
-            // Hide progress
-            if (progressBar != null) progressBar.setVisibility(View.GONE);
-            submitButton.setEnabled(true);
-            
-            if (result.getStatus() == PeopleRepository.Resource.Status.SUCCESS) {
-                Toast.makeText(requireContext(), "Cập nhật người dùng thành công", Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "Cập nhật người dùng thành công: " + result.getData().getName());
-                viewModel.setUpdatePersonSuccess(true);
-            } else if (result.getStatus() == PeopleRepository.Resource.Status.ERROR) {
-                String errorMsg = "Lỗi: " + result.getMessage();
-                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show();
-                Log.e(TAG, errorMsg);
+        } else {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+            } else {
+                openGallery();
             }
-        });
+        }
     }
+
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        galleryLauncher.launch(intent);
+    }
+
+    private void loadImage(Uri imageUri) {
+        Glide.with(requireContext())
+                .load(imageUri)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_menu_camera)
+                .centerCrop()
+                .into(imageView);
+    }
+
+    private void showDatePickerDialog() {
+        Calendar c = Calendar.getInstance();
+        int year  = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day   = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog picker = new DatePickerDialog(
+                requireContext(),
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    String date = String.format(Locale.getDefault(),
+                            "%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
+                    birthdayEditText.setText(date);
+                    birthdayEditText.setError(null);
+                },
+                year, month, day
+        );
+
+        picker.getDatePicker().setMaxDate(System.currentTimeMillis());
+
+        picker.show();
+    }
+
 
     private void navigateBack() {
         Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
