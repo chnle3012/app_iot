@@ -10,14 +10,29 @@
         android:id="@+id/navigation_history"
         android:name="com.example.btl_iot.ui.history.HistoryFragment"
         android:label="History"
-        tools:layout="@layout/fragment_history" />
+        tools:layout="@layout/fragment_history">
+        <action
+            android:id="@+id/action_navigation_history_to_historyDetail"
+            app:destination="@id/historyDetailFragment" />
+    </fragment>
+
+    <!-- History Detail Fragment -->
+    <fragment
+        android:id="@+id/historyDetailFragment"
+        android:name="com.example.btl_iot.ui.history.HistoryDetailFragment"
+        android:label="History Detail"
+        tools:layout="@layout/fragment_history_detail">
+        <argument
+            android:name="historyId"
+            app:argType="integer" />
+    </fragment>
 
     <!-- Warnings Fragment -->
     <fragment
         android:id="@+id/navigation_warnings"
         android:name="com.example.btl_iot.ui.warnings.WarningsFragment"
         android:label="Warnings"
-        tools:layout="@layout/fragment_warnings" />
+        tools:layout="@layout/fragment_warning" />
         
     <!-- People Management Fragment -->
     <fragment
