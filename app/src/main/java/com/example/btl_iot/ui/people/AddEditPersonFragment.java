@@ -147,18 +147,14 @@ public class AddEditPersonFragment extends Fragment {
         takePhotoButton = view.findViewById(R.id.btn_take_photo);
         progressBar = view.findViewById(R.id.progress_bar);
         submitButton = view.findViewById(R.id.btn_submit);
-<<<<<<< HEAD
-
         identificationEditText.setEnabled(false);
 
-=======
         deleteButton = view.findViewById(R.id.btn_delete);
 
         // Identification ID read-only
         identificationEditText.setEnabled(false);
 
         // Setup date picker for birthday
->>>>>>> 5992c45a66d9464c1593243d862e96a4cc54eead
         birthdayEditText.setFocusable(false);
         birthdayEditText.setClickable(true);
         birthdayEditText.setOnClickListener(v -> showDatePickerDialog());
