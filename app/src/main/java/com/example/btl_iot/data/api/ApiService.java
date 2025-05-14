@@ -7,6 +7,7 @@ import com.example.btl_iot.data.model.LoginRequest;
 import com.example.btl_iot.data.model.LoginResponse;
 import com.example.btl_iot.data.model.PeopleResponse;
 import com.example.btl_iot.data.model.PersonDetailResponse;
+import com.example.btl_iot.data.model.PiModeResponse;
 import com.example.btl_iot.data.model.RegisterRequest;
 import com.example.btl_iot.data.model.RegisterResponse;
 import com.example.btl_iot.data.model.WarningResponse;
@@ -88,5 +89,12 @@ public interface ApiService {
             @Query("limit") Integer limit,
             @Query("start") String start,
             @Query("end") String end
+    );
+    
+    @PUT("api/pi/{piId}/mode")
+    Call<PiModeResponse> updatePiMode(
+            @Path("piId") int piId,
+            @Query("mode") String mode,
+            @Header("Authorization") String token
     );
 }
