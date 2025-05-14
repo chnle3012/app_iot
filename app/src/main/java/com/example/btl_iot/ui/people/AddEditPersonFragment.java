@@ -199,10 +199,10 @@ public class AddEditPersonFragment extends Fragment {
         viewModel.getPersonDetail(personId).observe(getViewLifecycleOwner(), resource -> {
             progressBar.setVisibility(View.GONE);
             
-            if (resource.getStatus() == PeopleRepository.Resource.Status.SUCCESS && resource.getData() != null) {
+            if (resource.getStatus() == PeopleRepository.Resource.Status.SUCCESS) {
                 currentPerson = resource.getData();
                 prepareEditMode(currentPerson);
-            } else if (resource.getStatus() == PeopleRepository.Resource.Status.ERROR) {
+            } else if (resource.getStatus() == PeopleRepository.Resource.Status.ERROR && resource.getMessage() != null) {
                 Toast.makeText(requireContext(), "Lỗi: " + resource.getMessage(), Toast.LENGTH_LONG).show();
                 navigateBack();
             }
@@ -306,15 +306,16 @@ public class AddEditPersonFragment extends Fragment {
         if (currentPerson == null) return;
         progressBar.setVisibility(View.VISIBLE);
         viewModel.deletePerson(currentPerson.getPeopleId())
-                .observe(getViewLifecycleOwner(), resource -> {
-                    progressBar.setVisibility(View.GONE);
-                    if (resource.getStatus() == PeopleRepository.Resource.Status.SUCCESS) {
-                        Toast.makeText(requireContext(), "Xóa thành công", Toast.LENGTH_SHORT).show();
-                        viewModel.setDeletePersonSuccess(true);
-                    } else {
-                        Toast.makeText(requireContext(), "Lỗi xóa: " + resource.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
+            .observe(getViewLifecycleOwner(), resource -> {
+                progressBar.setVisibility(View.GONE);
+                if (resource.getStatus() == PeopleRepository.Resource.Status.SUCCESS) {
+                    Toast.makeText(requireContext(), "Xóa thành công", Toast.LENGTH_SHORT).show();
+                    viewModel.setDeletePersonSuccess(true);
+                    navigateBack();
+                } else if (resource.getMessage() != null) {
+                    Toast.makeText(requireContext(), "Lỗi xóa: " + resource.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
     }
 
     private void handleResult(PeopleRepository.Resource<Person> result){
@@ -323,7 +324,7 @@ public class AddEditPersonFragment extends Fragment {
         if (result.getStatus()==PeopleRepository.Resource.Status.SUCCESS) {
             Toast.makeText(requireContext(), isEditMode?"Cập nhật thành công":"Thêm thành công", Toast.LENGTH_SHORT).show();
             if (isEditMode) viewModel.setUpdatePersonSuccess(true); else viewModel.setAddPersonSuccess(true);
-        } else {
+        } else if (result.getMessage() != null){
             Toast.makeText(requireContext(), "Lỗi: " + result.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
@@ -353,11 +354,11 @@ public class AddEditPersonFragment extends Fragment {
 
     private void loadImage(Uri imageUri) {
         Glide.with(requireContext())
-                .load(imageUri)
-                .placeholder(android.R.drawable.ic_menu_gallery)
-                .error(android.R.drawable.ic_menu_camera)
-                .centerCrop()
-                .into(imageView);
+            .load(imageUri)
+            .placeholder(android.R.drawable.ic_menu_gallery)
+            .error(android.R.drawable.ic_menu_camera)
+            .centerCrop()
+            .into(imageView);
     }
 
     private final ActivityResultLauncher<Uri> cameraLauncher =
@@ -412,6 +413,6 @@ public class AddEditPersonFragment extends Fragment {
 
     private void navigateBack() {
         Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
-                .navigateUp();
+            .navigateUp();
     }
 } 
