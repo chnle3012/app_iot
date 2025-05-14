@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -41,6 +42,7 @@ import com.example.btl_iot.viewmodel.PeopleViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -71,6 +73,9 @@ public class AddEditPersonFragment extends Fragment {
     private Person currentPerson = null;
     private boolean isEditMode = false;
     private boolean hasSelectedNewImage = false;
+    private Uri cameraImageUri;
+
+    private static final int REQUEST_CAMERA_PERMISSION = 101;
     
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -106,6 +111,20 @@ public class AddEditPersonFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_add_edit_person, container, false);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera();
+            } else {
+                Toast.makeText(requireContext(), "Cần quyền camera để chụp ảnh", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -149,6 +168,7 @@ public class AddEditPersonFragment extends Fragment {
         if (selectedId != null && selectedId > 0 && selectedPerson != null) {
             isEditMode = true;
             currentPerson = selectedPerson;
+            submitButton.setVisibility(View.GONE);
             prepareEditMode(selectedPerson);
         } else if (selectedId != null && selectedId > 0) {
             isEditMode = true;
@@ -194,7 +214,21 @@ public class AddEditPersonFragment extends Fragment {
 
         // Buttons
         choosePhotoButton.setOnClickListener(v -> checkAndRequestStoragePermission());
-        takePhotoButton.setVisibility(View.GONE);
+
+        takePhotoButton.setVisibility(View.VISIBLE);
+        takePhotoButton.setOnClickListener(v -> {
+            // Kiểm tra permission CAMERA
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(requireActivity(),
+                        new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+            } else {
+                // Mở camera
+                openCamera();
+            }
+        });
+
+
         submitButton.setOnClickListener(v -> validateAndSave());
         saveButton.setVisibility(View.GONE);
         backButton.setOnClickListener(v -> navigateBack());
@@ -306,6 +340,33 @@ public class AddEditPersonFragment extends Fragment {
                 .centerCrop()
                 .into(imageView);
     }
+
+    private final ActivityResultLauncher<Uri> cameraLauncher =
+        registerForActivityResult(new ActivityResultContracts.TakePicture(), isSuccess -> {
+            if (isSuccess && cameraImageUri != null) {
+                selectedImageUri = cameraImageUri;
+                hasSelectedNewImage = true;
+                loadImage(cameraImageUri);
+            }
+        });
+
+    private void openCamera() {
+        cameraImageUri = createImageUriForCamera();
+        cameraLauncher.launch(cameraImageUri);
+    }
+
+
+    private Uri createImageUriForCamera() {
+        // Tạo file tạm trong cache để lưu ảnh
+        File photoFile = new File(requireContext().getCacheDir(),
+                "camera_photo_" + System.currentTimeMillis() + ".jpg");
+        // FileProvider: cần khai báo trong AndroidManifest và file provider_paths.xml
+        return FileProvider.getUriForFile(requireContext(),
+                requireContext().getPackageName() + ".provider",
+                photoFile);
+    }
+
+
 
     private void showDatePickerDialog() {
         Calendar c = Calendar.getInstance();
