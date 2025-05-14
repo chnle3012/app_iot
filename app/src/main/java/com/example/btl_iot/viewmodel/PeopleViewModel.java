@@ -18,6 +18,7 @@ public class PeopleViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> addPersonSuccess = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> updatePersonSuccess = new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> deletePersonSuccess = new MutableLiveData<>(false);
     private final MutableLiveData<Integer> selectedPersonId = new MutableLiveData<>(-1);
     private final MutableLiveData<Person> selectedPerson = new MutableLiveData<>();
 
@@ -29,65 +30,89 @@ public class PeopleViewModel extends AndroidViewModel {
     public LiveData<PeopleRepository.Resource<List<Person>>> getPeopleList() {
         return repository.getPeopleList();
     }
-    
+
     public LiveData<PeopleRepository.Resource<Person>> getPersonDetail(int peopleId) {
         return repository.getPersonDetail(peopleId);
     }
-    
-    public LiveData<PeopleRepository.Resource<Person>> addPerson(String name, String identificationId, String gender, String birthday, Uri imageUri) {
+
+    public LiveData<PeopleRepository.Resource<Person>> addPerson(
+            String name,
+            String identificationId,
+            String gender,
+            String birthday,
+            Uri imageUri
+    ) {
         return repository.addPerson(name, identificationId, gender, birthday, imageUri, getApplication());
     }
-    
-    public LiveData<PeopleRepository.Resource<Person>> updatePerson(int peopleId, String name, String identificationId, String gender, String birthday, Uri imageUri) {
+
+    public LiveData<PeopleRepository.Resource<Person>> updatePerson(
+            int peopleId,
+            String name,
+            String identificationId,
+            String gender,
+            String birthday,
+            Uri imageUri
+    ) {
         return repository.updatePerson(peopleId, name, identificationId, gender, birthday, imageUri, getApplication());
+    }
+
+    public LiveData<PeopleRepository.Resource<Void>> deletePerson(int peopleId) {
+        return repository.deletePerson(peopleId, getApplication());
     }
 
     public LiveData<String> getToastMessage() {
         return toastMessage;
     }
 
-    public LiveData<Boolean> getIsLoading() {
-        return isLoading;
-    }
-    
-    public LiveData<Boolean> getAddPersonSuccess() {
-        return addPersonSuccess;
-    }
-    
-    public void setAddPersonSuccess(boolean success) {
-        addPersonSuccess.setValue(success);
-    }
-    
-    public LiveData<Boolean> getUpdatePersonSuccess() {
-        return updatePersonSuccess;
-    }
-    
-    public void setUpdatePersonSuccess(boolean success) {
-        updatePersonSuccess.setValue(success);
-    }
-    
-    public LiveData<Integer> getSelectedPersonId() {
-        return selectedPersonId;
-    }
-    
-    public void setSelectedPersonId(int id) {
-        selectedPersonId.setValue(id);
-    }
-    
-    public LiveData<Person> getSelectedPerson() {
-        return selectedPerson;
-    }
-    
-    public void setSelectedPerson(Person person) {
-        selectedPerson.setValue(person);
-    }
-
     public void setToastMessage(String message) {
         toastMessage.setValue(message);
     }
 
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
+    public LiveData<Boolean> getAddPersonSuccess() {
+        return addPersonSuccess;
+    }
+
+    public void setAddPersonSuccess(boolean success) {
+        addPersonSuccess.setValue(success);
+    }
+
+    public LiveData<Boolean> getUpdatePersonSuccess() {
+        return updatePersonSuccess;
+    }
+
+    public void setUpdatePersonSuccess(boolean success) {
+        updatePersonSuccess.setValue(success);
+    }
+
+    public LiveData<Boolean> getDeletePersonSuccess() {
+        return deletePersonSuccess;
+    }
+
+    public void setDeletePersonSuccess(boolean success) {
+        deletePersonSuccess.setValue(success);
+    }
+
+    public LiveData<Integer> getSelectedPersonId() {
+        return selectedPersonId;
+    }
+
+    public void setSelectedPersonId(int id) {
+        selectedPersonId.setValue(id);
+    }
+
+    public LiveData<Person> getSelectedPerson() {
+        return selectedPerson;
+    }
+
+    public void setSelectedPerson(Person person) {
+        selectedPerson.setValue(person);
+    }
+
     public void refreshPeopleList() {
-        // This will trigger the API call again
         repository.getPeopleList();
     }
-} 
+}

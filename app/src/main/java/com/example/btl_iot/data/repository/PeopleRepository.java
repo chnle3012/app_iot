@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.btl_iot.data.api.ApiClient;
 import com.example.btl_iot.data.api.ApiService;
 import com.example.btl_iot.data.model.AddPersonResponse;
+import com.example.btl_iot.data.model.DeletePersonResponse;
 import com.example.btl_iot.data.model.PeopleResponse;
 import com.example.btl_iot.data.model.Person;
 import com.example.btl_iot.data.model.PersonDetailResponse;
@@ -33,6 +34,7 @@ public class PeopleRepository {
     private final MutableLiveData<Resource<Person>> addPersonResult = new MutableLiveData<>();
     private final MutableLiveData<Resource<Person>> personDetailResult = new MutableLiveData<>();
     private final MutableLiveData<Resource<Person>> updatePersonResult = new MutableLiveData<>();
+    private final MutableLiveData<Resource<Void>> deletePersonResult = new MutableLiveData<>();
 
     public PeopleRepository() {
         this.apiService = ApiClient.getApiService();
@@ -197,7 +199,29 @@ public class PeopleRepository {
         
         return updatePersonResult;
     }
-    
+
+    public LiveData<Resource<Void>> deletePerson(int peopleId,
+                                                 Context context) {
+        deletePersonResult.setValue(Resource.loading(null));
+        apiService.deletePerson(peopleId).enqueue(new Callback<DeletePersonResponse>() {
+            @Override
+            public void onResponse(Call<DeletePersonResponse> call, Response<DeletePersonResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    deletePersonResult.setValue(Resource.success(null));
+                } else {
+                    String msg = "Error deleting: " + (response.code());
+                    deletePersonResult.setValue(Resource.error(msg, null));
+                }
+            }
+            @Override
+            public void onFailure(Call<DeletePersonResponse> call, Throwable t) {
+                Log.e(TAG, "API call failed", t);
+                deletePersonResult.setValue(Resource.error("Network error: " + t.getMessage(), null));
+            }
+        });
+        return deletePersonResult;
+    }
+
     // Phương thức xử lý response chung cho cả hai trường hợp
     private void handleUpdateResponse(Response<AddPersonResponse> response) {
         if (response.isSuccessful() && response.body() != null) {
