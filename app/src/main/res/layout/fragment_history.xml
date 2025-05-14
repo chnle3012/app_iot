@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/white"
-            app:title="History Management"
+            app:title="Quản lý lịch sử"
             app:titleTextColor="@color/black"/>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -51,7 +51,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Statistics"
+                        android:text="Thống kê"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -80,7 +80,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Total Records"
+                                android:text="Tổng số lượt"
                                 android:textSize="14sp"/>
                         </LinearLayout>
 
@@ -103,7 +103,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Today"
+                                android:text="Hôm nay"
                                 android:textSize="14sp"/>
                         </LinearLayout>
 
@@ -126,7 +126,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Unique People"
+                                android:text="Cá nhân"
                                 android:textSize="14sp"/>
                         </LinearLayout>
                     </LinearLayout>
@@ -152,7 +152,7 @@
                         android:id="@+id/layout_search"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Search by name"
+                        android:hint="Tìm kiếm theo tên"
                         app:startIconDrawable="@android:drawable/ic_menu_search"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
@@ -174,7 +174,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Date Filter"
+                            android:text="Lọc ngày"
                             android:textSize="12sp"
                             android:layout_marginEnd="4dp"
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
@@ -184,7 +184,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Clear Filters"
+                            android:text="Xóa bộ lọc"
                             android:textSize="12sp"
                             android:layout_marginStart="4dp"
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
@@ -196,7 +196,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="History Records"
+                android:text="Danh sách lịch sử"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp"/>

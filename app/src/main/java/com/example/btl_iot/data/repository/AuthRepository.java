@@ -45,7 +45,7 @@ public class AuthRepository {
                     }
                 } else {
                     // HTTP error
-                    String errorMsg = "Login failed. Please try again.";
+                    String errorMsg = "Đăng nhập thất bại. Vui lòng thử lại.";
                     loginResult.setValue(Resource.error(errorMsg, null));
                 }
             }
@@ -53,7 +53,7 @@ public class AuthRepository {
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 // Network or other error
-                String errorMsg = "Network error: " + t.getMessage();
+                String errorMsg = "Lỗi kết nối: " + t.getMessage();
                 loginResult.setValue(Resource.error(errorMsg, null));
             }
         });
@@ -85,7 +85,7 @@ public class AuthRepository {
                     }
                 } else {
                     // HTTP error
-                    String errorMsg = "Registration failed. Please try again.";
+                    String errorMsg = "Đăng ký thất bại. Vui lòng thử lại.";
                     registerResult.setValue(Resource.error(errorMsg, null));
                 }
             }
@@ -93,7 +93,7 @@ public class AuthRepository {
             @Override
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
                 // Network or other error
-                String errorMsg = "Network error: " + t.getMessage();
+                String errorMsg = "Lỗi kết nối: " + t.getMessage();
                 registerResult.setValue(Resource.error(errorMsg, null));
             }
         });

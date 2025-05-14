@@ -18,7 +18,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/white"
             app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"
-            app:title="History Details"
+            app:title="Chi tiết lịch sử"
             app:titleTextColor="@color/black"/>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -52,7 +52,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Person Information"
+                        android:text="Thông tin cá nhân"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="16dp"/>
@@ -68,7 +68,7 @@
                             android:layout_height="100dp"
                             android:scaleType="centerCrop"
                             android:src="@android:drawable/ic_menu_gallery"
-                            android:contentDescription="Person Photo"
+                            android:contentDescription="Ảnh cá nhân"
                             android:background="#EEEEEE"/>
 
                         <LinearLayout
@@ -80,7 +80,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Name"
+                                android:text="Tên"
                                 android:textSize="14sp"
                                 android:textStyle="bold"/>
 
@@ -95,7 +95,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Age"
+                                android:text="Tuổi"
                                 android:textSize="14sp"
                                 android:textStyle="bold"/>
 
@@ -143,7 +143,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Event Information"
+                        android:text="Thông tin sự kiện"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="16dp"/>
@@ -157,7 +157,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="History ID:"
+                            android:text="ID lịch sử:"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:layout_marginEnd="8dp"/>
@@ -179,7 +179,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Timestamp:"
+                            android:text="Thời gian:"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:layout_marginEnd="8dp"/>
@@ -201,7 +201,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Mode:"
+                            android:text="Chế độ:"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:layout_marginEnd="8dp"/>
@@ -234,7 +234,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Captured Image"
+                        android:text="Ảnh chụp"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="16dp"/>
@@ -245,7 +245,7 @@
                         android:layout_height="200dp"
                         android:scaleType="centerInside"
                         android:src="@android:drawable/ic_menu_gallery"
-                        android:contentDescription="Event Photo"
+                        android:contentDescription="Ảnh sự kiện"
                         android:background="#EEEEEE"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
