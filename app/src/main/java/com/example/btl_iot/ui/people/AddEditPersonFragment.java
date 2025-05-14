@@ -64,6 +64,7 @@ public class AddEditPersonFragment extends Fragment {
     private Button saveButton;
     private Button backButton;
     private Button submitButton;
+    private Button deleteButton;
     private Button choosePhotoButton;
     private Button takePhotoButton;
     private ImageView imageView;
@@ -146,6 +147,7 @@ public class AddEditPersonFragment extends Fragment {
         takePhotoButton = view.findViewById(R.id.btn_take_photo);
         progressBar = view.findViewById(R.id.progress_bar);
         submitButton = view.findViewById(R.id.btn_submit);
+        deleteButton = view.findViewById(R.id.btn_delete);
 
         // Identification ID read-only
         identificationEditText.setEnabled(false);
@@ -228,9 +230,16 @@ public class AddEditPersonFragment extends Fragment {
             }
         });
 
+        deleteButton.setVisibility(isEditMode? View.VISIBLE: View.GONE);
+        deleteButton.setOnClickListener(v -> deletePerson());
 
+        submitButton.setVisibility(isEditMode? View.GONE: View.VISIBLE);
         submitButton.setOnClickListener(v -> validateAndSave());
-        saveButton.setVisibility(View.GONE);
+
+        saveButton.setVisibility(isEditMode? View.VISIBLE: View.GONE);
+        saveButton.setOnClickListener(v -> validateAndSave());
+
+        backButton.setVisibility(isEditMode? View.VISIBLE: View.GONE);
         backButton.setOnClickListener(v -> navigateBack());
     }
     
@@ -291,11 +300,21 @@ public class AddEditPersonFragment extends Fragment {
             viewModel.addPerson(name, identificationId, gender, birthday, selectedImageUri)
                     .observe(getViewLifecycleOwner(), this::handleResult);
         }
-//        if (isEditMode) {
-//            updatePerson(name, age);
-//        } else {
-//            addPerson(name, age);
-//        }
+    }
+
+    private void deletePerson() {
+        if (currentPerson == null) return;
+        progressBar.setVisibility(View.VISIBLE);
+        viewModel.deletePerson(currentPerson.getPeopleId())
+                .observe(getViewLifecycleOwner(), resource -> {
+                    progressBar.setVisibility(View.GONE);
+                    if (resource.getStatus() == PeopleRepository.Resource.Status.SUCCESS) {
+                        Toast.makeText(requireContext(), "Xóa thành công", Toast.LENGTH_SHORT).show();
+                        viewModel.setDeletePersonSuccess(true);
+                    } else {
+                        Toast.makeText(requireContext(), "Lỗi xóa: " + resource.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     private void handleResult(PeopleRepository.Resource<Person> result){
