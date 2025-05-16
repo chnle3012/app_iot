@@ -380,7 +380,6 @@ public class AddEditPersonFragment extends Fragment {
         // Tạo file tạm trong cache để lưu ảnh
         File photoFile = new File(requireContext().getCacheDir(),
                 "camera_photo_" + System.currentTimeMillis() + ".jpg");
-        // FileProvider: cần khai báo trong AndroidManifest và file provider_paths.xml
         return FileProvider.getUriForFile(requireContext(),
                 requireContext().getPackageName() + ".provider",
                 photoFile);
