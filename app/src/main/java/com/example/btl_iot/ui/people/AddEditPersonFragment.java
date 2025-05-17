@@ -41,6 +41,7 @@ import com.example.btl_iot.data.repository.PeopleRepository;
 import com.example.btl_iot.viewmodel.PeopleViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.example.btl_iot.util.ImageValidationUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -249,7 +250,6 @@ public class AddEditPersonFragment extends Fragment {
         saveButton.setVisibility(isEditMode? View.VISIBLE: View.GONE);
         saveButton.setOnClickListener(v -> validateAndSave());
 
-        backButton.setVisibility(isEditMode? View.VISIBLE: View.GONE);
         backButton.setOnClickListener(v -> navigateBack());
     }
     
@@ -301,15 +301,33 @@ public class AddEditPersonFragment extends Fragment {
         // Show progress
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
         submitButton.setEnabled(false);
-        
-        // Call API - phân biệt giữa thêm mới và cập nhật
-        if (isEditMode) {
-            viewModel.updatePerson(currentPerson.getPeopleId(), name, identificationId, gender, birthday, hasSelectedNewImage?selectedImageUri:null)
-                    .observe(getViewLifecycleOwner(), this::handleResult);
-        } else {
-            viewModel.addPerson(name, identificationId, gender, birthday, selectedImageUri)
-                    .observe(getViewLifecycleOwner(), this::handleResult);
+
+        if (isEditMode && !hasSelectedNewImage) {
+            // Call API - phân biệt giữa thêm mới và cập nhật
+            viewModel.updatePerson(currentPerson.getPeopleId(), name, identificationId, gender, birthday, null)
+                        .observe(getViewLifecycleOwner(), this::handleResult);
+        }else{
+            ImageValidationUtils.FaceDetectionResult result = ImageValidationUtils.checkSingleFaceInImage(requireContext(), selectedImageUri);
+            if (result.isValid){
+                if (progressBar != null){
+                    progressBar.setVisibility(View.VISIBLE);
+                    submitButton.setEnabled(false);
+                    Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show();
+
+                    return;
+                }
+            }
+
+            // Call API - phân biệt giữa thêm mới và cập nhật
+            if (isEditMode) {
+                viewModel.updatePerson(currentPerson.getPeopleId(), name, identificationId, gender, birthday, hasSelectedNewImage?selectedImageUri:null)
+                        .observe(getViewLifecycleOwner(), this::handleResult);
+            } else {
+                viewModel.addPerson(name, identificationId, gender, birthday, selectedImageUri)
+                        .observe(getViewLifecycleOwner(), this::handleResult);
+            }
         }
+
     }
 
     private void deletePerson() {
