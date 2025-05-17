@@ -12,8 +12,16 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Nếu bạn bị giới hạn ABI, đảm bảo bao gồm cả arm64-v8a
+        packagingOptions {
+            jniLibs {
+                // Đảm bảo pickFirst các .so cần thiết
+                pickFirsts += "lib/**/libmediapipe_tasks_vision_jni.so"
+                pickFirsts += "lib/**/libmediapipe_framework_jni.so"
+            }
+        }
     }
 
     buildTypes {
@@ -25,11 +33,22 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    // PackagingOptions để đảm bảo các .so của MediaPipe được include
+    packagingOptions {
+        jniLibs {
+            // Đảm bảo pickFirst các .so cần thiết
+            pickFirsts += "lib/**/libmediapipe_tasks_vision_jni.so"
+            pickFirsts += "lib/**/libmediapipe_framework_jni.so"
+        }
+    }
 }
+
 
 dependencies {
     // AndroidX
@@ -62,11 +81,11 @@ dependencies {
     
     // Glide for image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
-    
+
+    implementation("com.google.mediapipe:tasks-vision:0.10.10")
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
-    implementation("com.google.mediapipe:tasks-vision:0.10.10")
 }

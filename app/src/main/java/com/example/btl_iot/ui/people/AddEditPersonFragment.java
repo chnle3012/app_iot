@@ -50,6 +50,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AddEditPersonFragment extends Fragment {
 
@@ -82,6 +84,9 @@ public class AddEditPersonFragment extends Fragment {
     private Uri cameraImageUri;
 
     private static final int REQUEST_CAMERA_PERMISSION = 101;
+
+    private final ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor();
+
 
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(),
@@ -116,6 +121,7 @@ public class AddEditPersonFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(PeopleViewModel.class);
+        ImageValidationUtils.initFaceDetector(requireContext());
     }
 
     @Nullable
@@ -303,29 +309,28 @@ public class AddEditPersonFragment extends Fragment {
         submitButton.setEnabled(false);
 
         if (isEditMode && !hasSelectedNewImage) {
-            // Call API - phân biệt giữa thêm mới và cập nhật
             viewModel.updatePerson(currentPerson.getPeopleId(), name, identificationId, gender, birthday, null)
                         .observe(getViewLifecycleOwner(), this::handleResult);
         }else{
-            ImageValidationUtils.FaceDetectionResult result = ImageValidationUtils.checkSingleFaceInImage(requireContext(), selectedImageUri);
-            if (result.isValid){
-                if (progressBar != null){
-                    progressBar.setVisibility(View.VISIBLE);
-                    submitButton.setEnabled(false);
-                    Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show();
+            backgroundExecutor.execute(() -> {
+                ImageValidationUtils.FaceDetectionResult result = ImageValidationUtils.checkSingleFaceInImage(requireContext(), selectedImageUri);
 
-                    return;
-                }
-            }
-
-            // Call API - phân biệt giữa thêm mới và cập nhật
-            if (isEditMode) {
-                viewModel.updatePerson(currentPerson.getPeopleId(), name, identificationId, gender, birthday, hasSelectedNewImage?selectedImageUri:null)
-                        .observe(getViewLifecycleOwner(), this::handleResult);
-            } else {
-                viewModel.addPerson(name, identificationId, gender, birthday, selectedImageUri)
-                        .observe(getViewLifecycleOwner(), this::handleResult);
-            }
+                requireActivity().runOnUiThread(() -> {
+                    if (!result.isValid) {
+                        progressBar.setVisibility(View.GONE);
+                        submitButton.setEnabled(true);
+                        Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show();
+                    } else {
+                        if (isEditMode) {
+                            viewModel.updatePerson(currentPerson.getPeopleId(), name, identificationId, gender, birthday, selectedImageUri)
+                                    .observe(getViewLifecycleOwner(), this::handleResult);
+                        } else {
+                            viewModel.addPerson(name, identificationId, gender, birthday, selectedImageUri)
+                                    .observe(getViewLifecycleOwner(), this::handleResult);
+                        }
+                    }
+                });
+            });
         }
 
     }
