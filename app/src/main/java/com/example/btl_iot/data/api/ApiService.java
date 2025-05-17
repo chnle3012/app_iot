@@ -1,6 +1,7 @@
 package com.example.btl_iot.data.api;
 
 import com.example.btl_iot.data.model.AddPersonResponse;
+import com.example.btl_iot.data.model.DeleteHistoryResponse;
 import com.example.btl_iot.data.model.DeletePersonResponse;
 import com.example.btl_iot.data.model.HistoryResponse;
 import com.example.btl_iot.data.model.LoginRequest;
@@ -80,6 +81,12 @@ public interface ApiService {
             @Query("limit") Integer limit,
             @Query("start") String start,
             @Query("end") String end
+    );
+    
+    @DELETE("api/history/{historyId}")
+    Call<DeleteHistoryResponse> deleteHistory(
+            @Path("historyId") int historyId,
+            @Header("Authorization") String token
     );
 
     @GET("api/warning")
