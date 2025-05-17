@@ -43,6 +43,10 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -77,20 +81,26 @@ public class AddEditPersonFragment extends Fragment {
     private Uri cameraImageUri;
 
     private static final int REQUEST_CAMERA_PERMISSION = 101;
-    
+
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    Uri imageUri = result.getData().getData();
-                    if (imageUri != null) {
-                        Log.d(TAG, "Đã chọn ảnh mới từ gallery: " + imageUri);
-                        selectedImageUri = imageUri;
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                Uri imageUri = result.getData().getData();
+                if (imageUri != null) {
+                    try {
+                        File savedImageFile = saveImageToAppDirectory(imageUri);
+                        selectedImageUri = Uri.fromFile(savedImageFile);
                         hasSelectedNewImage = true;
-                        loadImage(imageUri);
+                        loadImage(selectedImageUri);
+                        Log.d(TAG, "Đã lưu ảnh từ gallery vào: " + selectedImageUri);
+                    } catch (IOException e) {
+                        Log.e(TAG, "Lỗi khi sao chép ảnh từ gallery", e);
+                        Toast.makeText(requireContext(), "Lỗi khi sao chép ảnh", Toast.LENGTH_SHORT).show();
                     }
                 }
-            });
+            }
+        });
             
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -364,9 +374,16 @@ public class AddEditPersonFragment extends Fragment {
     private final ActivityResultLauncher<Uri> cameraLauncher =
         registerForActivityResult(new ActivityResultContracts.TakePicture(), isSuccess -> {
             if (isSuccess && cameraImageUri != null) {
-                selectedImageUri = cameraImageUri;
-                hasSelectedNewImage = true;
-                loadImage(cameraImageUri);
+                try {
+                    File savedImageFile = saveImageToAppDirectory(cameraImageUri);
+                    selectedImageUri = Uri.fromFile(savedImageFile);
+                    hasSelectedNewImage = true;
+                    loadImage(selectedImageUri);
+                    Log.d(TAG, "Đã lưu ảnh từ camera vào: " + selectedImageUri);
+                } catch (IOException e) {
+                    Log.e(TAG, "Lỗi khi sao chép ảnh từ camera", e);
+                    Toast.makeText(requireContext(), "Lỗi khi sao chép ảnh", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -375,16 +392,27 @@ public class AddEditPersonFragment extends Fragment {
         cameraLauncher.launch(cameraImageUri);
     }
 
+    private File saveImageToAppDirectory(Uri imageUri) throws IOException {
+        File imageFile = new File(requireContext().getFilesDir(), "person_images/" + System.currentTimeMillis() + ".jpg");
+        imageFile.getParentFile().mkdirs(); // Tạo thư mục nếu chưa tồn tại
+        try (InputStream inputStream = requireContext().getContentResolver().openInputStream(imageUri);
+             OutputStream outputStream = new FileOutputStream(imageFile)) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        }
+        return imageFile;
+    }
 
     private Uri createImageUriForCamera() {
-        // Tạo file tạm trong cache để lưu ảnh
         File photoFile = new File(requireContext().getCacheDir(),
                 "camera_photo_" + System.currentTimeMillis() + ".jpg");
         return FileProvider.getUriForFile(requireContext(),
-                requireContext().getPackageName() + ".provider",
+                requireContext().getPackageName() + ".fileprovider",
                 photoFile);
     }
-
 
 
     private void showDatePickerDialog() {
@@ -414,4 +442,4 @@ public class AddEditPersonFragment extends Fragment {
         Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
             .navigateUp();
     }
-} 
+}
