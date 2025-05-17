@@ -10,6 +10,7 @@
     <string name="clear_all_data">Clear All Data</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="default_notification_channel_id">ID</string>
     <string name="sample_data_added">Sample data added</string>
     <string name="all_data_cleared">All data cleared</string>
     <string name="no_data_to_clear">No data to clear</string>

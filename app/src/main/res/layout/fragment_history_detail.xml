@@ -255,6 +255,7 @@
                 android:id="@+id/btn_delete_history"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="80dp"
                 android:text="Delete This Record"
                 android:textColor="@color/white"
                 android:backgroundTint="#F44336"/>

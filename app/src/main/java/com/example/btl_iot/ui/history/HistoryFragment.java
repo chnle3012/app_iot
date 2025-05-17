@@ -580,28 +580,45 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
     private void deleteHistory(HistoryResponse.History history) {
         progressBar.setVisibility(View.VISIBLE);
         
-        // Call API to delete history
-        historyViewModel.deleteHistory(history.getHistoryId()).observe(getViewLifecycleOwner(), result -> {
+        // Lấy token xác thực
+        String token = getAuthToken();
+        if (token == null || token.isEmpty()) {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(requireContext(), "Không tìm thấy token. Vui lòng đăng nhập lại.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        // Gọi API để xóa history
+        historyViewModel.deleteHistory(token, history.getHistoryId()).observe(getViewLifecycleOwner(), resource -> {
             progressBar.setVisibility(View.GONE);
             
-            if (result.isSuccess()) {
-                Toast.makeText(requireContext(), "Xóa lịch sử thành công", Toast.LENGTH_SHORT).show();
-                
-                // Remove from lists and update adapter
-                allHistoryList.remove(history);
-                filteredHistoryList.remove(history);
-                historyAdapter.updateData(filteredHistoryList);
-                
-                // Update statistics
-                updateStatistics();
-                
-                // Show empty view if needed
-                if (filteredHistoryList.isEmpty()) {
-                    showEmptyView("Không tìm thấy bản ghi lịch sử");
+            if (resource.getStatus() == AuthRepository.Resource.Status.SUCCESS) {
+                if (resource.getData() != null && resource.getData().isSuccess()) {
+                    // Xóa thành công
+                    Toast.makeText(requireContext(), "Xóa lịch sử thành công", Toast.LENGTH_SHORT).show();
+                    
+                    // Remove from lists and update adapter
+                    allHistoryList.remove(history);
+                    filteredHistoryList.remove(history);
+                    historyAdapter.updateData(filteredHistoryList);
+                    
+                    // Update statistics
+                    updateStatistics();
+                    
+                    // Show empty view if needed
+                    if (filteredHistoryList.isEmpty()) {
+                        showEmptyView("Không tìm thấy bản ghi lịch sử");
+                    }
+                } else {
+                    // Phản hồi từ server không thành công
+                    String errorMessage = (resource.getData() != null) ? resource.getData().getMessage() : "Không xác định";
+                    Toast.makeText(requireContext(), "Xóa lịch sử thất bại: " + errorMessage, Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Toast.makeText(requireContext(), "Xóa lịch sử thất bại: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+            } else if (resource.getStatus() == AuthRepository.Resource.Status.ERROR) {
+                // Xảy ra lỗi khi gọi API
+                Toast.makeText(requireContext(), "Xóa lịch sử thất bại: " + resource.getMessage(), Toast.LENGTH_SHORT).show();
             }
+            // Không xử lý trạng thái LOADING
         });
     }
     

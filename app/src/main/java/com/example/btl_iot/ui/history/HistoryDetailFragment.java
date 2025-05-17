@@ -1,6 +1,8 @@
 package com.example.btl_iot.ui.history;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,8 @@ import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
 import com.example.btl_iot.R;
 import com.example.btl_iot.data.model.HistoryResponse;
+import com.example.btl_iot.data.repository.AuthRepository;
+import com.example.btl_iot.util.Constants;
 import com.example.btl_iot.viewmodel.HistoryViewModel;
 
 public class HistoryDetailFragment extends Fragment {
@@ -165,10 +169,10 @@ public class HistoryDetailFragment extends Fragment {
     
     private void confirmDelete() {
         new AlertDialog.Builder(requireContext())
-                .setTitle("Delete History")
-                .setMessage("Are you sure you want to delete this history record?")
-                .setPositiveButton("Delete", (dialog, which) -> deleteHistory())
-                .setNegativeButton("Cancel", null)
+                .setTitle("Xóa lịch sử")
+                .setMessage("Bạn có chắc chắn muốn xóa bản ghi lịch sử này?")
+                .setPositiveButton("Xóa", (dialog, which) -> deleteHistory())
+                .setNegativeButton("Hủy", null)
                 .show();
     }
     
@@ -177,18 +181,43 @@ public class HistoryDetailFragment extends Fragment {
         
         progressBar.setVisibility(View.VISIBLE);
         
-        // Here we would call the API to delete the history
-        // For now, we'll just simulate success
-        viewModel.deleteHistory(historyDetail.getHistoryId()).observe(getViewLifecycleOwner(), result -> {
+        // Lấy token xác thực
+        String token = getAuthToken();
+        if (token == null || token.isEmpty()) {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(requireContext(), "Không tìm thấy token. Vui lòng đăng nhập lại.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        viewModel.deleteHistory(token, historyDetail.getHistoryId()).observe(getViewLifecycleOwner(), resource -> {
             progressBar.setVisibility(View.GONE);
             
-            if (result.isSuccess()) {
-                Toast.makeText(requireContext(), "History deleted successfully", Toast.LENGTH_SHORT).show();
-                navigateBack();
-            } else {
-                showError("Failed to delete history: " + result.getMessage());
+            if (resource.getStatus() == AuthRepository.Resource.Status.SUCCESS) {
+                if (resource.getData() != null && resource.getData().isSuccess()) {
+                    // Xóa thành công
+                    Toast.makeText(requireContext(), "Xóa lịch sử thành công", Toast.LENGTH_SHORT).show();
+                    navigateBack();
+                } else {
+                    // Phản hồi từ server không thành công
+                    String errorMessage = (resource.getData() != null) ? resource.getData().getMessage() : "Không xác định";
+                    showError("Xóa lịch sử thất bại: " + errorMessage);
+                }
+            } else if (resource.getStatus() == AuthRepository.Resource.Status.ERROR) {
+                // Xảy ra lỗi khi gọi API
+                showError("Xóa lịch sử thất bại: " + resource.getMessage());
             }
+            // Không xử lý trạng thái LOADING
         });
+    }
+    
+    private String getAuthToken() {
+        SharedPreferences prefs = requireContext().getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        String rawToken = prefs.getString(Constants.KEY_AUTH_TOKEN, null);
+        if (rawToken != null) {
+            return "Bearer " + rawToken;
+        } else {
+            return null;
+        }
     }
     
     private void showError(String message) {

@@ -6,7 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
+import com.example.btl_iot.data.model.DeleteHistoryResponse;
 import com.example.btl_iot.data.model.HistoryResponse;
 import com.example.btl_iot.data.repository.AuthRepository;
 import com.example.btl_iot.data.repository.HistoryRepository;
@@ -38,32 +40,7 @@ public class HistoryViewModel extends AndroidViewModel {
     }
     
     // Delete history record
-    public LiveData<DeleteResult> deleteHistory(int historyId) {
-        MutableLiveData<DeleteResult> result = new MutableLiveData<>();
-        
-        // In a real app, this would call the API to delete the history
-        // For now, we'll simulate success
-        result.setValue(new DeleteResult(true, "History deleted successfully"));
-        
-        return result;
-    }
-    
-    // Helper class for delete operation result
-    public static class DeleteResult {
-        private final boolean success;
-        private final String message;
-        
-        public DeleteResult(boolean success, String message) {
-            this.success = success;
-            this.message = message;
-        }
-        
-        public boolean isSuccess() {
-            return success;
-        }
-        
-        public String getMessage() {
-            return message;
-        }
+    public LiveData<AuthRepository.Resource<DeleteHistoryResponse>> deleteHistory(String token, int historyId) {
+        return historyRepository.deleteHistory(token, historyId);
     }
 }
