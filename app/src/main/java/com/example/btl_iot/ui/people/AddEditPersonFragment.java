@@ -53,6 +53,8 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import android.app.AlertDialog;
+
 public class AddEditPersonFragment extends Fragment {
 
     private static final String TAG = "AddEditPersonFragment";
@@ -217,7 +219,7 @@ public class AddEditPersonFragment extends Fragment {
         });
 
         deleteButton.setVisibility(isEditMode? View.VISIBLE: View.GONE);
-        deleteButton.setOnClickListener(v -> deletePerson());
+        deleteButton.setOnClickListener(v -> confirmDelete());
 
         submitButton.setVisibility(isEditMode? View.GONE: View.VISIBLE);
         submitButton.setOnClickListener(v -> validateAndSave());
@@ -284,6 +286,17 @@ public class AddEditPersonFragment extends Fragment {
             viewModel.addPerson(name, identificationId, gender, birthday, selectedImageUri)
                     .observe(getViewLifecycleOwner(), this::handleResult);
         }
+    }
+
+    private void confirmDelete() {
+        if (currentPerson == null) return;
+        
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Xóa người dùng")
+                .setMessage("Bạn có chắc chắn muốn xóa người dùng này?")
+                .setPositiveButton("Xóa", (dialog, which) -> deletePerson())
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void deletePerson() {
