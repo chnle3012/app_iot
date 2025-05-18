@@ -87,36 +87,6 @@ public class AddEditPersonFragment extends Fragment {
 
     private final ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor();
 
-
-    private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
-        new ActivityResultContracts.StartActivityForResult(),
-        result -> {
-            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                Uri imageUri = result.getData().getData();
-                if (imageUri != null) {
-                    try {
-                        File savedImageFile = saveImageToAppDirectory(imageUri);
-                        selectedImageUri = Uri.fromFile(savedImageFile);
-                        hasSelectedNewImage = true;
-                        loadImage(selectedImageUri);
-                        Log.d(TAG, "Đã lưu ảnh từ gallery vào: " + selectedImageUri);
-                    } catch (IOException e) {
-                        Log.e(TAG, "Lỗi khi sao chép ảnh từ gallery", e);
-                        Toast.makeText(requireContext(), "Lỗi khi sao chép ảnh", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
-            
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    openGallery();
-                } else {
-                    Toast.makeText(requireContext(), "Cần quyền truy cập bộ nhớ để chọn ảnh", Toast.LENGTH_SHORT).show();
-                }
-            });
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -236,7 +206,6 @@ public class AddEditPersonFragment extends Fragment {
 
         takePhotoButton.setVisibility(View.VISIBLE);
         takePhotoButton.setOnClickListener(v -> {
-            // Kiểm tra permission CAMERA
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
                     != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(requireActivity(),
@@ -308,31 +277,13 @@ public class AddEditPersonFragment extends Fragment {
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
         submitButton.setEnabled(false);
 
-        if (isEditMode && !hasSelectedNewImage) {
-            viewModel.updatePerson(currentPerson.getPeopleId(), name, identificationId, gender, birthday, null)
-                        .observe(getViewLifecycleOwner(), this::handleResult);
-        }else{
-            backgroundExecutor.execute(() -> {
-                ImageValidationUtils.FaceDetectionResult result = ImageValidationUtils.checkSingleFaceInImage(requireContext(), selectedImageUri);
-
-                requireActivity().runOnUiThread(() -> {
-                    if (!result.isValid) {
-                        progressBar.setVisibility(View.GONE);
-                        submitButton.setEnabled(true);
-                        Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show();
-                    } else {
-                        if (isEditMode) {
-                            viewModel.updatePerson(currentPerson.getPeopleId(), name, identificationId, gender, birthday, selectedImageUri)
-                                    .observe(getViewLifecycleOwner(), this::handleResult);
-                        } else {
-                            viewModel.addPerson(name, identificationId, gender, birthday, selectedImageUri)
-                                    .observe(getViewLifecycleOwner(), this::handleResult);
-                        }
-                    }
-                });
-            });
+        if (isEditMode) {
+            viewModel.updatePerson(currentPerson.getPeopleId(), name, identificationId, gender, birthday, hasSelectedNewImage? selectedImageUri : null)
+                    .observe(getViewLifecycleOwner(), this::handleResult);
+        } else {
+            viewModel.addPerson(name, identificationId, gender, birthday, selectedImageUri)
+                    .observe(getViewLifecycleOwner(), this::handleResult);
         }
-
     }
 
     private void deletePerson() {
@@ -362,6 +313,16 @@ public class AddEditPersonFragment extends Fragment {
         }
     }
 
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+        registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    openGallery();
+                } else {
+                    Toast.makeText(requireContext(), "Cần quyền truy cập bộ nhớ để chọn ảnh", Toast.LENGTH_SHORT).show();
+                }
+            }
+        );
+
     private void checkAndRequestStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
@@ -383,6 +344,21 @@ public class AddEditPersonFragment extends Fragment {
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         galleryLauncher.launch(intent);
+
+        if (selectedImageUri != null){
+            backgroundExecutor.execute(() -> {
+                ImageValidationUtils.FaceDetectionResult result = ImageValidationUtils.checkSingleFaceInImage(requireContext(), selectedImageUri);
+
+                requireActivity().runOnUiThread(() -> {
+                    if (!result.isValid) {
+                        progressBar.setVisibility(View.GONE);
+                        submitButton.setEnabled(true);
+                        Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show();
+                        selectedImageUri = null;
+                    }
+                });
+            });
+        }
     }
 
     private void loadImage(Uri imageUri) {
@@ -408,16 +384,53 @@ public class AddEditPersonFragment extends Fragment {
                     Toast.makeText(requireContext(), "Lỗi khi sao chép ảnh", Toast.LENGTH_SHORT).show();
                 }
             }
-        });
+        }
+    );
+
+    private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    Uri imageUri = result.getData().getData();
+                    if (imageUri != null) {
+                        try {
+                            File savedImageFile = saveImageToAppDirectory(imageUri);
+                            selectedImageUri = Uri.fromFile(savedImageFile);
+                            hasSelectedNewImage = true;
+                            loadImage(selectedImageUri);
+                            Log.d(TAG, "Đã lưu ảnh từ gallery vào: " + selectedImageUri);
+                        } catch (IOException e) {
+                            Log.e(TAG, "Lỗi khi sao chép ảnh từ gallery", e);
+                            Toast.makeText(requireContext(), "Lỗi khi sao chép ảnh", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            }
+    );
 
     private void openCamera() {
         cameraImageUri = createImageUriForCamera();
         cameraLauncher.launch(cameraImageUri);
+
+        if (selectedImageUri != null){
+            backgroundExecutor.execute(() -> {
+                ImageValidationUtils.FaceDetectionResult result = ImageValidationUtils.checkSingleFaceInImage(requireContext(), selectedImageUri);
+
+                requireActivity().runOnUiThread(() -> {
+                    if (!result.isValid) {
+                        progressBar.setVisibility(View.GONE);
+                        submitButton.setEnabled(true);
+                        Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show();
+                        selectedImageUri = null;
+                    }
+                });
+            });
+        }
     }
 
     private File saveImageToAppDirectory(Uri imageUri) throws IOException {
         File imageFile = new File(requireContext().getFilesDir(), "person_images/" + System.currentTimeMillis() + ".jpg");
-        imageFile.getParentFile().mkdirs(); // Tạo thư mục nếu chưa tồn tại
+        imageFile.getParentFile().mkdirs();
         try (InputStream inputStream = requireContext().getContentResolver().openInputStream(imageUri);
              OutputStream outputStream = new FileOutputStream(imageFile)) {
             byte[] buffer = new byte[1024];
