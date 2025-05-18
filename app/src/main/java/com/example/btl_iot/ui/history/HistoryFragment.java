@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -40,9 +41,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -508,7 +511,116 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
         builder.setTitle("Thống kê lịch sử");
         
         View view = getLayoutInflater().inflate(R.layout.dialog_history_statistics, null);
-        // TODO: Add statistics data to the view
+        
+        // Get references to TextViews
+        TextView totalRecordsText = view.findViewById(R.id.stat_total_records);
+        TextView todayRecordsText = view.findViewById(R.id.stat_today_records);
+        TextView weekRecordsText = view.findViewById(R.id.stat_week_records);
+        TextView monthRecordsText = view.findViewById(R.id.stat_month_records);
+        TextView uniquePeopleText = view.findViewById(R.id.stat_unique_people);
+        TextView mostFrequentText = view.findViewById(R.id.stat_most_frequent);
+        
+        // Validate data
+        if (allHistoryList == null || allHistoryList.isEmpty()) {
+            // Set all values to default
+            totalRecordsText.setText("0");
+            todayRecordsText.setText("0");
+            weekRecordsText.setText("0");
+            monthRecordsText.setText("0");
+            uniquePeopleText.setText("0");
+            mostFrequentText.setText("N/A");
+        } else {
+            // Calculate statistics
+            
+            // 1. Total records
+            int totalRecords = allHistoryList.size();
+            totalRecordsText.setText(String.valueOf(totalRecords));
+            
+            // 2. Time-based statistics
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            String today = dateFormat.format(new Date());
+            
+            // Get current date
+            Calendar calendar = Calendar.getInstance();
+            
+            // Calculate start of week
+            Calendar startOfWeek = (Calendar) calendar.clone();
+            startOfWeek.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+            String startOfWeekStr = dateFormat.format(startOfWeek.getTime());
+            
+            // Calculate start of month
+            Calendar startOfMonth = (Calendar) calendar.clone();
+            startOfMonth.set(Calendar.DAY_OF_MONTH, 1);
+            String startOfMonthStr = dateFormat.format(startOfMonth.getTime());
+            
+            // Count records
+            int todayCount = 0;
+            int weekCount = 0;
+            int monthCount = 0;
+            
+            for (HistoryResponse.History history : allHistoryList) {
+                String timestamp = history.getTimestamp();
+                if (timestamp == null) continue;
+                
+                // Check for today's records
+                if (timestamp.startsWith(today)) {
+                    todayCount++;
+                }
+                
+                // Check for this week's records
+                if (timestamp.compareTo(startOfWeekStr) >= 0) {
+                    weekCount++;
+                }
+                
+                // Check for this month's records
+                if (timestamp.compareTo(startOfMonthStr) >= 0) {
+                    monthCount++;
+                }
+            }
+            
+            todayRecordsText.setText(String.valueOf(todayCount));
+            weekRecordsText.setText(String.valueOf(weekCount));
+            monthRecordsText.setText(String.valueOf(monthCount));
+            
+            // 3. People statistics
+            // Count unique people and find most frequent
+            Set<Integer> uniquePeopleIds = new HashSet<>();
+            Map<Integer, Integer> peopleFrequency = new HashMap<>();
+            Map<Integer, String> peopleNames = new HashMap<>();
+            
+            for (HistoryResponse.History history : allHistoryList) {
+                if (history.getPeople() != null) {
+                    int peopleId = history.getPeople().getPeopleId();
+                    String peopleName = history.getPeople().getName();
+                    
+                    uniquePeopleIds.add(peopleId);
+                    peopleNames.put(peopleId, peopleName);
+                    
+                    // Increment frequency counter
+                    int currentFreq = peopleFrequency.getOrDefault(peopleId, 0);
+                    peopleFrequency.put(peopleId, currentFreq + 1);
+                }
+            }
+            
+            uniquePeopleText.setText(String.valueOf(uniquePeopleIds.size()));
+            
+            // Find most frequent person
+            int maxFrequency = 0;
+            int mostFrequentPersonId = -1;
+            for (Map.Entry<Integer, Integer> entry : peopleFrequency.entrySet()) {
+                if (entry.getValue() > maxFrequency) {
+                    maxFrequency = entry.getValue();
+                    mostFrequentPersonId = entry.getKey();
+                }
+            }
+            
+            if (mostFrequentPersonId != -1 && peopleNames.containsKey(mostFrequentPersonId)) {
+                String personName = peopleNames.get(mostFrequentPersonId);
+                mostFrequentText.setText(personName + " (" + maxFrequency + " lần)");
+            } else {
+                mostFrequentText.setText("N/A");
+            }
+        }
         
         builder.setView(view);
         builder.setPositiveButton("OK", null);
