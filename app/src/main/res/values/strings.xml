@@ -22,4 +22,9 @@
     <string name="options">Tùy chọn</string>
     <string name="edit_person">Chỉnh sửa</string>
     <string name="delete_person">Xóa</string>
+    
+    <!-- People management strings -->
+    <string name="people_management_title">Quản lý người dùng</string>
+    <string name="people_management_subtitle">Danh sách người dùng đã đăng ký</string>
+    <string name="search_people">Tìm kiếm người dùng...</string>
 </resources>
