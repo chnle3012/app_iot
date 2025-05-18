@@ -16,4 +16,15 @@
     <string name="no_data_to_clear">No data to clear</string>
     <string name="account">Tài khoản</string>
     <string name="logout">Đăng xuất</string>
+    
+    <!-- Person item strings -->
+    <string name="person_photo">Ảnh người dùng</string>
+    <string name="options">Tùy chọn</string>
+    <string name="edit_person">Chỉnh sửa</string>
+    <string name="delete_person">Xóa</string>
+    
+    <!-- People management strings -->
+    <string name="people_management_title">Quản lý người dùng</string>
+    <string name="people_management_subtitle">Danh sách người dùng đã đăng ký</string>
+    <string name="search_people">Tìm kiếm người dùng...</string>
 </resources>
