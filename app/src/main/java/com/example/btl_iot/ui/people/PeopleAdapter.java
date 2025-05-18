@@ -5,13 +5,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.btl_iot.R;
 import com.example.btl_iot.data.model.Person;
 
@@ -25,6 +29,7 @@ public class PeopleAdapter extends RecyclerView.Adapter<PeopleAdapter.PersonView
 
     public interface PersonClickListener {
         void onPersonClick(Person person);
+        void onDeleteClick(Person person);
     }
 
     public PeopleAdapter(PersonClickListener clickListener) {
@@ -64,48 +69,94 @@ public class PeopleAdapter extends RecyclerView.Adapter<PeopleAdapter.PersonView
     static class PersonViewHolder extends RecyclerView.ViewHolder {
         private final ImageView avatarImageView;
         private final TextView nameTextView;
+        private final TextView idTextView;
         private final TextView detailsTextView;
+        private final ImageButton optionsButton;
 
         public PersonViewHolder(@NonNull View itemView) {
             super(itemView);
             avatarImageView = itemView.findViewById(R.id.img_person_avatar);
             nameTextView = itemView.findViewById(R.id.txt_person_name);
+            idTextView = itemView.findViewById(R.id.txt_person_id);
             detailsTextView = itemView.findViewById(R.id.txt_person_details);
+            optionsButton = itemView.findViewById(R.id.btn_options);
         }
 
         public void bind(Person person, PersonClickListener listener) {
-            nameTextView.setText(person.getName());
+            // Set name with proper handling of null/empty values
+            String name = person.getName();
+            nameTextView.setText(name != null && !name.isEmpty() ? name : "Không có tên");
+            
+            // Set ID information separately
+            String idValue = person.getIdentificationId();
+            if (idValue != null && !idValue.isEmpty()) {
+                idTextView.setText("ID: " + idValue);
+                idTextView.setVisibility(View.VISIBLE);
+            } else {
+                idTextView.setVisibility(View.GONE);
+            }
 
-            String details = "";
-            if (person.getIdentificationId() != null) {
-                details += person.getIdentificationId();
+            // Create the details text with gender and birthday
+            StringBuilder details = new StringBuilder();
+            if (person.getGender() != null && !person.getGender().isEmpty()) {
+                details.append(person.getGender());
             }
-            if (person.getGender() != null) {
-                if (!details.isEmpty()) details += ", ";
-                details += person.getGender();
+            
+            if (person.getBirthday() != null && !person.getBirthday().isEmpty()) {
+                if (details.length() > 0) details.append(", ");
+                details.append(person.getBirthday());
             }
-            if (person.getBirthday() != null) {
-                if (!details.isEmpty()) details += ", ";
-                details += person.getBirthday();
+            
+            if (details.length() > 0) {
+                detailsTextView.setText(details.toString());
+                detailsTextView.setVisibility(View.VISIBLE);
+            } else {
+                detailsTextView.setVisibility(View.GONE);
             }
-            detailsTextView.setText(details);
 
+            // Load avatar image with proper error handling
             String imagePath = person.getFaceImagePath();
-            Context context  = itemView.getContext();
+            Context context = itemView.getContext();
             if (imagePath != null && !imagePath.isEmpty()) {
                 Glide.with(context)
                         .load(imagePath)
+                        .apply(RequestOptions.circleCropTransform())
                         .placeholder(android.R.drawable.ic_menu_gallery)
                         .error(android.R.drawable.ic_menu_camera)
-                        .centerCrop()
                         .into(avatarImageView);
             } else {
-                avatarImageView.setImageResource(android.R.drawable.ic_menu_camera);
+                Glide.with(context)
+                        .load(android.R.drawable.ic_menu_camera)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(avatarImageView);
             }
 
+            // Set click listener for the entire item
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onPersonClick(person);
+                }
+            });
+            
+            // Set click listener for the options button
+            optionsButton.setOnClickListener(v -> {
+                if (listener != null) {
+                    // Show a popup menu with options
+                    PopupMenu popup = new PopupMenu(context, v);
+                    popup.inflate(R.menu.person_options_menu);
+                    popup.setOnMenuItemClickListener(item -> {
+                        int itemId = item.getItemId();
+                        if (itemId == R.id.action_edit_person) {
+                            listener.onPersonClick(person);
+                            return true;
+                        } else if (itemId == R.id.action_delete_person) {
+                            // Call the delete method in the listener
+                            listener.onDeleteClick(person);
+                            return true;
+                        }
+                        return false;
+                    });
+                    popup.show();
                 }
             });
         }

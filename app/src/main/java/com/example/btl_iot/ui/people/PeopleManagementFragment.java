@@ -1,5 +1,6 @@
 package com.example.btl_iot.ui.people;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -129,6 +130,15 @@ public class PeopleManagementFragment extends Fragment implements PeopleAdapter.
                 Log.e(TAG, "Error loading people: " + resource.getMessage());
             }
         });
+        
+        // Observe delete success
+        viewModel.getDeletePersonSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (success) {
+                viewModel.setDeletePersonSuccess(false);
+                // Refresh the list after successful deletion
+                viewModel.refreshPeopleList();
+            }
+        });
     }
 
     @Override
@@ -141,5 +151,37 @@ public class PeopleManagementFragment extends Fragment implements PeopleAdapter.
         // Điều hướng đến màn hình chỉnh sửa
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         navController.navigate(R.id.action_navigation_people_to_addEditPerson);
+    }
+    
+    @Override
+    public void onDeleteClick(Person person) {
+        confirmDeletePerson(person);
+    }
+    
+    private void confirmDeletePerson(Person person) {
+        if (person == null) return;
+        
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Xóa người dùng")
+                .setMessage("Bạn có chắc chắn muốn xóa " + person.getName() + "?")
+                .setPositiveButton("Xóa", (dialog, which) -> deletePerson(person))
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+    
+    private void deletePerson(Person person) {
+        if (person == null) return;
+        progressBar.setVisibility(View.VISIBLE);
+        
+        viewModel.deletePerson(person.getPeopleId())
+            .observe(getViewLifecycleOwner(), resource -> {
+                progressBar.setVisibility(View.GONE);
+                if (resource.getStatus() == PeopleRepository.Resource.Status.SUCCESS) {
+                    Toast.makeText(requireContext(), "Xóa thành công", Toast.LENGTH_SHORT).show();
+                    viewModel.setDeletePersonSuccess(true);
+                } else if (resource.getMessage() != null) {
+                    Toast.makeText(requireContext(), "Lỗi xóa: " + resource.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
     }
 } 
