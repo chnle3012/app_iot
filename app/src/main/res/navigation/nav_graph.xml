@@ -32,7 +32,22 @@
         android:id="@+id/navigation_warnings"
         android:name="com.example.btl_iot.ui.warnings.WarningsFragment"
         android:label="Warnings"
-        tools:layout="@layout/fragment_warning" />
+        tools:layout="@layout/fragment_warning">
+        <action
+            android:id="@+id/action_navigation_warnings_to_warningDetail"
+            app:destination="@id/warningDetailFragment" />
+    </fragment>
+        
+    <!-- Warning Detail Fragment -->
+    <fragment
+        android:id="@+id/warningDetailFragment"
+        android:name="com.example.btl_iot.ui.warnings.WarningDetailFragment"
+        android:label="Warning Detail"
+        tools:layout="@layout/fragment_warning_detail">
+        <argument
+            android:name="warningId"
+            app:argType="integer" />
+    </fragment>
         
     <!-- People Management Fragment -->
     <fragment
