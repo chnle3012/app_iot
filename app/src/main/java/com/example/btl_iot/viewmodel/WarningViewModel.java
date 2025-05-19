@@ -12,6 +12,7 @@ import com.example.btl_iot.data.repository.WarningRepository;
 
 public class WarningViewModel extends AndroidViewModel {
     private WarningRepository warningRepository;
+    private WarningResponse.Warning selectedWarning;
 
     public WarningViewModel(@NonNull Application application) {
         super(application);
@@ -23,5 +24,17 @@ public class WarningViewModel extends AndroidViewModel {
             String token, Integer page, Integer limit, String start, String end
     ) {
         return warningRepository.getWarning(token, page, limit, start, end);
+    }
+
+    public void setSelectedWarning(WarningResponse.Warning warning) {
+        this.selectedWarning = warning;
+    }
+
+    public WarningResponse.Warning getSelectedWarning() {
+        return selectedWarning;
+    }
+
+    public LiveData<AuthRepository.Resource<WarningResponse>> deleteWarning(String token, int warningId) {
+        return warningRepository.deleteWarning(token, warningId);
     }
 }

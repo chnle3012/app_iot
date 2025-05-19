@@ -3,6 +3,9 @@ package com.example.btl_iot.ui.warnings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,11 +41,43 @@ public class WarningsAdapter extends RecyclerView.Adapter<WarningsAdapter.Warnin
     @Override
     public void onBindViewHolder(@NonNull WarningViewHolder holder, int position) {
         WarningResponse.Warning warning = warningList.get(position);
-        holder.message.setText("Info: " + warning.getInfo());
-        holder.timestamp.setText(warning.getTimestamp());
+        
+        // Set nội dung cảnh báo
+        holder.message.setText(warning.getInfo());
+        
+        // Set ID cảnh báo
         holder.id.setText("ID: " + warning.getId());
+        
+        // Set thời gian
+        holder.timestamp.setText(warning.getTimestamp());
 
-        holder.itemView.setOnClickListener(v -> listener.onWarningItemClicked(warning));
+        // Set sự kiện click cho item view
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onWarningItemClick(warning);
+            }
+        });
+        
+        // Set sự kiện click cho nút options
+        holder.options.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onOptionsClick(warning, v);
+            }
+        });
+        
+        // Set sự kiện click cho nút xem chi tiết
+        holder.btnViewDetail.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onViewDetailsClick(warning);
+            }
+        });
+        
+        // Set sự kiện click cho nút xóa
+        holder.btnDelete.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDeleteClick(warning);
+            }
+        });
     }
 
     @Override
@@ -51,19 +86,30 @@ public class WarningsAdapter extends RecyclerView.Adapter<WarningsAdapter.Warnin
     }
 
     static class WarningViewHolder extends RecyclerView.ViewHolder {
+        ImageView icon;
         TextView message;
-        TextView timestamp;
         TextView id;
+        TextView timestamp;
+        Button btnViewDetail;
+        Button btnDelete;
+        ImageButton options;
 
         public WarningViewHolder(@NonNull View itemView) {
             super(itemView);
+            icon = itemView.findViewById(R.id.warning_item_icon);
             message = itemView.findViewById(R.id.warning_item_message);
-            timestamp = itemView.findViewById(R.id.warning_item_timestamp);
             id = itemView.findViewById(R.id.warning_item_id);
+            timestamp = itemView.findViewById(R.id.warning_item_timestamp);
+            btnViewDetail = itemView.findViewById(R.id.btn_view_detail);
+            btnDelete = itemView.findViewById(R.id.btn_delete);
+            options = itemView.findViewById(R.id.warning_item_options);
         }
     }
 
     public interface WarningItemListener {
-        void onWarningItemClicked(WarningResponse.Warning warning);
+        void onWarningItemClick(WarningResponse.Warning warning);
+        void onViewDetailsClick(WarningResponse.Warning warning);
+        void onDeleteClick(WarningResponse.Warning warning);
+        void onOptionsClick(WarningResponse.Warning warning, View view);
     }
 }
