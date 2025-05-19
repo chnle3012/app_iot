@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -501,14 +502,16 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
         // Lưu warning được chọn vào ViewModel để xem chi tiết
         warningViewModel.setSelectedWarning(warning);
         
-        // Thông báo tạm thời vì chưa có trang chi tiết
-        Toast.makeText(requireContext(), "Xem chi tiết cảnh báo ID: " + warning.getWarningId(), Toast.LENGTH_SHORT).show();
-        
-        // Khi có trang chi tiết, có thể điều hướng đến đó
-        // NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-        // Bundle args = new Bundle();
-        // args.putInt("warningId", warning.getWarningId());
-        // navController.navigate(R.id.action_navigation_warning_to_warningDetail, args);
+        // Chuyển hướng đến trang chi tiết cảnh báo
+        try {
+            Bundle args = new Bundle();
+            args.putInt("warningId", warning.getWarningId());
+            
+            Navigation.findNavController(requireView())
+                    .navigate(R.id.action_navigation_warnings_to_warningDetail, args);
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), "Lỗi chuyển hướng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
     
     private void confirmDeleteWarning(WarningResponse.Warning warning) {
