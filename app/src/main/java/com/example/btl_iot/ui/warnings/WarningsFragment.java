@@ -6,10 +6,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,8 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -34,17 +29,13 @@ import com.example.btl_iot.data.model.WarningResponse;
 import com.example.btl_iot.data.repository.AuthRepository;
 import com.example.btl_iot.util.Constants;
 import com.example.btl_iot.viewmodel.WarningViewModel;
-import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class WarningsFragment extends Fragment implements WarningsAdapter.WarningItemListener {
 
@@ -56,14 +47,12 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
     private TextView emptyView;
     private TextView totalWarningsTextView;
     private TextView todayWarningsTextView;
-    private TextInputEditText searchInput;
     private Button dateFilterButton;
     private Button clearFilterButton;
     private Toolbar toolbar;
 
     private List<WarningResponse.Warning> allWarningList = new ArrayList<>();
     private List<WarningResponse.Warning> filteredWarningList = new ArrayList<>();
-    private String currentSearchQuery = "";
     private String startDateFilter = "2023-01-01";
     private String endDateFilter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
@@ -82,7 +71,6 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
         emptyView = view.findViewById(R.id.txt_empty_view_warning);
         totalWarningsTextView = view.findViewById(R.id.txt_total_warnings);
         todayWarningsTextView = view.findViewById(R.id.txt_today_warnings);
-        searchInput = view.findViewById(R.id.input_search_warning);
         dateFilterButton = view.findViewById(R.id.btn_date_filter_warning);
         clearFilterButton = view.findViewById(R.id.btn_clear_filter_warning);
         toolbar = view.findViewById(R.id.toolbar_warning);
@@ -104,9 +92,6 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
         // Setup SwipeRefreshLayout
         swipeRefreshLayout.setOnRefreshListener(this::refreshWarningData);
 
-        // Setup search input
-        setupSearchInput();
-
         // Setup filter buttons
         setupFilterButtons();
 
@@ -121,33 +106,17 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
 
     private void setupToolbar() {
         toolbar.setTitle("Quản lý cảnh báo");
-        toolbar.inflateMenu(R.menu.warning_item_menu);
+        toolbar.inflateMenu(R.menu.warning_menu);
         toolbar.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.menu_refresh) {
                 refreshWarningData();
                 return true;
             } else if (itemId == R.id.menu_statistics) {
-                Toast.makeText(requireContext(), "Chức năng thống kê đang được phát triển", Toast.LENGTH_SHORT).show();
+                showStatisticsDialog();
                 return true;
             }
             return false;
-        });
-    }
-
-    private void setupSearchInput() {
-        searchInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                currentSearchQuery = s.toString().trim().toLowerCase();
-                filterWarningList();
-            }
         });
     }
 
@@ -251,7 +220,7 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
                             android.util.Log.d("WarningsFragment", "Content: " + (content != null ? ("size=" + content.size()) : "null"));
                             
                             if (content != null && !content.isEmpty()) {
-                                android.util.Log.d("WarningsFragment", "First item id: " + content.get(0).getId());
+                                android.util.Log.d("WarningsFragment", "First item id: " + content.get(0).getWarningId());
                             }
                         }
                     }
@@ -302,23 +271,8 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
             return;
         }
         
-        // Apply search filter
-        filteredWarningList = allWarningList.stream()
-                .filter(warning -> {
-                    if (currentSearchQuery.isEmpty()) {
-                        return true;
-                    }
-                    
-                    // Tìm theo nội dung cảnh báo
-                    if (warning.getInfo() != null && 
-                        warning.getInfo().toLowerCase().contains(currentSearchQuery)) {
-                        return true;
-                    }
-                    
-                    // Tìm theo ID cảnh báo
-                    return String.valueOf(warning.getId()).contains(currentSearchQuery);
-                })
-                .collect(Collectors.toList());
+        // Use all warnings as filtered list (no text search)
+        filteredWarningList = new ArrayList<>(allWarningList);
         
         android.util.Log.d("WarningsFragment", "Filtered list size after filtering: " + filteredWarningList.size());
         
@@ -455,10 +409,6 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
     }
 
     private void clearFilters() {
-        // Clear search query
-        searchInput.setText("");
-        currentSearchQuery = "";
-        
         // Reset date filters to default
         startDateFilter = "2023-01-01";
         endDateFilter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
@@ -552,12 +502,12 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
         warningViewModel.setSelectedWarning(warning);
         
         // Thông báo tạm thời vì chưa có trang chi tiết
-        Toast.makeText(requireContext(), "Xem chi tiết cảnh báo ID: " + warning.getId(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), "Xem chi tiết cảnh báo ID: " + warning.getWarningId(), Toast.LENGTH_SHORT).show();
         
         // Khi có trang chi tiết, có thể điều hướng đến đó
         // NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         // Bundle args = new Bundle();
-        // args.putInt("warningId", warning.getId());
+        // args.putInt("warningId", warning.getWarningId());
         // navController.navigate(R.id.action_navigation_warning_to_warningDetail, args);
     }
     
@@ -582,7 +532,7 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
         }
         
         // Gọi API để xóa warning
-        warningViewModel.deleteWarning(token, warning.getId()).observe(getViewLifecycleOwner(), resource -> {
+        warningViewModel.deleteWarning(token, warning.getWarningId()).observe(getViewLifecycleOwner(), resource -> {
             progressBar.setVisibility(View.GONE);
             
             if (resource.getStatus() == AuthRepository.Resource.Status.SUCCESS) {
@@ -612,5 +562,62 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
                 Toast.makeText(requireContext(), "Xóa cảnh báo thất bại: " + resource.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showStatisticsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_warning_statistics, null);
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+
+        // Get references to statistics TextViews
+        TextView totalWarningsTextView = dialogView.findViewById(R.id.stat_total_warnings);
+        TextView todayWarningsTextView = dialogView.findViewById(R.id.stat_today_warnings);
+        TextView weekWarningsTextView = dialogView.findViewById(R.id.stat_week_warnings);
+        TextView monthWarningsTextView = dialogView.findViewById(R.id.stat_month_warnings);
+
+        // Calculate statistics
+        int totalWarnings = allWarningList.size();
+        
+        // Get today's date
+        Calendar calendar = Calendar.getInstance();
+        String todayString = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+        
+        // Calculate today's warnings
+        int todayWarnings = 0;
+        for (WarningResponse.Warning warning : allWarningList) {
+            if (warning.getTimestamp().startsWith(todayString)) {
+                todayWarnings++;
+            }
+        }
+        
+        // Calculate this week's warnings
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        String weekStartString = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+        int weekWarnings = 0;
+        for (WarningResponse.Warning warning : allWarningList) {
+            if (warning.getTimestamp().compareTo(weekStartString) >= 0) {
+                weekWarnings++;
+            }
+        }
+        
+        // Calculate this month's warnings
+        calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        String monthStartString = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+        int monthWarnings = 0;
+        for (WarningResponse.Warning warning : allWarningList) {
+            if (warning.getTimestamp().compareTo(monthStartString) >= 0) {
+                monthWarnings++;
+            }
+        }
+        
+        // Update UI
+        totalWarningsTextView.setText(String.valueOf(totalWarnings));
+        todayWarningsTextView.setText(String.valueOf(todayWarnings));
+        weekWarningsTextView.setText(String.valueOf(weekWarnings));
+        monthWarningsTextView.setText(String.valueOf(monthWarnings));
+        
+        dialog.show();
     }
 }
