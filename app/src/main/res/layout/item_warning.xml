@@ -5,14 +5,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="12dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:padding="12dp">
 
         <!-- Icon cảnh báo -->
         <ImageView
@@ -24,8 +27,7 @@
             android:contentDescription="Warning Icon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/warning_item_message" />
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <!-- Tin nhắn cảnh báo -->
         <TextView
@@ -33,12 +35,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:textSize="18sp"
-            android:textStyle="normal"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="end"
             app:layout_constraintStart_toEndOf="@id/warning_item_icon"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/warning_item_options"
             app:layout_constraintTop_toTopOf="@id/warning_item_icon"
-            app:layout_constraintBottom_toTopOf="@id/warning_item_id"
             tools:text="Warning Message" />
 
         <!-- ID cảnh báo -->
@@ -47,13 +50,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
             android:textSize="14sp"
             android:textColor="#757575"
             app:layout_constraintStart_toEndOf="@id/warning_item_icon"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/warning_item_options"
             app:layout_constraintTop_toBottomOf="@id/warning_item_message"
-            app:layout_constraintBottom_toTopOf="@id/warning_item_timestamp"
             tools:text="ID: 123" />
 
         <!-- Thời gian cảnh báo -->
@@ -63,13 +65,53 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textColor="#757575"
             app:layout_constraintStart_toEndOf="@id/warning_item_icon"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/warning_item_options"
             app:layout_constraintTop_toBottomOf="@id/warning_item_id"
-            app:layout_constraintBottom_toBottomOf="@id/warning_item_icon"
             tools:text="Timestamp" />
+
+        <!-- Nút tùy chọn (3 chấm) -->
+        <ImageButton
+            android:id="@+id/warning_item_options"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_menu_more"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:contentDescription="Options"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Các nút chi tiết và xóa -->
+        <LinearLayout
+            android:id="@+id/warning_item_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/warning_item_options"
+            android:translationX="20dp">
+
+            <Button
+                android:id="@+id/btn_view_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Details"
+                android:textSize="12sp"
+                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+            <Button
+                android:id="@+id/btn_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Delete"
+                android:textSize="12sp"
+                android:textColor="#F44336"
+                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

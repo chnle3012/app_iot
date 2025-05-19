@@ -11,6 +11,7 @@ import com.example.btl_iot.data.repository.AuthRepository.Resource;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import com.google.gson.Gson;
 
 public class WarningRepository {
     private final ApiService apiService;
@@ -45,5 +46,34 @@ public class WarningRepository {
         });
 
         return warningResult;
+    }
+
+    public LiveData<Resource<WarningResponse>> deleteWarning(String token, int warningId) {
+        MutableLiveData<Resource<WarningResponse>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading(null));
+        
+        apiService.deleteWarning(token, warningId).enqueue(new Callback<WarningResponse>() {
+            @Override
+            public void onResponse(Call<WarningResponse> call, Response<WarningResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.setValue(Resource.success(response.body()));
+                } else {
+                    try {
+                        Gson gson = new Gson();
+                        WarningResponse errorResponse = gson.fromJson(response.errorBody().string(), WarningResponse.class);
+                        result.setValue(Resource.error(errorResponse.getMessage(), errorResponse));
+                    } catch (Exception e) {
+                        result.setValue(Resource.error("Lỗi xử lý phản hồi: " + e.getMessage(), null));
+                    }
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<WarningResponse> call, Throwable t) {
+                result.setValue(Resource.error("Lỗi kết nối: " + t.getMessage(), null));
+            }
+        });
+        
+        return result;
     }
 }

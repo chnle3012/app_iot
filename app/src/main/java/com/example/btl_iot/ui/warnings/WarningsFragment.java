@@ -73,6 +73,8 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_warning, container, false);
 
+        android.util.Log.d("WarningsFragment", "onCreateView called");
+
         // Initialize UI components
         progressBar = view.findViewById(R.id.progress_bar_warning);
         recyclerView = view.findViewById(R.id.recycler_view_warning);
@@ -90,9 +92,11 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
         swipeRefreshLayout.setVisibility(View.VISIBLE);
 
         // Setup RecyclerView
+        android.util.Log.d("WarningsFragment", "Setting up RecyclerView");
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         warningsAdapter = new WarningsAdapter(new ArrayList<>(), this);
         recyclerView.setAdapter(warningsAdapter);
+        android.util.Log.d("WarningsFragment", "RecyclerView setup complete");
 
         // Setup ViewModel
         warningViewModel = new ViewModelProvider(requireActivity()).get(WarningViewModel.class);
@@ -117,11 +121,14 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
 
     private void setupToolbar() {
         toolbar.setTitle("Quản lý cảnh báo");
-//        toolbar.inflateMenu(R.menu.warning_menu);
+        toolbar.inflateMenu(R.menu.warning_item_menu);
         toolbar.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.menu_refresh) {
                 refreshWarningData();
+                return true;
+            } else if (itemId == R.id.menu_statistics) {
+                Toast.makeText(requireContext(), "Chức năng thống kê đang được phát triển", Toast.LENGTH_SHORT).show();
                 return true;
             }
             return false;
@@ -187,7 +194,7 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
                 }
             }
         } catch (Exception e) {
-            android.util.Log.e("HistoryFragment", "Error updating date filter button: " + e.getMessage());
+            android.util.Log.e("WarningsFragment", "Error updating date filter button: " + e.getMessage());
             dateFilterButton.setText("Lọc ngày");
         }
     }
@@ -214,37 +221,70 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
         emptyView.setVisibility(View.GONE);
         swipeRefreshLayout.setVisibility(View.VISIBLE);
 
+        android.util.Log.d("WarningsFragment", "Fetching warnings with token: " + token);
+        android.util.Log.d("WarningsFragment", "Parameters: page=" + page + ", limit=" + limit + 
+                       ", start=" + start + ", end=" + end);
+
         warningViewModel.getWarnings(token, page, limit, start, end).observe(getViewLifecycleOwner(), resource -> {
             progressBar.setVisibility(View.GONE);
             swipeRefreshLayout.setRefreshing(false);
 
             if (resource == null) {
-                Toast.makeText(getContext(), "Không có dữ liệu", Toast.LENGTH_SHORT).show();
+                android.util.Log.e("WarningsFragment", "Resource is null");
+                showEmptyView("Không có dữ liệu");
                 return;
             }
+
+            android.util.Log.d("WarningsFragment", "Response status: " + resource.getStatus());
 
             switch (resource.getStatus()) {
                 case SUCCESS:
                     WarningResponse warningResponse = resource.getData();
+                    android.util.Log.d("WarningsFragment", "Warning response: " + (warningResponse != null ? "not null" : "null"));
+                    
+                    if (warningResponse != null) {
+                        android.util.Log.d("WarningsFragment", "Warning success: " + warningResponse.isSuccess());
+                        android.util.Log.d("WarningsFragment", "Warning data: " + (warningResponse.getData() != null ? "not null" : "null"));
+                        
+                        if (warningResponse.getData() != null) {
+                            List<WarningResponse.Warning> content = warningResponse.getData().getContent();
+                            android.util.Log.d("WarningsFragment", "Content: " + (content != null ? ("size=" + content.size()) : "null"));
+                            
+                            if (content != null && !content.isEmpty()) {
+                                android.util.Log.d("WarningsFragment", "First item id: " + content.get(0).getId());
+                            }
+                        }
+                    }
+                    
                     if (warningResponse != null && warningResponse.isSuccess() && warningResponse.getData() != null) {
                         List<WarningResponse.Warning> warnings = warningResponse.getData().getContent();
                         if (warnings != null && !warnings.isEmpty()) {
-                            allWarningList = warnings;
-                            warningsAdapter.updateData(warnings);
+                            // Store all warning records
+                            allWarningList = new ArrayList<>(warnings);
+                            android.util.Log.d("WarningsFragment", "All warning list updated with " + allWarningList.size() + " items");
+                            
+                            // Apply current filters
+                            filterWarningList();
+                            
+                            // Update statistics
                             updateStatistics();
                         } else {
+                            android.util.Log.d("WarningsFragment", "No warnings in response");
                             showEmptyView("Không tìm thấy cảnh báo");
                         }
                     } else {
-                        Toast.makeText(getContext(), "Không thể tải cảnh báo", Toast.LENGTH_SHORT).show();
+                        android.util.Log.d("WarningsFragment", "Invalid warning response structure");
+                        showEmptyView("Không thể tải cảnh báo");
                     }
                     break;
 
                 case ERROR:
-                    Toast.makeText(getContext(), resource.getMessage(), Toast.LENGTH_SHORT).show();
+                    android.util.Log.e("WarningsFragment", "Error: " + resource.getMessage());
+                    showEmptyView(resource.getMessage());
                     break;
 
                 case LOADING:
+                    android.util.Log.d("WarningsFragment", "Loading...");
                     progressBar.setVisibility(View.VISIBLE);
                     break;
             }
@@ -252,62 +292,98 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
     }
 
     private void filterWarningList() {
+        android.util.Log.d("WarningsFragment", "Filtering warning list, allWarningList size: " + 
+            (allWarningList != null ? allWarningList.size() : "null"));
+        
         if (allWarningList == null || allWarningList.isEmpty()) {
             filteredWarningList = new ArrayList<>();
             warningsAdapter.updateData(filteredWarningList);
             showEmptyView("Không tìm thấy cảnh báo");
             return;
         }
-
+        
+        // Apply search filter
         filteredWarningList = allWarningList.stream()
-                .filter(warning -> warning.getInfo().toLowerCase().contains(currentSearchQuery))
+                .filter(warning -> {
+                    if (currentSearchQuery.isEmpty()) {
+                        return true;
+                    }
+                    
+                    // Tìm theo nội dung cảnh báo
+                    if (warning.getInfo() != null && 
+                        warning.getInfo().toLowerCase().contains(currentSearchQuery)) {
+                        return true;
+                    }
+                    
+                    // Tìm theo ID cảnh báo
+                    return String.valueOf(warning.getId()).contains(currentSearchQuery);
+                })
                 .collect(Collectors.toList());
-
+        
+        android.util.Log.d("WarningsFragment", "Filtered list size after filtering: " + filteredWarningList.size());
+        
+        // Update adapter with filtered list
         warningsAdapter.updateData(filteredWarningList);
-
+        android.util.Log.d("WarningsFragment", "Updated adapter with filtered data");
+        
+        // Show empty view if needed
         if (filteredWarningList.isEmpty()) {
-            showEmptyView("Không tìm thấy cảnh báo");
+            android.util.Log.d("WarningsFragment", "Filtered list is empty, showing empty view");
+            showEmptyView("Không tìm thấy cảnh báo phù hợp");
         } else {
+            android.util.Log.d("WarningsFragment", "Filtered list has data, hiding empty view");
             hideEmptyView();
         }
     }
 
     private void showDateFilterDialog() {
+        // Inflate custom dialog layout
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_date_filter, null);
-
+        
+        // Create dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setView(dialogView);
         AlertDialog dialog = builder.create();
-
+        
+        // Get current date
         final Calendar calendar = Calendar.getInstance();
         final SimpleDateFormat displayFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         final SimpleDateFormat apiFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-
+        
+        // Set initial values
         TextView txtStartDate = dialogView.findViewById(R.id.txt_start_date);
         TextView txtEndDate = dialogView.findViewById(R.id.txt_end_date);
-
+        
+        // Convert stored dates to display format
         try {
-            txtStartDate.setText(displayFormat.format(apiFormat.parse(startDateFilter)));
-            txtEndDate.setText(displayFormat.format(apiFormat.parse(endDateFilter)));
+            Date startDate = apiFormat.parse(startDateFilter);
+            Date endDate = apiFormat.parse(endDateFilter);
+            if (startDate != null && endDate != null) {
+                txtStartDate.setText(displayFormat.format(startDate));
+                txtEndDate.setText(displayFormat.format(endDate));
+            }
         } catch (Exception e) {
-            txtStartDate.setText("");
-            txtEndDate.setText("");
+            android.util.Log.e("WarningsFragment", "Date parsing error: " + e.getMessage());
         }
-
+        
+        // Set click listeners for date fields
         txtStartDate.setOnClickListener(v -> {
             Calendar cal = Calendar.getInstance();
             try {
-                cal.setTime(apiFormat.parse(startDateFilter));
-            } catch (Exception ignored) {
+                Date date = displayFormat.parse(txtStartDate.getText().toString());
+                if (date != null) {
+                    cal.setTime(date);
+                }
+            } catch (Exception e) {
+                android.util.Log.e("WarningsFragment", "Date parsing error: " + e.getMessage());
             }
-
+            
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     requireContext(),
                     (view, year, month, dayOfMonth) -> {
                         Calendar selectedDate = Calendar.getInstance();
                         selectedDate.set(year, month, dayOfMonth);
                         txtStartDate.setText(displayFormat.format(selectedDate.getTime()));
-                        startDateFilter = apiFormat.format(selectedDate.getTime());
                     },
                     cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH),
@@ -315,21 +391,24 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
             );
             datePickerDialog.show();
         });
-
+        
         txtEndDate.setOnClickListener(v -> {
             Calendar cal = Calendar.getInstance();
             try {
-                cal.setTime(apiFormat.parse(endDateFilter));
-            } catch (Exception ignored) {
+                Date date = displayFormat.parse(txtEndDate.getText().toString());
+                if (date != null) {
+                    cal.setTime(date);
+                }
+            } catch (Exception e) {
+                android.util.Log.e("WarningsFragment", "Date parsing error: " + e.getMessage());
             }
-
+            
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     requireContext(),
                     (view, year, month, dayOfMonth) -> {
                         Calendar selectedDate = Calendar.getInstance();
                         selectedDate.set(year, month, dayOfMonth);
                         txtEndDate.setText(displayFormat.format(selectedDate.getTime()));
-                        endDateFilter = apiFormat.format(selectedDate.getTime());
                     },
                     cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH),
@@ -337,30 +416,57 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
             );
             datePickerDialog.show();
         });
-
+        
+        // Set click listeners for action buttons
         Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
         Button btnApply = dialogView.findViewById(R.id.btn_apply);
-
+        
         btnCancel.setOnClickListener(v -> dialog.dismiss());
-
+        
         btnApply.setOnClickListener(v -> {
-            updateDateFilterButtonText();
-            refreshWarningData();
+            try {
+                // Parse selected dates
+                Date startDate = displayFormat.parse(txtStartDate.getText().toString());
+                Date endDate = displayFormat.parse(txtEndDate.getText().toString());
+                
+                if (startDate != null && endDate != null) {
+                    // Convert to API format
+                    startDateFilter = apiFormat.format(startDate);
+                    endDateFilter = apiFormat.format(endDate);
+                    
+                    android.util.Log.d("WarningsFragment", "Applying date filter: " + startDateFilter + " to " + endDateFilter);
+                    
+                    // Update filter button text
+                    updateDateFilterButtonText();
+                    
+                    // Apply filter
+                    refreshWarningData();
+                }
+            } catch (Exception e) {
+                Toast.makeText(requireContext(), "Invalid date format", Toast.LENGTH_SHORT).show();
+                android.util.Log.e("WarningsFragment", "Date parsing error: " + e.getMessage());
+            }
+            
             dialog.dismiss();
         });
-
+        
+        // Show dialog
         dialog.show();
     }
 
     private void clearFilters() {
+        // Clear search query
         searchInput.setText("");
         currentSearchQuery = "";
-
+        
+        // Reset date filters to default
         startDateFilter = "2023-01-01";
         endDateFilter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-
+        
+        // Update date filter button text
         updateDateFilterButtonText();
-
+        
+        // Refresh data
         refreshWarningData();
     }
 
@@ -370,9 +476,11 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
             todayWarningsTextView.setText("0");
             return;
         }
-
+        
+        // Total warnings
         totalWarningsTextView.setText(String.valueOf(allWarningList.size()));
-
+        
+        // Today's warnings
         String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         long todayCount = allWarningList.stream()
                 .filter(warning -> warning.getTimestamp() != null && warning.getTimestamp().startsWith(today))
@@ -381,6 +489,7 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
     }
 
     private void showEmptyView(String message) {
+        android.util.Log.d("WarningsFragment", "Showing empty view with message: " + message);
         if (emptyView != null) {
             emptyView.setText(message);
             emptyView.setVisibility(View.VISIBLE);
@@ -389,15 +498,119 @@ public class WarningsFragment extends Fragment implements WarningsAdapter.Warnin
             swipeRefreshLayout.setVisibility(View.GONE);
         }
     }
-
+    
     private void hideEmptyView() {
+        android.util.Log.d("WarningsFragment", "Hiding empty view");
         if (emptyView != null) {
             emptyView.setVisibility(View.GONE);
         }
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    // Implement WarningItemListener methods
+    @Override
+    public void onWarningItemClick(WarningResponse.Warning warning) {
+        viewWarningDetail(warning);
     }
 
     @Override
-    public void onWarningItemClicked(WarningResponse.Warning warning) {
+    public void onViewDetailsClick(WarningResponse.Warning warning) {
+        viewWarningDetail(warning);
+    }
 
+    @Override
+    public void onDeleteClick(WarningResponse.Warning warning) {
+        confirmDeleteWarning(warning);
+    }
+    
+    @Override
+    public void onOptionsClick(WarningResponse.Warning warning, View view) {
+        showOptionsMenu(warning, view);
+    }
+    
+    private void showOptionsMenu(WarningResponse.Warning warning, View view) {
+        PopupMenu popup = new PopupMenu(requireContext(), view);
+        popup.inflate(R.menu.warning_item_menu);
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.menu_view_details) {
+                viewWarningDetail(warning);
+                return true;
+            } else if (itemId == R.id.menu_delete) {
+                confirmDeleteWarning(warning);
+                return true;
+            }
+            return false;
+        });
+        popup.show();
+    }
+    
+    private void viewWarningDetail(WarningResponse.Warning warning) {
+        // Lưu warning được chọn vào ViewModel để xem chi tiết
+        warningViewModel.setSelectedWarning(warning);
+        
+        // Thông báo tạm thời vì chưa có trang chi tiết
+        Toast.makeText(requireContext(), "Xem chi tiết cảnh báo ID: " + warning.getId(), Toast.LENGTH_SHORT).show();
+        
+        // Khi có trang chi tiết, có thể điều hướng đến đó
+        // NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        // Bundle args = new Bundle();
+        // args.putInt("warningId", warning.getId());
+        // navController.navigate(R.id.action_navigation_warning_to_warningDetail, args);
+    }
+    
+    private void confirmDeleteWarning(WarningResponse.Warning warning) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Xóa cảnh báo")
+                .setMessage("Bạn có chắc chắn muốn xóa cảnh báo này?")
+                .setPositiveButton("Xóa", (dialog, which) -> deleteWarning(warning))
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+    
+    private void deleteWarning(WarningResponse.Warning warning) {
+        progressBar.setVisibility(View.VISIBLE);
+        
+        // Lấy token xác thực
+        String token = getAuthToken();
+        if (token == null || token.isEmpty()) {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(requireContext(), "Không tìm thấy token. Vui lòng đăng nhập lại.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        // Gọi API để xóa warning
+        warningViewModel.deleteWarning(token, warning.getId()).observe(getViewLifecycleOwner(), resource -> {
+            progressBar.setVisibility(View.GONE);
+            
+            if (resource.getStatus() == AuthRepository.Resource.Status.SUCCESS) {
+                if (resource.getData() != null && resource.getData().isSuccess()) {
+                    // Xóa thành công
+                    Toast.makeText(requireContext(), "Xóa cảnh báo thành công", Toast.LENGTH_SHORT).show();
+                    
+                    // Remove from lists and update adapter
+                    allWarningList.remove(warning);
+                    filteredWarningList.remove(warning);
+                    warningsAdapter.updateData(filteredWarningList);
+                    
+                    // Update statistics
+                    updateStatistics();
+                    
+                    // Show empty view if needed
+                    if (filteredWarningList.isEmpty()) {
+                        showEmptyView("Không tìm thấy cảnh báo");
+                    }
+                } else {
+                    // Phản hồi từ server không thành công
+                    String errorMessage = (resource.getData() != null) ? resource.getData().getMessage() : "Không xác định";
+                    Toast.makeText(requireContext(), "Xóa cảnh báo thất bại: " + errorMessage, Toast.LENGTH_SHORT).show();
+                }
+            } else if (resource.getStatus() == AuthRepository.Resource.Status.ERROR) {
+                // Xảy ra lỗi khi gọi API
+                Toast.makeText(requireContext(), "Xóa cảnh báo thất bại: " + resource.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

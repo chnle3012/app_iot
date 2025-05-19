@@ -104,4 +104,7 @@ public interface ApiService {
             @Query("mode") String mode,
             @Header("Authorization") String token
     );
+
+    @DELETE("api/warnings/{id}")
+    Call<WarningResponse> deleteWarning(@Header("Authorization") String token, @Path("id") int warningId);
 }
