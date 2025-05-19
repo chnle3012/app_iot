@@ -48,18 +48,18 @@ public class WarningResponse {
     }
 
     public static class Warning {
-        private int id;
+        private int warningId;
         private String info; // Thay từ message thành info
         private String timestamp;
         private String imagePath; // Thêm imagePath nếu cần sử dụng
 
-        // Getter và Setter cho id
-        public int getId() {
-            return id;
+        // Getter và Setter cho warningId
+        public int getWarningId() {
+            return warningId;
         }
 
-        public void setId(int id) {
-            this.id = id;
+        public void setWarningId(int warningId) {
+            this.warningId = warningId;
         }
 
         // Getter và Setter cho info (thay vì message)

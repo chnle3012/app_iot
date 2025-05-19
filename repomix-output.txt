@@ -957,7 +957,7 @@ import java.util.StringJoiner;
 
 public class Person {
     @SerializedName("peopleId")
-    private int id;
+    private int warningId;
     
     private String name;
     private int age;
@@ -966,8 +966,8 @@ public class Person {
     private String IdentificationId;
     private String faceImagePath;
 
-    public Person(int id, String name, String gender, String birthday, String IdentificationId, String faceImagePath) {
-        this.id = id;
+    public Person(int warningId, String name, String gender, String birthday, String IdentificationId, String faceImagePath) {
+        this.warningId = warningId;
         this.name = name;
         this.gender = gender;
         this.birthday = birthday;
@@ -976,11 +976,11 @@ public class Person {
     }
 
     public int getId() {
-        return id;
+        return warningId;
     }
     
     public int getPeopleId() {
-        return id;
+        return warningId;
     }
 
     public String getName() {
@@ -1108,7 +1108,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class User implements Parcelable {
-    private int id;
+    private int warningId;
     private String name;
     private int age;
     private String imageUrl;
@@ -1118,15 +1118,15 @@ public class User implements Parcelable {
         // Default constructor
     }
 
-    public User(int id, String name, int age, String imageUrl) {
-        this.id = id;
+    public User(int warningId, String name, int age, String imageUrl) {
+        this.warningId = warningId;
         this.name = name;
         this.age = age;
         this.imageUrl = imageUrl;
     }
     
-    public User(int id, String name, int age, String imageUrl, String gender) {
-        this.id = id;
+    public User(int warningId, String name, int age, String imageUrl, String gender) {
+        this.warningId = warningId;
         this.name = name;
         this.age = age;
         this.imageUrl = imageUrl;
@@ -1134,7 +1134,7 @@ public class User implements Parcelable {
     }
 
     protected User(Parcel in) {
-        id = in.readInt();
+        warningId = in.readInt();
         name = in.readString();
         age = in.readInt();
         imageUrl = in.readString();
@@ -1154,11 +1154,11 @@ public class User implements Parcelable {
     };
 
     public int getId() {
-        return id;
+        return warningId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(int warningId) {
+        this.warningId = warningId;
     }
 
     public String getName() {
@@ -1200,7 +1200,7 @@ public class User implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
+        dest.writeInt(warningId);
         dest.writeString(name);
         dest.writeInt(age);
         dest.writeString(imageUrl);
@@ -1284,18 +1284,18 @@ public class WarningResponse {
     }
 
     public static class Warning {
-        private int id;
+        private int warningId;
         private String info; // Thay từ message thành info
         private String timestamp;
         private String imagePath; // Thêm imagePath nếu cần sử dụng
 
-        // Getter và Setter cho id
+        // Getter và Setter cho warningId
         public int getId() {
-            return id;
+            return warningId;
         }
 
-        public void setId(int id) {
-            this.id = id;
+        public void setId(int warningId) {
+            this.warningId = warningId;
         }
 
         // Getter và Setter cho info (thay vì message)
@@ -1928,7 +1928,7 @@ public class MainActivity extends AppCompatActivity {
         // Load MainDashboardFragment ngay khi mở app
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.main, new MainDashboardFragment());
+            transaction.replace(R.warningId.main, new MainDashboardFragment());
             transaction.commit();
         }
     }
@@ -2004,7 +2004,7 @@ public class AccountFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        btnLogout = view.findViewById(R.id.btn_logout);
+        btnLogout = view.findViewById(R.warningId.btn_logout);
         
         btnLogout.setOnClickListener(v -> logout());
     }
@@ -2078,13 +2078,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        tilUsername = findViewById(R.id.til_username);
-        tilPassword = findViewById(R.id.til_password);
-        etUsername = findViewById(R.id.et_username);
-        etPassword = findViewById(R.id.et_password);
-        btnLogin = findViewById(R.id.btn_login);
-        btnGoToRegister = findViewById(R.id.btn_go_to_register);
-        progressBar = findViewById(R.id.progress_bar);
+        tilUsername = findViewById(R.warningId.til_username);
+        tilPassword = findViewById(R.warningId.til_password);
+        etUsername = findViewById(R.warningId.et_username);
+        etPassword = findViewById(R.warningId.et_password);
+        btnLogin = findViewById(R.warningId.btn_login);
+        btnGoToRegister = findViewById(R.warningId.btn_go_to_register);
+        progressBar = findViewById(R.warningId.progress_bar);
     }
 
     private void setupListeners() {
@@ -2217,15 +2217,15 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        tilUsername = findViewById(R.id.til_username);
-        tilPassword = findViewById(R.id.til_password);
-        tilConfirmPassword = findViewById(R.id.til_confirm_password);
-        etUsername = findViewById(R.id.et_username);
-        etPassword = findViewById(R.id.et_password);
-        etConfirmPassword = findViewById(R.id.et_confirm_password);
-        btnRegister = findViewById(R.id.btn_register);
-        btnBackToLogin = findViewById(R.id.btn_back_to_login);
-        progressBar = findViewById(R.id.progress_bar);
+        tilUsername = findViewById(R.warningId.til_username);
+        tilPassword = findViewById(R.warningId.til_password);
+        tilConfirmPassword = findViewById(R.warningId.til_confirm_password);
+        etUsername = findViewById(R.warningId.et_username);
+        etPassword = findViewById(R.warningId.et_password);
+        etConfirmPassword = findViewById(R.warningId.et_confirm_password);
+        btnRegister = findViewById(R.warningId.btn_register);
+        btnBackToLogin = findViewById(R.warningId.btn_back_to_login);
+        progressBar = findViewById(R.warningId.progress_bar);
     }
 
     private void setupListeners() {
@@ -2382,12 +2382,12 @@ public class MainDashboardActivity extends AppCompatActivity implements BottomNa
         setContentView(R.layout.activity_main_dashboard);
 
         // Setup bottom navigation
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView = findViewById(R.warningId.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
         // Khởi tạo NavController từ NavHostFragment (cách an toàn)
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment);
+                .findFragmentById(R.warningId.nav_host_fragment);
         
         if (navHostFragment != null) {
             navController = navHostFragment.getNavController();
@@ -2395,25 +2395,25 @@ public class MainDashboardActivity extends AppCompatActivity implements BottomNa
             // Kết nối bottom navigation với navController
             // Dùng sự kiện thay đổi điểm đến để cập nhật bottom nav
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-                int id = destination.getId();
+                int warningId = destination.getId();
                 
                 // Nếu là một trong các tab chính, cập nhật bottom nav tương ứng
-                if (id == R.id.navigation_history || 
-                    id == R.id.navigation_warnings ||
-                    id == R.id.navigation_people ||
-                    id == R.id.navigation_account) {
+                if (warningId == R.warningId.navigation_history ||
+                    warningId == R.warningId.navigation_warnings ||
+                    warningId == R.warningId.navigation_people ||
+                    warningId == R.warningId.navigation_account) {
                     
                     // Cập nhật bottom nav nhưng không kích hoạt sự kiện onClick
                     bottomNavigationView.setOnNavigationItemSelectedListener(null);
                     
-                    if (id == R.id.navigation_history) {
-                        bottomNavigationView.setSelectedItemId(R.id.navigation_history);
-                    } else if (id == R.id.navigation_warnings) {
-                        bottomNavigationView.setSelectedItemId(R.id.navigation_warnings);
-                    } else if (id == R.id.navigation_people) {
-                        bottomNavigationView.setSelectedItemId(R.id.navigation_people);
-                    } else if (id == R.id.navigation_account) {
-                        bottomNavigationView.setSelectedItemId(R.id.navigation_account);
+                    if (warningId == R.warningId.navigation_history) {
+                        bottomNavigationView.setSelectedItemId(R.warningId.navigation_history);
+                    } else if (warningId == R.warningId.navigation_warnings) {
+                        bottomNavigationView.setSelectedItemId(R.warningId.navigation_warnings);
+                    } else if (warningId == R.warningId.navigation_people) {
+                        bottomNavigationView.setSelectedItemId(R.warningId.navigation_people);
+                    } else if (warningId == R.warningId.navigation_account) {
+                        bottomNavigationView.setSelectedItemId(R.warningId.navigation_account);
                     }
                     
                     // Gắn lại listener
@@ -2431,17 +2431,17 @@ public class MainDashboardActivity extends AppCompatActivity implements BottomNa
             return false;
         }
         
-        if (itemId == R.id.navigation_history) {
-            navController.navigate(R.id.navigation_history);
+        if (itemId == R.warningId.navigation_history) {
+            navController.navigate(R.warningId.navigation_history);
             return true;
-        } else if (itemId == R.id.navigation_warnings) {
-            navController.navigate(R.id.navigation_warnings);
+        } else if (itemId == R.warningId.navigation_warnings) {
+            navController.navigate(R.warningId.navigation_warnings);
             return true;
-        } else if (itemId == R.id.navigation_people) {
-            navController.navigate(R.id.navigation_people);
+        } else if (itemId == R.warningId.navigation_people) {
+            navController.navigate(R.warningId.navigation_people);
             return true;
-        } else if (itemId == R.id.navigation_account) {
-            navController.navigate(R.id.navigation_account);
+        } else if (itemId == R.warningId.navigation_account) {
+            navController.navigate(R.warningId.navigation_account);
             return true;
         }
         
@@ -2475,14 +2475,14 @@ public class MainDashboardFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_dashboard, container, false);
 
-        bottomNavigationView = view.findViewById(R.id.bottom_navigation);
+        bottomNavigationView = view.findViewById(R.warningId.bottom_navigation);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
-            if (itemId == R.id.navigation_history) {
+            if (itemId == R.warningId.navigation_history) {
                 loadFragment(new HistoryFragment());
                 return true;
-            } else if (itemId == R.id.navigation_warnings) {
+            } else if (itemId == R.warningId.navigation_warnings) {
                 loadFragment(new WarningsFragment());
                 return true;
             }
@@ -2497,7 +2497,7 @@ public class MainDashboardFragment extends Fragment {
 
     private void loadFragment(Fragment fragment) {
         requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.nav_host_fragment, fragment)  // Sửa ở đây
+                .replace(R.warningId.nav_host_fragment, fragment)  // Sửa ở đây
                 .commit();
     }
 }
@@ -2581,13 +2581,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
         public HistoryViewHolder(@NonNull View itemView, HistoryItemListener listener) {
             super(itemView);
-            title = itemView.findViewById(R.id.history_item_title);
-            name = itemView.findViewById(R.id.history_item_name);
-            historyId = itemView.findViewById(R.id.history_item_id);
-            mode = itemView.findViewById(R.id.history_item_mode);
-            optionsButton = itemView.findViewById(R.id.history_item_options);
-            viewDetailsButton = itemView.findViewById(R.id.btn_view_details);
-            deleteButton = itemView.findViewById(R.id.btn_delete);
+            title = itemView.findViewById(R.warningId.history_item_title);
+            name = itemView.findViewById(R.warningId.history_item_name);
+            historyId = itemView.findViewById(R.warningId.history_item_id);
+            mode = itemView.findViewById(R.warningId.history_item_mode);
+            optionsButton = itemView.findViewById(R.warningId.history_item_options);
+            viewDetailsButton = itemView.findViewById(R.warningId.btn_view_details);
+            deleteButton = itemView.findViewById(R.warningId.btn_delete);
             this.itemListener = listener;
         }
 
@@ -2710,17 +2710,17 @@ public class HistoryDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_history_detail, container, false);
         
         // Initialize UI components
-        progressBar = view.findViewById(R.id.progress_bar_detail);
-        personPhotoImageView = view.findViewById(R.id.img_person_photo);
-        personNameTextView = view.findViewById(R.id.txt_person_name);
-        personAgeTextView = view.findViewById(R.id.txt_person_age);
-        personIdTextView = view.findViewById(R.id.txt_person_id);
-        historyIdTextView = view.findViewById(R.id.txt_history_id);
-        timestampTextView = view.findViewById(R.id.txt_timestamp);
-        modeTextView = view.findViewById(R.id.txt_mode);
-        eventPhotoImageView = view.findViewById(R.id.img_event_photo);
-        deleteButton = view.findViewById(R.id.btn_delete_history);
-        toolbar = view.findViewById(R.id.toolbar_history_detail);
+        progressBar = view.findViewById(R.warningId.progress_bar_detail);
+        personPhotoImageView = view.findViewById(R.warningId.img_person_photo);
+        personNameTextView = view.findViewById(R.warningId.txt_person_name);
+        personAgeTextView = view.findViewById(R.warningId.txt_person_age);
+        personIdTextView = view.findViewById(R.warningId.txt_person_id);
+        historyIdTextView = view.findViewById(R.warningId.txt_history_id);
+        timestampTextView = view.findViewById(R.warningId.txt_timestamp);
+        modeTextView = view.findViewById(R.warningId.txt_mode);
+        eventPhotoImageView = view.findViewById(R.warningId.img_event_photo);
+        deleteButton = view.findViewById(R.warningId.btn_delete_history);
+        toolbar = view.findViewById(R.warningId.toolbar_history_detail);
         
         setupToolbar();
         setupDeleteButton();
@@ -2924,17 +2924,17 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
         android.util.Log.d("HistoryFragment", "onCreateView called");
 
         // Initialize UI components
-        progressBar = view.findViewById(R.id.progress_bar);
-        recyclerView = view.findViewById(R.id.recycler_view_history);
-        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
-        emptyView = view.findViewById(R.id.txt_empty_view);
-        totalRecordsTextView = view.findViewById(R.id.txt_total_records);
-        todayRecordsTextView = view.findViewById(R.id.txt_today_records);
-        uniquePeopleTextView = view.findViewById(R.id.txt_unique_people);
-        searchInput = view.findViewById(R.id.input_search);
-        dateFilterButton = view.findViewById(R.id.btn_date_filter);
-        clearFilterButton = view.findViewById(R.id.btn_clear_filter);
-        toolbar = view.findViewById(R.id.toolbar_history);
+        progressBar = view.findViewById(R.warningId.progress_bar);
+        recyclerView = view.findViewById(R.warningId.recycler_view_history);
+        swipeRefreshLayout = view.findViewById(R.warningId.swipe_refresh);
+        emptyView = view.findViewById(R.warningId.txt_empty_view);
+        totalRecordsTextView = view.findViewById(R.warningId.txt_total_records);
+        todayRecordsTextView = view.findViewById(R.warningId.txt_today_records);
+        uniquePeopleTextView = view.findViewById(R.warningId.txt_unique_people);
+        searchInput = view.findViewById(R.warningId.input_search);
+        dateFilterButton = view.findViewById(R.warningId.btn_date_filter);
+        clearFilterButton = view.findViewById(R.warningId.btn_clear_filter);
+        toolbar = view.findViewById(R.warningId.toolbar_history);
 
         // Set initial visibility
         emptyView.setVisibility(View.GONE);
@@ -2973,10 +2973,10 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
         toolbar.inflateMenu(R.menu.history_menu);
         toolbar.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
-            if (itemId == R.id.menu_refresh) {
+            if (itemId == R.warningId.menu_refresh) {
                 refreshHistoryData();
                 return true;
-            } else if (itemId == R.id.menu_statistics) {
+            } else if (itemId == R.warningId.menu_statistics) {
                 showStatisticsDialog();
                 return true;
             }
@@ -3101,7 +3101,7 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
                             android.util.Log.d("HistoryFragment", "Content: " + (content != null ? ("size=" + content.size()) : "null"));
                             
                             if (content != null && !content.isEmpty()) {
-                                android.util.Log.d("HistoryFragment", "First item id: " + content.get(0).getHistoryId());
+                                android.util.Log.d("HistoryFragment", "First item warningId: " + content.get(0).getHistoryId());
                             }
                         }
                     }
@@ -3202,8 +3202,8 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
         final SimpleDateFormat apiFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         
         // Set initial values
-        TextView txtStartDate = dialogView.findViewById(R.id.txt_start_date);
-        TextView txtEndDate = dialogView.findViewById(R.id.txt_end_date);
+        TextView txtStartDate = dialogView.findViewById(R.warningId.txt_start_date);
+        TextView txtEndDate = dialogView.findViewById(R.warningId.txt_end_date);
         
         // Convert stored dates to display format
         try {
@@ -3269,8 +3269,8 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
         });
         
         // Set click listeners for action buttons
-        Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
-        Button btnApply = dialogView.findViewById(R.id.btn_apply);
+        Button btnCancel = dialogView.findViewById(R.warningId.btn_cancel);
+        Button btnApply = dialogView.findViewById(R.warningId.btn_apply);
         
         btnCancel.setOnClickListener(v -> dialog.dismiss());
         
@@ -3409,10 +3409,10 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
         historyViewModel.setSelectedHistory(history);
         
         // Navigate to history detail fragment
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        NavController navController = Navigation.findNavController(requireActivity(), R.warningId.nav_host_fragment);
         Bundle args = new Bundle();
         args.putInt("historyId", history.getHistoryId());
-        navController.navigate(R.id.action_navigation_history_to_historyDetail, args);
+        navController.navigate(R.warningId.action_navigation_history_to_historyDetail, args);
     }
     
     private void confirmDeleteHistory(HistoryResponse.History history) {
@@ -3457,10 +3457,10 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.HistoryI
         popup.inflate(R.menu.history_item_menu);
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
-            if (itemId == R.id.menu_view_details) {
+            if (itemId == R.warningId.menu_view_details) {
                 viewHistoryDetail(history);
                 return true;
-            } else if (itemId == R.id.menu_delete) {
+            } else if (itemId == R.warningId.menu_delete) {
                 confirmDeleteHistory(history);
                 return true;
             }
@@ -3608,23 +3608,23 @@ public class AddEditPersonFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         
         // Khởi tạo các view
-        titleTextView = view.findViewById(R.id.txt_title);
-        messageTextView = view.findViewById(R.id.txt_message);
-        nameLayout = view.findViewById(R.id.layout_name);
-        nameEditText = view.findViewById(R.id.input_name);
-        identificationEditText = view.findViewById(R.id.input_identification_id);
-        birthdayEditText = view.findViewById(R.id.input_birthday);
-        genderGroup = view.findViewById(R.id.radio_group_gender);
-        saveButton = view.findViewById(R.id.btn_save);
-        backButton = view.findViewById(R.id.btn_back);
-        imageView = view.findViewById(R.id.img_person_avatar);
-        choosePhotoButton = view.findViewById(R.id.btn_choose_image);
-        takePhotoButton = view.findViewById(R.id.btn_take_photo);
-        progressBar = view.findViewById(R.id.progress_bar);
-        submitButton = view.findViewById(R.id.btn_submit);
+        titleTextView = view.findViewById(R.warningId.txt_title);
+        messageTextView = view.findViewById(R.warningId.txt_message);
+        nameLayout = view.findViewById(R.warningId.layout_name);
+        nameEditText = view.findViewById(R.warningId.input_name);
+        identificationEditText = view.findViewById(R.warningId.input_identification_id);
+        birthdayEditText = view.findViewById(R.warningId.input_birthday);
+        genderGroup = view.findViewById(R.warningId.radio_group_gender);
+        saveButton = view.findViewById(R.warningId.btn_save);
+        backButton = view.findViewById(R.warningId.btn_back);
+        imageView = view.findViewById(R.warningId.img_person_avatar);
+        choosePhotoButton = view.findViewById(R.warningId.btn_choose_image);
+        takePhotoButton = view.findViewById(R.warningId.btn_take_photo);
+        progressBar = view.findViewById(R.warningId.progress_bar);
+        submitButton = view.findViewById(R.warningId.btn_submit);
         identificationEditText.setEnabled(false);
 
-        deleteButton = view.findViewById(R.id.btn_delete);
+        deleteButton = view.findViewById(R.warningId.btn_delete);
 
         // Identification ID read-only
         identificationEditText.setEnabled(false);
@@ -3659,8 +3659,8 @@ public class AddEditPersonFragment extends Fragment {
         birthdayEditText.setText(String.valueOf(person.getBirthday()));
         String gender = person.getGender();
         if (gender != null) {
-            if (gender.equalsIgnoreCase("Nam")) genderGroup.check(R.id.radio_male);
-            else if (gender.equalsIgnoreCase("Nữ")) genderGroup.check(R.id.radio_female);
+            if (gender.equalsIgnoreCase("Nam")) genderGroup.check(R.warningId.radio_male);
+            else if (gender.equalsIgnoreCase("Nữ")) genderGroup.check(R.warningId.radio_female);
         }
 
         if (person.getFaceImagePath() != null) {
@@ -3887,7 +3887,7 @@ public class AddEditPersonFragment extends Fragment {
 
 
     private void navigateBack() {
-        Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
+        Navigation.findNavController(requireActivity(), R.warningId.nav_host_fragment)
             .navigateUp();
     }
 }
@@ -3965,9 +3965,9 @@ public class PeopleAdapter extends RecyclerView.Adapter<PeopleAdapter.PersonView
 
         public PersonViewHolder(@NonNull View itemView) {
             super(itemView);
-            avatarImageView = itemView.findViewById(R.id.img_person_avatar);
-            nameTextView = itemView.findViewById(R.id.txt_person_name);
-            detailsTextView = itemView.findViewById(R.id.txt_person_details);
+            avatarImageView = itemView.findViewById(R.warningId.img_person_avatar);
+            nameTextView = itemView.findViewById(R.warningId.txt_person_name);
+            detailsTextView = itemView.findViewById(R.warningId.txt_person_details);
         }
 
         public void bind(Person person, PersonClickListener listener) {
@@ -4072,11 +4072,11 @@ public class PeopleManagementFragment extends Fragment implements PeopleAdapter.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        recyclerView = view.findViewById(R.id.recycler_people);
-        emptyView = view.findViewById(R.id.txt_empty_view);
-        progressBar = view.findViewById(R.id.progress_bar);
-        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
-        fabAddPerson = view.findViewById(R.id.fab_add_person);
+        recyclerView = view.findViewById(R.warningId.recycler_people);
+        emptyView = view.findViewById(R.warningId.txt_empty_view);
+        progressBar = view.findViewById(R.warningId.progress_bar);
+        swipeRefreshLayout = view.findViewById(R.warningId.swipe_refresh);
+        fabAddPerson = view.findViewById(R.warningId.fab_add_person);
         
         setupRecyclerView();
         setupSwipeRefresh();
@@ -4103,8 +4103,8 @@ public class PeopleManagementFragment extends Fragment implements PeopleAdapter.
             viewModel.setSelectedPersonId(-1);
             viewModel.setSelectedPerson(null);
             
-            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-            navController.navigate(R.id.action_navigation_people_to_addEditPerson);
+            NavController navController = Navigation.findNavController(requireActivity(), R.warningId.nav_host_fragment);
+            navController.navigate(R.warningId.action_navigation_people_to_addEditPerson);
         });
     }
 
@@ -4153,8 +4153,8 @@ public class PeopleManagementFragment extends Fragment implements PeopleAdapter.
         viewModel.setSelectedPerson(person);
         
         // Điều hướng đến màn hình chỉnh sửa
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_navigation_people_to_addEditPerson);
+        NavController navController = Navigation.findNavController(requireActivity(), R.warningId.nav_host_fragment);
+        navController.navigate(R.warningId.action_navigation_people_to_addEditPerson);
     }
 }
 
@@ -4205,7 +4205,7 @@ public class WarningsAdapter extends RecyclerView.Adapter<WarningsAdapter.Warnin
         // Gán dữ liệu vào các TextView trong item
         holder.message.setText("Infor: " + warning.getInfo());
         holder.timestamp.setText(warning.getTimestamp());
-        holder.id.setText("ID: " + warning.getId());
+        holder.warningId.setText("ID: " + warning.getId());
     }
 
     @Override
@@ -4217,14 +4217,14 @@ public class WarningsAdapter extends RecyclerView.Adapter<WarningsAdapter.Warnin
     static class WarningViewHolder extends RecyclerView.ViewHolder {
         TextView message;
         TextView timestamp;
-        TextView id;
+        TextView warningId;
 
         public WarningViewHolder(@NonNull View itemView) {
             super(itemView);
             // Ánh xạ các TextView từ layout item_warning
-            message = itemView.findViewById(R.id.warning_item_message);
-            timestamp = itemView.findViewById(R.id.warning_item_timestamp);
-            id = itemView.findViewById(R.id.warning_item_id);
+            message = itemView.findViewById(R.warningId.warning_item_message);
+            timestamp = itemView.findViewById(R.warningId.warning_item_timestamp);
+            warningId = itemView.findViewById(R.warningId.warning_item_id);
         }
     }
 }
@@ -4270,8 +4270,8 @@ public class WarningsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_warning, container, false);
 
         // Ensure the IDs match those in fragment_warning.xml
-        progressBar = view.findViewById(R.id.progress_bar_warning); // Correct ID
-        recyclerView = view.findViewById(R.id.recycler_view_warning);
+        progressBar = view.findViewById(R.warningId.progress_bar_warning); // Correct ID
+        recyclerView = view.findViewById(R.warningId.recycler_view_warning);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         warningAdapter = new WarningsAdapter(null); // Adapter initially has no data
@@ -4783,8 +4783,8 @@ public class PeopleViewModel extends AndroidViewModel {
         return selectedPersonId;
     }
 
-    public void setSelectedPersonId(int id) {
-        selectedPersonId.setValue(id);
+    public void setSelectedPersonId(int warningId) {
+        selectedPersonId.setValue(warningId);
     }
 
     public LiveData<Person> getSelectedPerson() {
@@ -5098,7 +5098,7 @@ File: app/src/main/res/layout/activity_login.xml
     tools:context=".ui.auth.LoginActivity">
 
     <ImageView
-        android:id="@+id/iv_logo"
+        android:warningId="@+warningId/iv_logo"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@mipmap/ic_launcher"
@@ -5109,7 +5109,7 @@ File: app/src/main/res/layout/activity_login.xml
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_login_title"
+        android:warningId="@+warningId/tv_login_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -5119,10 +5119,10 @@ File: app/src/main/res/layout/activity_login.xml
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_logo" />
+        app:layout_constraintTop_toBottomOf="@+warningId/iv_logo" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_username"
+        android:warningId="@+warningId/til_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
@@ -5130,10 +5130,10 @@ File: app/src/main/res/layout/activity_login.xml
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_login_title">
+        app:layout_constraintTop_toBottomOf="@+warningId/tv_login_title">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_username"
+            android:warningId="@+warningId/et_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -5142,7 +5142,7 @@ File: app/src/main/res/layout/activity_login.xml
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_password"
+        android:warningId="@+warningId/til_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -5151,10 +5151,10 @@ File: app/src/main/res/layout/activity_login.xml
         app:passwordToggleEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_username">
+        app:layout_constraintTop_toBottomOf="@+warningId/til_username">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_password"
+            android:warningId="@+warningId/et_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
@@ -5163,7 +5163,7 @@ File: app/src/main/res/layout/activity_login.xml
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/btn_login"
+        android:warningId="@+warningId/btn_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -5171,20 +5171,20 @@ File: app/src/main/res/layout/activity_login.xml
         android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_password" />
+        app:layout_constraintTop_toBottomOf="@+warningId/til_password" />
 
     <TextView
-        android:id="@+id/tv_register_prompt"
+        android:warningId="@+warningId/tv_register_prompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Bạn chưa có tài khoản?"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_login" />
+        app:layout_constraintTop_toBottomOf="@+warningId/btn_login" />
 
     <Button
-        android:id="@+id/btn_go_to_register"
+        android:warningId="@+warningId/btn_go_to_register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -5193,10 +5193,10 @@ File: app/src/main/res/layout/activity_login.xml
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_register_prompt" />
+        app:layout_constraintTop_toBottomOf="@+warningId/tv_register_prompt" />
 
     <ProgressBar
-        android:id="@+id/progress_bar"
+        android:warningId="@+warningId/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
@@ -5217,7 +5217,7 @@ File: app/src/main/res/layout/activity_main_dashboard.xml
     android:layout_height="match_parent">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host_fragment"
+        android:warningId="@+warningId/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -5226,7 +5226,7 @@ File: app/src/main/res/layout/activity_main_dashboard.xml
         app:navGraph="@navigation/nav_graph" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+        android:warningId="@+warningId/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -5241,7 +5241,7 @@ File: app/src/main/res/layout/activity_main.xml
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:warningId="@+warningId/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
@@ -5270,7 +5270,7 @@ File: app/src/main/res/layout/activity_register.xml
     tools:context=".ui.auth.RegisterActivity">
 
     <ImageView
-        android:id="@+id/iv_logo"
+        android:warningId="@+warningId/iv_logo"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@mipmap/ic_launcher"
@@ -5281,7 +5281,7 @@ File: app/src/main/res/layout/activity_register.xml
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_register_title"
+        android:warningId="@+warningId/tv_register_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -5291,10 +5291,10 @@ File: app/src/main/res/layout/activity_register.xml
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_logo" />
+        app:layout_constraintTop_toBottomOf="@+warningId/iv_logo" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_username"
+        android:warningId="@+warningId/til_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -5302,10 +5302,10 @@ File: app/src/main/res/layout/activity_register.xml
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_register_title">
+        app:layout_constraintTop_toBottomOf="@+warningId/tv_register_title">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_username"
+            android:warningId="@+warningId/et_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -5314,7 +5314,7 @@ File: app/src/main/res/layout/activity_register.xml
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_password"
+        android:warningId="@+warningId/til_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -5323,10 +5323,10 @@ File: app/src/main/res/layout/activity_register.xml
         app:passwordToggleEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_username">
+        app:layout_constraintTop_toBottomOf="@+warningId/til_username">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_password"
+            android:warningId="@+warningId/et_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
@@ -5335,7 +5335,7 @@ File: app/src/main/res/layout/activity_register.xml
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_confirm_password"
+        android:warningId="@+warningId/til_confirm_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -5344,10 +5344,10 @@ File: app/src/main/res/layout/activity_register.xml
         app:passwordToggleEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_password">
+        app:layout_constraintTop_toBottomOf="@+warningId/til_password">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_confirm_password"
+            android:warningId="@+warningId/et_confirm_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
@@ -5356,7 +5356,7 @@ File: app/src/main/res/layout/activity_register.xml
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/btn_register"
+        android:warningId="@+warningId/btn_register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -5364,10 +5364,10 @@ File: app/src/main/res/layout/activity_register.xml
         android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_confirm_password" />
+        app:layout_constraintTop_toBottomOf="@+warningId/til_confirm_password" />
 
     <Button
-        android:id="@+id/btn_back_to_login"
+        android:warningId="@+warningId/btn_back_to_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -5376,10 +5376,10 @@ File: app/src/main/res/layout/activity_register.xml
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_register" />
+        app:layout_constraintTop_toBottomOf="@+warningId/btn_register" />
 
     <ProgressBar
-        android:id="@+id/progress_bar"
+        android:warningId="@+warningId/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
@@ -5403,7 +5403,7 @@ File: app/src/main/res/layout/activity_splash.xml
     tools:context=".ui.auth.SplashActivity">
 
     <ImageView
-        android:id="@+id/iv_logo"
+        android:warningId="@+warningId/iv_logo"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:src="@mipmap/ic_launcher"
@@ -5415,7 +5415,7 @@ File: app/src/main/res/layout/activity_splash.xml
         app:layout_constraintVertical_bias="0.4" />
 
     <TextView
-        android:id="@+id/tv_app_name"
+        android:warningId="@+warningId/tv_app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -5425,7 +5425,7 @@ File: app/src/main/res/layout/activity_splash.xml
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_logo" />
+        app:layout_constraintTop_toBottomOf="@+warningId/iv_logo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -5468,7 +5468,7 @@ File: app/src/main/res/layout/dialog_date_filter.xml
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/txt_start_date"
+                android:warningId="@+warningId/txt_start_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
@@ -5491,7 +5491,7 @@ File: app/src/main/res/layout/dialog_date_filter.xml
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/txt_end_date"
+                android:warningId="@+warningId/txt_end_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
@@ -5508,7 +5508,7 @@ File: app/src/main/res/layout/dialog_date_filter.xml
         android:layout_marginTop="8dp">
 
         <Button
-            android:id="@+id/btn_cancel"
+            android:warningId="@+warningId/btn_cancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -5517,7 +5517,7 @@ File: app/src/main/res/layout/dialog_date_filter.xml
             style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
         <Button
-            android:id="@+id/btn_apply"
+            android:warningId="@+warningId/btn_apply"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -5574,7 +5574,7 @@ File: app/src/main/res/layout/dialog_history_statistics.xml
                         android:text="Tổng số bản ghi:" />
 
                     <TextView
-                        android:id="@+id/stat_total_records"
+                        android:warningId="@+warningId/stat_total_records"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
@@ -5594,7 +5594,7 @@ File: app/src/main/res/layout/dialog_history_statistics.xml
                         android:text="Bản ghi hôm nay:" />
 
                     <TextView
-                        android:id="@+id/stat_today_records"
+                        android:warningId="@+warningId/stat_today_records"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
@@ -5614,7 +5614,7 @@ File: app/src/main/res/layout/dialog_history_statistics.xml
                         android:text="Bản ghi tuần này:" />
 
                     <TextView
-                        android:id="@+id/stat_week_records"
+                        android:warningId="@+warningId/stat_week_records"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
@@ -5633,7 +5633,7 @@ File: app/src/main/res/layout/dialog_history_statistics.xml
                         android:text="Bản ghi tháng này:" />
 
                     <TextView
-                        android:id="@+id/stat_month_records"
+                        android:warningId="@+warningId/stat_month_records"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
@@ -5674,7 +5674,7 @@ File: app/src/main/res/layout/dialog_history_statistics.xml
                         android:text="Số người khác nhau:" />
 
                     <TextView
-                        android:id="@+id/stat_unique_people"
+                        android:warningId="@+warningId/stat_unique_people"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
@@ -5694,7 +5694,7 @@ File: app/src/main/res/layout/dialog_history_statistics.xml
                         android:text="Người xuất hiện thường xuyên nhất:" />
 
                     <TextView
-                        android:id="@+id/stat_most_frequent"
+                        android:warningId="@+warningId/stat_most_frequent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
@@ -5734,7 +5734,7 @@ File: app/src/main/res/layout/dialog_history_statistics.xml
                         android:text="Chế độ nhận diện:" />
 
                     <TextView
-                        android:id="@+id/stat_recognition_mode"
+                        android:warningId="@+warningId/stat_recognition_mode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
@@ -5753,7 +5753,7 @@ File: app/src/main/res/layout/dialog_history_statistics.xml
                         android:text="Chế độ khác:" />
 
                     <TextView
-                        android:id="@+id/stat_other_modes"
+                        android:warningId="@+warningId/stat_other_modes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
@@ -5775,7 +5775,7 @@ File: app/src/main/res/layout/fragment_account.xml
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/tv_account_title"
+        android:warningId="@+warningId/tv_account_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/account"
@@ -5785,12 +5785,12 @@ File: app/src/main/res/layout/fragment_account.xml
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/btn_logout"
+        android:warningId="@+warningId/btn_logout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/logout"
         android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_account_title" />
+        app:layout_constraintTop_toBottomOf="@warningId/tv_account_title" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -5812,7 +5812,7 @@ File: app/src/main/res/layout/fragment_add_edit_person.xml
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/txt_title"
+            android:warningId="@+warningId/txt_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="24sp"
@@ -5822,20 +5822,20 @@ File: app/src/main/res/layout/fragment_add_edit_person.xml
             tools:text="Add Person" />
 
         <TextView
-            android:id="@+id/txt_message"
+            android:warningId="@+warningId/txt_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textColor="#F44336"
             android:textStyle="italic"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/txt_title"
+            app:layout_constraintTop_toBottomOf="@warningId/txt_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="API chỉ hỗ trợ xem dữ liệu" />
 
         <ImageView
-            android:id="@+id/img_person_avatar"
+            android:warningId="@+warningId/img_person_avatar"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_marginTop="12dp"
@@ -5845,20 +5845,20 @@ File: app/src/main/res/layout/fragment_add_edit_person.xml
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txt_message"
+            app:layout_constraintTop_toBottomOf="@warningId/txt_message"
             tools:src="@android:drawable/ic_menu_camera" />
 
         <LinearLayout
-            android:id="@+id/layout_photo_buttons"
+            android:warningId="@+warningId/layout_photo_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:orientation="horizontal"
             android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/img_person_avatar">
+            app:layout_constraintTop_toBottomOf="@warningId/img_person_avatar">
 
             <Button
-                android:id="@+id/btn_choose_image"
+                android:warningId="@+warningId/btn_choose_image"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -5866,7 +5866,7 @@ File: app/src/main/res/layout/fragment_add_edit_person.xml
                 android:text="Chọn ảnh" />
 
             <Button
-                android:id="@+id/btn_take_photo"
+                android:warningId="@+warningId/btn_take_photo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -5875,42 +5875,42 @@ File: app/src/main/res/layout/fragment_add_edit_person.xml
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/layout_name"
+            android:warningId="@+warningId/layout_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:hint="Tên"
-            app:layout_constraintTop_toBottomOf="@id/layout_photo_buttons">
+            app:layout_constraintTop_toBottomOf="@warningId/layout_photo_buttons">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_name"
+                android:warningId="@+warningId/input_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/layout_identification_id"
+            android:warningId="@+warningId/layout_identification_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:hint="Id đặc biệt"
-            app:layout_constraintTop_toBottomOf="@id/layout_name">
+            app:layout_constraintTop_toBottomOf="@warningId/layout_name">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_identification_id"
+                android:warningId="@+warningId/input_identification_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
-            android:id="@+id/layout_gender"
+            android:warningId="@+warningId/layout_gender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
-            app:layout_constraintTop_toBottomOf="@id/layout_identification_id">
+            app:layout_constraintTop_toBottomOf="@warningId/layout_identification_id">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -5920,20 +5920,20 @@ File: app/src/main/res/layout/fragment_add_edit_person.xml
                 android:layout_gravity="center_vertical"/>
 
             <RadioGroup
-                android:id="@+id/radio_group_gender"
+                android:warningId="@+warningId/radio_group_gender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginStart="16dp">
 
                 <RadioButton
-                    android:id="@+id/radio_male"
+                    android:warningId="@+warningId/radio_male"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Nam" />
 
                 <RadioButton
-                    android:id="@+id/radio_female"
+                    android:warningId="@+warningId/radio_female"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -5942,15 +5942,15 @@ File: app/src/main/res/layout/fragment_add_edit_person.xml
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/layout_birthday"
+            android:warningId="@+warningId/layout_birthday"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:hint="Ngày sinh"
-            app:layout_constraintTop_toBottomOf="@id/layout_gender">
+            app:layout_constraintTop_toBottomOf="@warningId/layout_gender">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_birthday"
+                android:warningId="@+warningId/input_birthday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
@@ -5959,7 +5959,7 @@ File: app/src/main/res/layout/fragment_add_edit_person.xml
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/btn_submit"
+            android:warningId="@+warningId/btn_submit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -5969,34 +5969,34 @@ File: app/src/main/res/layout/fragment_add_edit_person.xml
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:backgroundTint="#4CAF50"
-            app:layout_constraintTop_toBottomOf="@id/layout_birthday"
+            app:layout_constraintTop_toBottomOf="@warningId/layout_birthday"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <Button
-            android:id="@+id/btn_delete"
+            android:warningId="@+warningId/btn_delete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="Xóa"
             android:backgroundTint="#F44336"
-            app:layout_constraintTop_toBottomOf="@id/layout_birthday"
+            app:layout_constraintTop_toBottomOf="@warningId/layout_birthday"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <LinearLayout
-            android:id="@+id/layout_action_buttons"
+            android:warningId="@+warningId/layout_action_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_delete"
+            app:layout_constraintTop_toBottomOf="@+warningId/btn_delete"
             app:layout_constraintVertical_bias="0.018"
             tools:layout_editor_absoluteX="16dp">
 
             <Button
-                android:id="@+id/btn_back"
+                android:warningId="@+warningId/btn_back"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -6005,7 +6005,7 @@ File: app/src/main/res/layout/fragment_add_edit_person.xml
                 android:text="Quay lại" />
 
             <Button
-                android:id="@+id/btn_save"
+                android:warningId="@+warningId/btn_save"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -6014,7 +6014,7 @@ File: app/src/main/res/layout/fragment_add_edit_person.xml
         </LinearLayout>
 
         <ProgressBar
-            android:id="@+id/progress_bar"
+            android:warningId="@+warningId/progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
@@ -6038,13 +6038,13 @@ File: app/src/main/res/layout/fragment_history_detail.xml
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar_history_detail"
+        android:warningId="@+warningId/appbar_history_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar_history_detail"
+            android:warningId="@+warningId/toolbar_history_detail"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/white"
@@ -6067,7 +6067,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
 
             <!-- Person Information Card -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/card_person_info"
+                android:warningId="@+warningId/card_person_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -6094,7 +6094,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:id="@+id/img_person_photo"
+                            android:warningId="@+warningId/img_person_photo"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:scaleType="centerCrop"
@@ -6116,7 +6116,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
                                 android:textStyle="bold"/>
 
                             <TextView
-                                android:id="@+id/txt_person_name"
+                                android:warningId="@+warningId/txt_person_name"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="8dp"
@@ -6131,7 +6131,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
                                 android:textStyle="bold"/>
 
                             <TextView
-                                android:id="@+id/txt_person_age"
+                                android:warningId="@+warningId/txt_person_age"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="8dp"
@@ -6146,7 +6146,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
                                 android:textStyle="bold"/>
 
                             <TextView
-                                android:id="@+id/txt_person_id"
+                                android:warningId="@+warningId/txt_person_id"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="16sp"
@@ -6158,7 +6158,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
 
             <!-- Event Information Card -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/card_event_info"
+                android:warningId="@+warningId/card_event_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -6194,7 +6194,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
                             android:layout_marginEnd="8dp"/>
 
                         <TextView
-                            android:id="@+id/txt_history_id"
+                            android:warningId="@+warningId/txt_history_id"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="14sp"
@@ -6216,7 +6216,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
                             android:layout_marginEnd="8dp"/>
 
                         <TextView
-                            android:id="@+id/txt_timestamp"
+                            android:warningId="@+warningId/txt_timestamp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="14sp"
@@ -6238,7 +6238,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
                             android:layout_marginEnd="8dp"/>
 
                         <TextView
-                            android:id="@+id/txt_mode"
+                            android:warningId="@+warningId/txt_mode"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="14sp"
@@ -6249,7 +6249,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
 
             <!-- Image Card -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/card_event_image"
+                android:warningId="@+warningId/card_event_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -6271,7 +6271,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
                         android:layout_marginBottom="16dp"/>
 
                     <ImageView
-                        android:id="@+id/img_event_photo"
+                        android:warningId="@+warningId/img_event_photo"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
                         android:scaleType="centerInside"
@@ -6283,7 +6283,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
 
             <!-- Delete Button -->
             <Button
-                android:id="@+id/btn_delete_history"
+                android:warningId="@+warningId/btn_delete_history"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Delete This Record"
@@ -6293,7 +6293,7 @@ File: app/src/main/res/layout/fragment_history_detail.xml
     </androidx.core.widget.NestedScrollView>
 
     <ProgressBar
-        android:id="@+id/progress_bar_detail"
+        android:warningId="@+warningId/progress_bar_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -6311,13 +6311,13 @@ File: app/src/main/res/layout/fragment_history.xml
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar_history"
+        android:warningId="@+warningId/appbar_history"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar_history"
+            android:warningId="@+warningId/toolbar_history"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/white"
@@ -6340,7 +6340,7 @@ File: app/src/main/res/layout/fragment_history.xml
 
             <!-- Statistics Card -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/card_statistics"
+                android:warningId="@+warningId/card_statistics"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -6374,7 +6374,7 @@ File: app/src/main/res/layout/fragment_history.xml
                             android:gravity="center">
 
                             <TextView
-                                android:id="@+id/txt_total_records"
+                                android:warningId="@+warningId/txt_total_records"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
@@ -6397,7 +6397,7 @@ File: app/src/main/res/layout/fragment_history.xml
                             android:gravity="center">
 
                             <TextView
-                                android:id="@+id/txt_today_records"
+                                android:warningId="@+warningId/txt_today_records"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
@@ -6420,7 +6420,7 @@ File: app/src/main/res/layout/fragment_history.xml
                             android:gravity="center">
 
                             <TextView
-                                android:id="@+id/txt_unique_people"
+                                android:warningId="@+warningId/txt_unique_people"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
@@ -6440,7 +6440,7 @@ File: app/src/main/res/layout/fragment_history.xml
 
             <!-- Search and Filter Card -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/card_search"
+                android:warningId="@+warningId/card_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -6454,7 +6454,7 @@ File: app/src/main/res/layout/fragment_history.xml
                     android:padding="16dp">
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/layout_search"
+                        android:warningId="@+warningId/layout_search"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Tìm kiếm theo tên"
@@ -6462,7 +6462,7 @@ File: app/src/main/res/layout/fragment_history.xml
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/input_search"
+                            android:warningId="@+warningId/input_search"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="text"/>
@@ -6475,7 +6475,7 @@ File: app/src/main/res/layout/fragment_history.xml
                         android:orientation="horizontal">
 
                         <Button
-                            android:id="@+id/btn_date_filter"
+                            android:warningId="@+warningId/btn_date_filter"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -6485,7 +6485,7 @@ File: app/src/main/res/layout/fragment_history.xml
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
                         <Button
-                            android:id="@+id/btn_clear_filter"
+                            android:warningId="@+warningId/btn_clear_filter"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -6507,7 +6507,7 @@ File: app/src/main/res/layout/fragment_history.xml
                 android:layout_marginBottom="8dp"/>
 
             <ProgressBar
-                android:id="@+id/progress_bar"
+                android:warningId="@+warningId/progress_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -6520,12 +6520,12 @@ File: app/src/main/res/layout/fragment_history.xml
                 android:layout_marginBottom="70dp">
 
                 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                    android:id="@+id/swipe_refresh"
+                    android:warningId="@+warningId/swipe_refresh"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_view_history"
+                        android:warningId="@+warningId/recycler_view_history"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:clipToPadding="false"
@@ -6533,7 +6533,7 @@ File: app/src/main/res/layout/fragment_history.xml
                 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
                 <TextView
-                    android:id="@+id/txt_empty_view"
+                    android:warningId="@+warningId/txt_empty_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="No history records found"
@@ -6559,12 +6559,12 @@ File: app/src/main/res/layout/fragment_main_dashboard.xml
     android:layout_height="match_parent">
 
     <FrameLayout
-        android:id="@+id/fragment_container"
+        android:warningId="@+warningId/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+        android:warningId="@+warningId/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -6583,14 +6583,14 @@ File: app/src/main/res/layout/fragment_people_management.xml
     android:layout_height="match_parent">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh"
+        android:warningId="@+warningId/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/buttonsLayout">
+        app:layout_constraintBottom_toTopOf="@+warningId/buttonsLayout">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_people"
+            android:warningId="@+warningId/recycler_people"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -6598,7 +6598,7 @@ File: app/src/main/res/layout/fragment_people_management.xml
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ProgressBar
-        android:id="@+id/progress_bar"
+        android:warningId="@+warningId/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
@@ -6608,7 +6608,7 @@ File: app/src/main/res/layout/fragment_people_management.xml
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/buttonsLayout"
+        android:warningId="@+warningId/buttonsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -6617,7 +6617,7 @@ File: app/src/main/res/layout/fragment_people_management.xml
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
-            android:id="@+id/btnAddSampleData"
+            android:warningId="@+warningId/btnAddSampleData"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -6626,7 +6626,7 @@ File: app/src/main/res/layout/fragment_people_management.xml
             android:visibility="gone" />
 
         <Button
-            android:id="@+id/btnClearData"
+            android:warningId="@+warningId/btnClearData"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -6636,7 +6636,7 @@ File: app/src/main/res/layout/fragment_people_management.xml
     </LinearLayout>
 
     <TextView
-        android:id="@+id/txt_empty_view"
+        android:warningId="@+warningId/txt_empty_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_people_found"
@@ -6644,13 +6644,13 @@ File: app/src/main/res/layout/fragment_people_management.xml
         android:visibility="gone"
         android:gravity="center"
         android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="@id/swipe_refresh"
+        app:layout_constraintBottom_toBottomOf="@warningId/swipe_refresh"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_person"
+        android:warningId="@+warningId/fab_add_person"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -6674,14 +6674,14 @@ File: app/src/main/res/layout/fragment_warning.xml
     android:padding="8dp">
 
     <ProgressBar
-        android:id="@+id/progress_bar_warning"
+        android:warningId="@+warningId/progress_bar_warning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_warning"
+        android:warningId="@+warningId/recycler_view_warning"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp" />
@@ -6710,7 +6710,7 @@ File: app/src/main/res/layout/item_history.xml
         android:padding="12dp">
 
         <ImageView
-            android:id="@+id/history_item_icon"
+            android:warningId="@+warningId/history_item_icon"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:scaleType="centerCrop"
@@ -6721,7 +6721,7 @@ File: app/src/main/res/layout/item_history.xml
             app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
-            android:id="@+id/history_item_title"
+            android:warningId="@+warningId/history_item_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -6729,13 +6729,13 @@ File: app/src/main/res/layout/item_history.xml
             android:textStyle="bold"
             android:maxLines="1"
             android:ellipsize="end"
-            app:layout_constraintStart_toEndOf="@id/history_item_icon"
-            app:layout_constraintEnd_toStartOf="@id/history_item_options"
-            app:layout_constraintTop_toTopOf="@id/history_item_icon"
+            app:layout_constraintStart_toEndOf="@warningId/history_item_icon"
+            app:layout_constraintEnd_toStartOf="@warningId/history_item_options"
+            app:layout_constraintTop_toTopOf="@warningId/history_item_icon"
             tools:text="2023-05-15 14:30:25" />
 
         <TextView
-            android:id="@+id/history_item_name"
+            android:warningId="@+warningId/history_item_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -6744,39 +6744,39 @@ File: app/src/main/res/layout/item_history.xml
             android:textColor="#757575"
             android:maxLines="1"
             android:ellipsize="end"
-            app:layout_constraintStart_toEndOf="@id/history_item_icon"
-            app:layout_constraintEnd_toStartOf="@id/history_item_options"
-            app:layout_constraintTop_toBottomOf="@id/history_item_title"
+            app:layout_constraintStart_toEndOf="@warningId/history_item_icon"
+            app:layout_constraintEnd_toStartOf="@warningId/history_item_options"
+            app:layout_constraintTop_toBottomOf="@warningId/history_item_title"
             tools:text="Person Name" />
 
         <TextView
-            android:id="@+id/history_item_id"
+            android:warningId="@+warningId/history_item_id"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
             android:textSize="12sp"
             android:textColor="#757575"
-            app:layout_constraintStart_toEndOf="@id/history_item_icon"
-            app:layout_constraintEnd_toStartOf="@id/history_item_options"
-            app:layout_constraintTop_toBottomOf="@id/history_item_name"
+            app:layout_constraintStart_toEndOf="@warningId/history_item_icon"
+            app:layout_constraintEnd_toStartOf="@warningId/history_item_options"
+            app:layout_constraintTop_toBottomOf="@warningId/history_item_name"
             tools:text="ID: 12345" />
 
         <TextView
-            android:id="@+id/history_item_mode"
+            android:warningId="@+warningId/history_item_mode"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="2dp"
             android:textSize="12sp"
             android:textColor="#757575"
-            app:layout_constraintStart_toEndOf="@id/history_item_icon"
-            app:layout_constraintEnd_toStartOf="@id/history_item_options"
-            app:layout_constraintTop_toBottomOf="@id/history_item_id"
+            app:layout_constraintStart_toEndOf="@warningId/history_item_icon"
+            app:layout_constraintEnd_toStartOf="@warningId/history_item_options"
+            app:layout_constraintTop_toBottomOf="@warningId/history_item_id"
             tools:text="Mode: Recognition" />
 
         <ImageButton
-            android:id="@+id/history_item_options"
+            android:warningId="@+warningId/history_item_options"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_more"
@@ -6787,16 +6787,16 @@ File: app/src/main/res/layout/item_history.xml
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:id="@+id/history_item_actions"
+            android:warningId="@+warningId/history_item_actions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/history_item_options">
+            app:layout_constraintTop_toBottomOf="@warningId/history_item_options">
 
             <Button
-                android:id="@+id/btn_view_details"
+                android:warningId="@+warningId/btn_view_details"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:text="Details"
@@ -6805,7 +6805,7 @@ File: app/src/main/res/layout/item_history.xml
                 style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
             <Button
-                android:id="@+id/btn_delete"
+                android:warningId="@+warningId/btn_delete"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:text="Delete"
@@ -6837,7 +6837,7 @@ File: app/src/main/res/layout/item_person.xml
         android:padding="8dp">
 
         <ImageView
-            android:id="@+id/img_person_avatar"
+            android:warningId="@+warningId/img_person_avatar"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:scaleType="centerCrop"
@@ -6848,31 +6848,31 @@ File: app/src/main/res/layout/item_person.xml
             tools:src="@android:drawable/ic_menu_camera" />
 
         <TextView
-            android:id="@+id/txt_person_name"
+            android:warningId="@+warningId/txt_person_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/img_person_avatar"
+            app:layout_constraintStart_toEndOf="@warningId/img_person_avatar"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/img_person_avatar"
-            app:layout_constraintBottom_toTopOf="@id/txt_person_details"
+            app:layout_constraintTop_toTopOf="@warningId/img_person_avatar"
+            app:layout_constraintBottom_toTopOf="@warningId/txt_person_details"
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="Person Name" />
             
         <TextView
-            android:id="@+id/txt_person_details"
+            android:warningId="@+warningId/txt_person_details"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
             android:textSize="14sp"
             android:textColor="#757575"
-            app:layout_constraintStart_toEndOf="@id/img_person_avatar"
+            app:layout_constraintStart_toEndOf="@warningId/img_person_avatar"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txt_person_name"
-            app:layout_constraintBottom_toBottomOf="@id/img_person_avatar"
+            app:layout_constraintTop_toBottomOf="@warningId/txt_person_name"
+            app:layout_constraintBottom_toBottomOf="@warningId/img_person_avatar"
             tools:text="30 years, Male" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -6899,7 +6899,7 @@ File: app/src/main/res/layout/item_warning.xml
 
         <!-- Icon cảnh báo -->
         <ImageView
-            android:id="@+id/warning_item_icon"
+            android:warningId="@+warningId/warning_item_icon"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:scaleType="centerCrop"
@@ -6908,50 +6908,50 @@ File: app/src/main/res/layout/item_warning.xml
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/warning_item_message" />
+            app:layout_constraintEnd_toStartOf="@warningId/warning_item_message" />
 
         <!-- Tin nhắn cảnh báo -->
         <TextView
-            android:id="@+id/warning_item_message"
+            android:warningId="@+warningId/warning_item_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:textSize="18sp"
             android:textStyle="normal"
-            app:layout_constraintStart_toEndOf="@id/warning_item_icon"
+            app:layout_constraintStart_toEndOf="@warningId/warning_item_icon"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/warning_item_icon"
-            app:layout_constraintBottom_toTopOf="@id/warning_item_id"
+            app:layout_constraintTop_toTopOf="@warningId/warning_item_icon"
+            app:layout_constraintBottom_toTopOf="@warningId/warning_item_id"
             tools:text="Warning Message" />
 
         <!-- ID cảnh báo -->
         <TextView
-            android:id="@+id/warning_item_id"
+            android:warningId="@+warningId/warning_item_id"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
             android:textSize="14sp"
             android:textColor="#757575"
-            app:layout_constraintStart_toEndOf="@id/warning_item_icon"
+            app:layout_constraintStart_toEndOf="@warningId/warning_item_icon"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/warning_item_message"
-            app:layout_constraintBottom_toTopOf="@id/warning_item_timestamp"
+            app:layout_constraintTop_toBottomOf="@warningId/warning_item_message"
+            app:layout_constraintBottom_toTopOf="@warningId/warning_item_timestamp"
             tools:text="ID: 123" />
 
         <!-- Thời gian cảnh báo -->
         <TextView
-            android:id="@+id/warning_item_timestamp"
+            android:warningId="@+warningId/warning_item_timestamp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
             android:textSize="14sp"
             android:textColor="#757575"
-            app:layout_constraintStart_toEndOf="@id/warning_item_icon"
+            app:layout_constraintStart_toEndOf="@warningId/warning_item_icon"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/warning_item_id"
-            app:layout_constraintBottom_toBottomOf="@id/warning_item_icon"
+            app:layout_constraintTop_toBottomOf="@warningId/warning_item_id"
+            app:layout_constraintBottom_toBottomOf="@warningId/warning_item_icon"
             tools:text="Timestamp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -6962,19 +6962,19 @@ File: app/src/main/res/menu/bottom_nav_menu.xml
 ================
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/navigation_history"
+        android:warningId="@+warningId/navigation_history"
         android:icon="@drawable/ic_history"
         android:title="History" />
     <item
-        android:id="@+id/navigation_warnings"
+        android:warningId="@+warningId/navigation_warnings"
         android:icon="@drawable/ic_warning"
         android:title="@string/warnings" />
     <item
-        android:id="@+id/navigation_people"
+        android:warningId="@+warningId/navigation_people"
         android:icon="@android:drawable/ic_menu_myplaces"
         android:title="People" />
     <item
-        android:id="@+id/navigation_account"
+        android:warningId="@+warningId/navigation_account"
         android:icon="@android:drawable/ic_menu_manage"
         android:title="@string/account" />
 </menu>
@@ -6985,11 +6985,11 @@ File: app/src/main/res/menu/history_item_menu.xml
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/menu_view_details"
+        android:warningId="@+warningId/menu_view_details"
         android:title="Xem chi tiết" />
     
     <item
-        android:id="@+id/menu_delete"
+        android:warningId="@+warningId/menu_delete"
         android:title="Xóa" />
 </menu>
 
@@ -7001,19 +7001,19 @@ File: app/src/main/res/menu/history_menu.xml
     xmlns:app="http://schemas.android.com/apk/res-auto">
     
     <item
-        android:id="@+id/menu_refresh"
+        android:warningId="@+warningId/menu_refresh"
         android:icon="@android:drawable/ic_popup_sync"
         android:title="Làm mới"
         app:showAsAction="ifRoom" />
     
     <item
-        android:id="@+id/menu_statistics"
+        android:warningId="@+warningId/menu_statistics"
         android:icon="@android:drawable/ic_menu_info_details"
         android:title="Thống kê"
         app:showAsAction="ifRoom" />
     
     <item
-        android:id="@+id/menu_export"
+        android:warningId="@+warningId/menu_export"
         android:icon="@android:drawable/ic_menu_share"
         android:title="Xuất dữ liệu"
         app:showAsAction="never" />
@@ -7046,23 +7046,23 @@ File: app/src/main/res/navigation/nav_graph.xml
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
-    app:startDestination="@id/navigation_history">
+    android:warningId="@+warningId/nav_graph"
+    app:startDestination="@warningId/navigation_history">
 
     <!-- History Fragment -->
     <fragment
-        android:id="@+id/navigation_history"
+        android:warningId="@+warningId/navigation_history"
         android:name="com.example.btl_iot.ui.history.HistoryFragment"
         android:label="History"
         tools:layout="@layout/fragment_history">
         <action
-            android:id="@+id/action_navigation_history_to_historyDetail"
-            app:destination="@id/historyDetailFragment" />
+            android:warningId="@+warningId/action_navigation_history_to_historyDetail"
+            app:destination="@warningId/historyDetailFragment" />
     </fragment>
 
     <!-- History Detail Fragment -->
     <fragment
-        android:id="@+id/historyDetailFragment"
+        android:warningId="@+warningId/historyDetailFragment"
         android:name="com.example.btl_iot.ui.history.HistoryDetailFragment"
         android:label="History Detail"
         tools:layout="@layout/fragment_history_detail">
@@ -7073,25 +7073,25 @@ File: app/src/main/res/navigation/nav_graph.xml
 
     <!-- Warnings Fragment -->
     <fragment
-        android:id="@+id/navigation_warnings"
+        android:warningId="@+warningId/navigation_warnings"
         android:name="com.example.btl_iot.ui.warnings.WarningsFragment"
         android:label="Warnings"
         tools:layout="@layout/fragment_warning" />
         
     <!-- People Management Fragment -->
     <fragment
-        android:id="@+id/navigation_people"
+        android:warningId="@+warningId/navigation_people"
         android:name="com.example.btl_iot.ui.people.PeopleManagementFragment"
         android:label="People Management"
         tools:layout="@layout/fragment_people_management">
         <action
-            android:id="@+id/action_navigation_people_to_addEditPerson"
-            app:destination="@id/addEditPersonFragment" />
+            android:warningId="@+warningId/action_navigation_people_to_addEditPerson"
+            app:destination="@warningId/addEditPersonFragment" />
     </fragment>
 
     <!-- Add/Edit Person Fragment -->
     <fragment
-        android:id="@+id/addEditPersonFragment"
+        android:warningId="@+warningId/addEditPersonFragment"
         android:name="com.example.btl_iot.ui.people.AddEditPersonFragment"
         android:label="Add/Edit Person"
         tools:layout="@layout/fragment_add_edit_person">
@@ -7103,7 +7103,7 @@ File: app/src/main/res/navigation/nav_graph.xml
     
     <!-- Account Fragment -->
     <fragment
-        android:id="@+id/navigation_account"
+        android:warningId="@+warningId/navigation_account"
         android:name="com.example.btl_iot.ui.account.AccountFragment"
         android:label="Account"
         tools:layout="@layout/fragment_account" />
@@ -7318,7 +7318,7 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
+android-application = { warningId = "com.android.application", version.ref = "agp" }
 
 ================
 File: gradle/wrapper/gradle-wrapper.properties

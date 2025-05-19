@@ -46,7 +46,7 @@ public class WarningsAdapter extends RecyclerView.Adapter<WarningsAdapter.Warnin
         holder.message.setText(warning.getInfo());
         
         // Set ID cảnh báo
-        holder.id.setText("ID: " + warning.getId());
+        holder.id.setText("ID: " + warning.getWarningId());
         
         // Set thời gian
         holder.timestamp.setText(warning.getTimestamp());
