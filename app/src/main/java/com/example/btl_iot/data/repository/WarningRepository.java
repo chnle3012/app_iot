@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.btl_iot.data.api.ApiClient;
 import com.example.btl_iot.data.api.ApiService;
+import com.example.btl_iot.data.model.DeleteWarningResponse;
 import com.example.btl_iot.data.model.WarningResponse;
 import com.example.btl_iot.data.repository.AuthRepository.Resource;
 
@@ -48,19 +49,19 @@ public class WarningRepository {
         return warningResult;
     }
 
-    public LiveData<Resource<WarningResponse>> deleteWarning(String token, int warningId) {
-        MutableLiveData<Resource<WarningResponse>> result = new MutableLiveData<>();
+    public LiveData<Resource<DeleteWarningResponse>> deleteWarning(String token, int warningId) {
+        MutableLiveData<Resource<DeleteWarningResponse>> result = new MutableLiveData<>();
         result.setValue(Resource.loading(null));
         
-        apiService.deleteWarning(token, warningId).enqueue(new Callback<WarningResponse>() {
+        apiService.deleteWarning(token, warningId).enqueue(new Callback<DeleteWarningResponse>() {
             @Override
-            public void onResponse(Call<WarningResponse> call, Response<WarningResponse> response) {
+            public void onResponse(Call<DeleteWarningResponse> call, Response<DeleteWarningResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     result.setValue(Resource.success(response.body()));
                 } else {
                     try {
                         Gson gson = new Gson();
-                        WarningResponse errorResponse = gson.fromJson(response.errorBody().string(), WarningResponse.class);
+                        DeleteWarningResponse errorResponse = gson.fromJson(response.errorBody().string(), DeleteWarningResponse.class);
                         result.setValue(Resource.error(errorResponse.getMessage(), errorResponse));
                     } catch (Exception e) {
                         result.setValue(Resource.error("Lỗi xử lý phản hồi: " + e.getMessage(), null));
@@ -69,7 +70,7 @@ public class WarningRepository {
             }
             
             @Override
-            public void onFailure(Call<WarningResponse> call, Throwable t) {
+            public void onFailure(Call<DeleteWarningResponse> call, Throwable t) {
                 result.setValue(Resource.error("Lỗi kết nối: " + t.getMessage(), null));
             }
         });
