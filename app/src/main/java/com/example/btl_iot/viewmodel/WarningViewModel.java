@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.btl_iot.data.model.DeleteWarningResponse;
 import com.example.btl_iot.data.model.WarningResponse;
 import com.example.btl_iot.data.repository.AuthRepository;
 import com.example.btl_iot.data.repository.WarningRepository;
@@ -34,7 +35,7 @@ public class WarningViewModel extends AndroidViewModel {
         return selectedWarning;
     }
 
-    public LiveData<AuthRepository.Resource<WarningResponse>> deleteWarning(String token, int warningId) {
+    public LiveData<AuthRepository.Resource<DeleteWarningResponse>> deleteWarning(String token, int warningId) {
         return warningRepository.deleteWarning(token, warningId);
     }
 }

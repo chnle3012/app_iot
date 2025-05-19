@@ -3,6 +3,7 @@ package com.example.btl_iot.data.api;
 import com.example.btl_iot.data.model.AddPersonResponse;
 import com.example.btl_iot.data.model.DeleteHistoryResponse;
 import com.example.btl_iot.data.model.DeletePersonResponse;
+import com.example.btl_iot.data.model.DeleteWarningResponse;
 import com.example.btl_iot.data.model.HistoryResponse;
 import com.example.btl_iot.data.model.LoginRequest;
 import com.example.btl_iot.data.model.LoginResponse;
@@ -105,6 +106,8 @@ public interface ApiService {
             @Header("Authorization") String token
     );
 
-    @DELETE("api/warnings/{id}")
-    Call<WarningResponse> deleteWarning(@Header("Authorization") String token, @Path("id") int warningId);
+    @DELETE("api/warning/{warningId}")
+    Call<DeleteWarningResponse> deleteWarning(
+        @Header("Authorization") String token, 
+        @Path("warningId") int warningId);
 }
