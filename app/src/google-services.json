@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "990339708593",
+    "project_id": "test-fcm-bd57e",
+    "storage_bucket": "test-fcm-bd57e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990339708593:android:07404adf82815409c81490",
+        "android_client_info": {
+          "package_name": "com.example.btl_iot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDo6yC3OgQon4B6AXm1X8KrRGtP3e7KM3U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

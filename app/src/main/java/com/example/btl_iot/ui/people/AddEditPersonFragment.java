@@ -136,14 +136,11 @@ public class AddEditPersonFragment extends Fragment {
         takePhotoButton = view.findViewById(R.id.btn_take_photo);
         progressBar = view.findViewById(R.id.progress_bar);
         submitButton = view.findViewById(R.id.btn_submit);
-        identificationEditText.setEnabled(false);
 
         deleteButton = view.findViewById(R.id.btn_delete);
 
-        // Identification ID read-only
         identificationEditText.setEnabled(false);
 
-        // Setup date picker for birthday
         birthdayEditText.setFocusable(false);
         birthdayEditText.setClickable(true);
         birthdayEditText.setOnClickListener(v -> showDatePickerDialog());
@@ -357,21 +354,6 @@ public class AddEditPersonFragment extends Fragment {
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         galleryLauncher.launch(intent);
-
-        if (selectedImageUri != null){
-            backgroundExecutor.execute(() -> {
-                ImageValidationUtils.FaceDetectionResult result = ImageValidationUtils.checkSingleFaceInImage(requireContext(), selectedImageUri);
-
-                requireActivity().runOnUiThread(() -> {
-                    if (!result.isValid) {
-                        progressBar.setVisibility(View.GONE);
-                        submitButton.setEnabled(true);
-                        Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show();
-                        selectedImageUri = null;
-                    }
-                });
-            });
-        }
     }
 
     private void loadImage(Uri imageUri) {
@@ -386,59 +368,69 @@ public class AddEditPersonFragment extends Fragment {
     private final ActivityResultLauncher<Uri> cameraLauncher =
         registerForActivityResult(new ActivityResultContracts.TakePicture(), isSuccess -> {
             if (isSuccess && cameraImageUri != null) {
-                try {
-                    File savedImageFile = saveImageToAppDirectory(cameraImageUri);
-                    selectedImageUri = Uri.fromFile(savedImageFile);
-                    hasSelectedNewImage = true;
-                    loadImage(selectedImageUri);
-                    Log.d(TAG, "Đã lưu ảnh từ camera vào: " + selectedImageUri);
-                } catch (IOException e) {
-                    Log.e(TAG, "Lỗi khi sao chép ảnh từ camera", e);
-                    Toast.makeText(requireContext(), "Lỗi khi sao chép ảnh", Toast.LENGTH_SHORT).show();
-                }
+                backgroundExecutor.execute(() -> {
+                    try {
+                        File savedImageFile = saveImageToAppDirectory(cameraImageUri);
+                        Uri fileUri = Uri.fromFile(savedImageFile);
+                        ImageValidationUtils.FaceDetectionResult result = ImageValidationUtils.checkSingleFaceInImage(requireContext(), fileUri);
+
+                        requireActivity().runOnUiThread(() -> {
+                            if (!result.isValid) {
+                                Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            selectedImageUri = fileUri;
+                            hasSelectedNewImage = true;
+                            loadImage(selectedImageUri);
+                            Log.d(TAG, "Đã lưu ảnh từ camera vào: " + selectedImageUri);
+                        });
+                    } catch (IOException e) {
+                        Log.e(TAG, "Lỗi khi sao chép ảnh từ camera", e);
+                        Toast.makeText(requireContext(), "Lỗi khi sao chép ảnh", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }
     );
 
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    Uri imageUri = result.getData().getData();
-                    if (imageUri != null) {
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                Uri imageUri = result.getData().getData();
+                if (imageUri != null) {
+                    backgroundExecutor.execute(() -> {
                         try {
-                            File savedImageFile = saveImageToAppDirectory(imageUri);
-                            selectedImageUri = Uri.fromFile(savedImageFile);
-                            hasSelectedNewImage = true;
-                            loadImage(selectedImageUri);
-                            Log.d(TAG, "Đã lưu ảnh từ gallery vào: " + selectedImageUri);
-                        } catch (IOException e) {
+                            File saved = saveImageToAppDirectory(imageUri);
+                            Uri fileUri = Uri.fromFile(saved);
+
+                            ImageValidationUtils.FaceDetectionResult res = ImageValidationUtils.checkSingleFaceInImage(requireContext(), fileUri);
+
+                            requireActivity().runOnUiThread(() -> {
+                                if (!res.isValid){
+                                    Toast.makeText(requireContext(), res.message, Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                selectedImageUri = fileUri;
+                                hasSelectedNewImage = true;
+                                loadImage(selectedImageUri);
+                                Log.d(TAG, "Đã lưu ảnh từ gallery vào: " + selectedImageUri);
+                            });
+
+                        } catch (IOException e){
                             Log.e(TAG, "Lỗi khi sao chép ảnh từ gallery", e);
                             Toast.makeText(requireContext(), "Lỗi khi sao chép ảnh", Toast.LENGTH_SHORT).show();
                         }
-                    }
+
+                    });
                 }
             }
+        }
     );
 
     private void openCamera() {
         cameraImageUri = createImageUriForCamera();
         cameraLauncher.launch(cameraImageUri);
-
-        if (selectedImageUri != null){
-            backgroundExecutor.execute(() -> {
-                ImageValidationUtils.FaceDetectionResult result = ImageValidationUtils.checkSingleFaceInImage(requireContext(), selectedImageUri);
-
-                requireActivity().runOnUiThread(() -> {
-                    if (!result.isValid) {
-                        progressBar.setVisibility(View.GONE);
-                        submitButton.setEnabled(true);
-                        Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show();
-                        selectedImageUri = null;
-                    }
-                });
-            });
-        }
     }
 
     private File saveImageToAppDirectory(Uri imageUri) throws IOException {

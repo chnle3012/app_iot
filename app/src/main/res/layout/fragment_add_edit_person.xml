@@ -102,7 +102,11 @@
                 android:id="@+id/input_identification_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="text"
+                android:enabled="false"
+                android:focusable="false"
+                android:clickable="false"
+                android:alpha="0.5"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
