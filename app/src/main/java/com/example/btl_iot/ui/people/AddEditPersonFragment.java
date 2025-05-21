@@ -139,8 +139,6 @@ public class AddEditPersonFragment extends Fragment {
 
         deleteButton = view.findViewById(R.id.btn_delete);
 
-        identificationEditText.setEnabled(false);
-
         birthdayEditText.setFocusable(false);
         birthdayEditText.setClickable(true);
         birthdayEditText.setOnClickListener(v -> showDatePickerDialog());

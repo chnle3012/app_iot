@@ -106,7 +106,7 @@
                 android:enabled="false"
                 android:focusable="false"
                 android:clickable="false"
-                android:alpha="0.5"/>
+                android:alpha="0.3"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
