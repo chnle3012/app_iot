@@ -10,7 +10,6 @@ public class Person {
     private int id;
     
     private String name;
-    private int age;
     private String gender;
     private String birthday;
     private String IdentificationId;
@@ -35,10 +34,6 @@ public class Person {
 
     public String getName() {
         return name;
-    }
-
-    public int getAge() {
-        return age;
     }
     public String getGender() {
         return gender;

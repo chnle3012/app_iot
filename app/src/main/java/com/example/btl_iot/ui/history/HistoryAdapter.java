@@ -11,8 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.btl_iot.R;
 import com.example.btl_iot.data.model.HistoryResponse;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
 
@@ -87,8 +91,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         public void bind(HistoryResponse.History history) {
             android.util.Log.d("HistoryAdapter", "Binding history item: " + history.getHistoryId());
             
-            // Format timestamp to be more readable if needed
-            title.setText(history.getTimestamp());
+            // Format timestamp to be more readable
+            String formattedTimestamp = formatTimestamp(history.getTimestamp());
+            title.setText(formattedTimestamp);
             
             // Set person name if available
             String personName = history.getPeople() != null ? history.getPeople().getName() : "Unknown";
@@ -126,6 +131,29 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
             });
             
             android.util.Log.d("HistoryAdapter", "Binding complete for history item: " + history.getHistoryId());
+        }
+        
+        private String formatTimestamp(String timestamp) {
+            if (timestamp == null || timestamp.isEmpty()) {
+                return "Unknown time";
+            }
+            
+            try {
+                // Parse the original timestamp format (assuming it's in yyyy-MM-dd HH-mm-ss format)
+                SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss", Locale.getDefault());
+                // Create the correct output format (HH:mm:ss)
+                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                
+                Date date = originalFormat.parse(timestamp);
+                if (date != null) {
+                    return outputFormat.format(date);
+                }
+            } catch (ParseException e) {
+                android.util.Log.e("HistoryAdapter", "Error parsing timestamp: " + e.getMessage());
+                // If parsing fails, return the original timestamp
+            }
+            
+            return timestamp;
         }
     }
 }

@@ -1,7 +1,5 @@
 package com.example.btl_iot.data.model;
 
-import com.google.gson.annotations.SerializedName;
-
 public class History {
     private long historyId;
     private String timestamp;
@@ -32,7 +30,7 @@ public class History {
     public static class People {
         private long peopleId;
         private String name;
-        private int age;
+        private String birthday;
         private String faceImagePath;
 
         public long getPeopleId() {
@@ -43,10 +41,9 @@ public class History {
             return name;
         }
 
-        public int getAge() {
-            return age;
+        public String getBirthday() {
+            return birthday;
         }
-
         public String getFaceImagePath() {
             return faceImagePath;
         }
