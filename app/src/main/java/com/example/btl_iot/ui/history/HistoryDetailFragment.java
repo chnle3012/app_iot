@@ -27,6 +27,11 @@ import com.example.btl_iot.data.repository.AuthRepository;
 import com.example.btl_iot.util.Constants;
 import com.example.btl_iot.viewmodel.HistoryViewModel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class HistoryDetailFragment extends Fragment {
 
     private static final String ARG_HISTORY_ID = "historyId";
@@ -133,7 +138,7 @@ public class HistoryDetailFragment extends Fragment {
         // Display person information
         if (history.getPeople() != null) {
             personNameTextView.setText(history.getPeople().getName());
-            personAgeTextView.setText(String.valueOf(history.getPeople().getAge()) + " years");
+            personAgeTextView.setText(String.valueOf(history.getPeople().getBirthday()));
             personIdTextView.setText(String.valueOf(history.getPeople().getPeopleId()));
             
             // Load person image if available
@@ -153,7 +158,10 @@ public class HistoryDetailFragment extends Fragment {
         
         // Display event information
         historyIdTextView.setText(String.valueOf(history.getHistoryId()));
-        timestampTextView.setText(history.getTimestamp());
+        
+        // Format timestamp correctly
+        timestampTextView.setText(formatTimestamp(history.getTimestamp()));
+        
         modeTextView.setText(history.getMode());
         
         // Load event image if available
@@ -165,6 +173,29 @@ public class HistoryDetailFragment extends Fragment {
                     .centerInside()
                     .into(eventPhotoImageView);
         }
+    }
+    
+    private String formatTimestamp(String timestamp) {
+        if (timestamp == null || timestamp.isEmpty()) {
+            return "Unknown time";
+        }
+        
+        try {
+            // Parse the original timestamp format (assuming it's in yyyy-MM-dd HH-mm-ss format)
+            SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss", Locale.getDefault());
+            // Create the correct output format (HH:mm:ss)
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            
+            Date date = originalFormat.parse(timestamp);
+            if (date != null) {
+                return outputFormat.format(date);
+            }
+        } catch (ParseException e) {
+            android.util.Log.e("HistoryDetailFragment", "Error parsing timestamp: " + e.getMessage());
+            // If parsing fails, return the original timestamp
+        }
+        
+        return timestamp;
     }
     
     private void confirmDelete() {

@@ -14,7 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.btl_iot.R;
 import com.example.btl_iot.data.model.WarningResponse;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class WarningsAdapter extends RecyclerView.Adapter<WarningsAdapter.WarningViewHolder> {
 
@@ -48,8 +52,8 @@ public class WarningsAdapter extends RecyclerView.Adapter<WarningsAdapter.Warnin
         // Set ID cảnh báo
         holder.id.setText("ID: " + warning.getWarningId());
         
-        // Set thời gian
-        holder.timestamp.setText(warning.getTimestamp());
+        // Set thời gian với định dạng đúng
+        holder.timestamp.setText(formatTimestamp(warning.getTimestamp()));
 
         // Set sự kiện click cho item view
         holder.itemView.setOnClickListener(v -> {
@@ -83,6 +87,29 @@ public class WarningsAdapter extends RecyclerView.Adapter<WarningsAdapter.Warnin
     @Override
     public int getItemCount() {
         return warningList == null ? 0 : warningList.size();
+    }
+    
+    private String formatTimestamp(String timestamp) {
+        if (timestamp == null || timestamp.isEmpty()) {
+            return "Unknown time";
+        }
+        
+        try {
+            // Parse the original timestamp format (assuming it's in yyyy-MM-dd HH-mm-ss format)
+            SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss", Locale.getDefault());
+            // Create the correct output format (HH:mm:ss)
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            
+            Date date = originalFormat.parse(timestamp);
+            if (date != null) {
+                return outputFormat.format(date);
+            }
+        } catch (ParseException e) {
+            android.util.Log.e("WarningsAdapter", "Error parsing timestamp: " + e.getMessage());
+            // If parsing fails, return the original timestamp
+        }
+        
+        return timestamp;
     }
 
     static class WarningViewHolder extends RecyclerView.ViewHolder {

@@ -80,7 +80,7 @@ public class HistoryResponse {
         private int peopleId;
         private String name;
 
-        private int age;
+        private String birthday;
 
         private String imagePath;
 
@@ -92,8 +92,8 @@ public class HistoryResponse {
             return name;
         }
 
-        public int getAge() {
-           return age;
+        public String getBirthday() {
+           return birthday;
         }
 
         public String getFaceImagePath() {
