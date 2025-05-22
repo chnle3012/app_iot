@@ -2,6 +2,7 @@ package com.example.btl_iot.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -13,13 +14,17 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.btl_iot.R;
 import com.example.btl_iot.data.model.LoginResponse;
 import com.example.btl_iot.data.repository.AuthRepository;
+import com.example.btl_iot.service.MyFirebaseMessagingService;
 import com.example.btl_iot.ui.dashboard.MainDashboardActivity;
+import com.example.btl_iot.util.SharedPrefsUtils;
 import com.example.btl_iot.viewmodel.AuthViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final String TAG = "LoginActivity";
     private TextInputLayout tilUsername, tilPassword;
     private TextInputEditText etUsername, etPassword;
     private Button btnLogin, btnGoToRegister;
@@ -100,6 +105,9 @@ public class LoginActivity extends AppCompatActivity {
                         long expiration = response.getData().getExpiration();
                         authViewModel.saveAuthToken(token, expiration);
                         
+                        // Send FCM token to server now that we have a JWT token
+                        sendFCMTokenToServer();
+                        
                         // Show success message
                         Toast.makeText(LoginActivity.this, 
                                 "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
@@ -113,6 +121,40 @@ public class LoginActivity extends AppCompatActivity {
                             result.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
+        }
+    }
+    
+    private void sendFCMTokenToServer() {
+        Log.d(TAG, "Attempting to send FCM token to server after login");
+        
+        // First check if we have a stored token
+        String fcmToken = SharedPrefsUtils.getFCMToken(this);
+        Log.d(TAG, "Current stored FCM token: " + fcmToken);
+        
+        if (fcmToken == null || fcmToken.isEmpty()) {
+            // If we don't have a token, get one from Firebase
+            Log.d(TAG, "No FCM token stored, requesting a new one");
+            FirebaseMessaging.getInstance().getToken()
+                    .addOnCompleteListener(task -> {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        // Get new FCM registration token
+                        String token = task.getResult();
+                        Log.d(TAG, "New FCM token obtained: " + token);
+                        
+                        // Save token locally
+                        SharedPrefsUtils.saveFCMToken(this, token);
+                        
+                        // Call the service to send the token to server
+                        MyFirebaseMessagingService.sendStoredFCMTokenToServer(this);
+                    });
+        } else {
+            // We have a token, send it to the server
+            Log.d(TAG, "Using existing FCM token: " + fcmToken);
+            MyFirebaseMessagingService.sendStoredFCMTokenToServer(this);
         }
     }
     

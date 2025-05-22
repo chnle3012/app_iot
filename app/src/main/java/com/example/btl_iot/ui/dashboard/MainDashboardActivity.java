@@ -1,20 +1,21 @@
 package com.example.btl_iot.ui.dashboard;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.example.btl_iot.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainDashboardActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "MainDashboardActivity";
     private NavController navController;
     private BottomNavigationView bottomNavigationView;
 
@@ -62,6 +63,65 @@ public class MainDashboardActivity extends AppCompatActivity implements BottomNa
                     bottomNavigationView.setOnNavigationItemSelectedListener(this);
                 }
             });
+        }
+        
+        // Xử lý intent từ thông báo
+        handleNotificationIntent(getIntent());
+    }
+    
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // Xử lý intent khi ứng dụng đã mở
+        handleNotificationIntent(intent);
+    }
+    
+    private void handleNotificationIntent(Intent intent) {
+        if (intent == null) {
+            return;
+        }
+        
+        Log.d(TAG, "Handling notification intent: " + intent);
+        
+        // Kiểm tra xem intent có phải từ thông báo không
+        if (intent.hasExtra("OPEN_WARNINGS")) {
+            Log.d(TAG, "Navigating to warnings screen from notification");
+            
+            // Mở tab Warnings
+            if (navController != null) {
+                navController.navigate(R.id.navigation_warnings);
+                bottomNavigationView.setSelectedItemId(R.id.navigation_warnings);
+                
+                // Lấy warningId từ intent
+                String warningIdString = intent.getStringExtra("warningId");
+                int warningIdValue = -1;
+                
+                if (warningIdString != null && !warningIdString.isEmpty()) {
+                    try {
+                        warningIdValue = Integer.parseInt(warningIdString);
+                    } catch (NumberFormatException e) {
+                        Log.e(TAG, "Error parsing warningId: " + warningIdString, e);
+                    }
+                }
+                
+                // Nếu có ID hợp lệ thì mở chi tiết cảnh báo
+                final int finalWarningId = warningIdValue;
+                if (finalWarningId > 0) {
+                    // Delay nhỏ để đảm bảo fragment đã sẵn sàng
+                    bottomNavigationView.postDelayed(() -> {
+                        try {
+                            // Tạo bundle với ID cảnh báo
+                            Bundle args = new Bundle();
+                            args.putInt("warningId", finalWarningId);
+                            
+                            // Mở chi tiết cảnh báo
+                            navController.navigate(R.id.action_navigation_warnings_to_warningDetail, args);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error navigating to warning detail", e);
+                        }
+                    }, 300);
+                }
+            }
         }
     }
 
