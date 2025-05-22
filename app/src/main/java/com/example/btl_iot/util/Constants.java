@@ -8,4 +8,6 @@ public class Constants {
     public static final String PREF_NAME = "btl_iot_prefs";
     public static final String KEY_AUTH_TOKEN = "auth_token";
     public static final String KEY_TOKEN_EXPIRATION = "token_expiration";
+
+    public static final String KEY_FCM_TOKEN = "fcm_token";
 } 

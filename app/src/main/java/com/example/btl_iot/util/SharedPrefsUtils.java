@@ -38,4 +38,14 @@ public class SharedPrefsUtils {
         
         return token != null && expiration > currentTime;
     }
+
+    public static void saveFCMToken(Context context, String token) {
+        SharedPreferences.Editor editor = getSharedPreferences(context).edit();
+        editor.putString(Constants.KEY_FCM_TOKEN, token);
+        editor.apply();
+    }
+
+    public static String getFCMToken(Context context) {
+        return getSharedPreferences(context).getString(Constants.KEY_FCM_TOKEN, null);
+    }
 } 

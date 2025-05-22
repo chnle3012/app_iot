@@ -4,6 +4,8 @@ import com.example.btl_iot.data.model.AddPersonResponse;
 import com.example.btl_iot.data.model.DeleteHistoryResponse;
 import com.example.btl_iot.data.model.DeletePersonResponse;
 import com.example.btl_iot.data.model.DeleteWarningResponse;
+import com.example.btl_iot.data.model.FCMTokenRequest;
+import com.example.btl_iot.data.model.FCMTokenResponse;
 import com.example.btl_iot.data.model.HistoryResponse;
 import com.example.btl_iot.data.model.LoginRequest;
 import com.example.btl_iot.data.model.LoginResponse;
@@ -110,4 +112,9 @@ public interface ApiService {
     Call<DeleteWarningResponse> deleteWarning(
         @Header("Authorization") String token, 
         @Path("warningId") int warningId);
+        
+    @PUT("api/auth/me/token")
+    Call<FCMTokenResponse> updateFCMToken(
+        @Header("Authorization") String token,
+        @Body FCMTokenRequest fcmTokenRequest);
 }
