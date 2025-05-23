@@ -48,6 +48,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -242,46 +245,72 @@ public class AddEditPersonFragment extends Fragment {
             }
         });
     }
-    
+
     private void validateAndSave() {
-        String name = nameEditText.getText().toString().trim();
-        String identificationId = identificationEditText.getText().toString().trim();
-        String birthday = birthdayEditText.getText().toString().trim();
+        String name  = nameEditText.getText().toString().trim();
+        String id    = identificationEditText.getText().toString().trim();
+        String bday  = birthdayEditText.getText().toString().trim();
         int genderId = genderGroup.getCheckedRadioButtonId();
 
         if (TextUtils.isEmpty(name)) {
             nameLayout.setError("Vui lòng nhập tên");
             return;
-        } else nameLayout.setError(null);
+        } else if (!name.matches("^[\\p{L} ]+$")) {
+            nameLayout.setError("Tên chỉ được gồm chữ và khoảng trắng");
+            return;
+        } else {
+            nameLayout.setError(null);
+        }
 
-        if (TextUtils.isEmpty(birthday)) {
+        if (TextUtils.isEmpty(bday)) {
             birthdayEditText.setError("Vui lòng chọn ngày sinh");
             return;
-        } else birthdayEditText.setError(null);
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        sdf.setLenient(false);
+        Date birthDate;
+        try {
+            birthDate = sdf.parse(bday);
+            if (birthDate.after(new Date())) {
+                birthdayEditText.setError("Ngày sinh không được ở tương lai");
+                return;
+            } else {
+                birthdayEditText.setError(null);
+            }
+        } catch (ParseException e) {
+            birthdayEditText.setError("Định dạng ngày sinh không hợp lệ");
+            return;
+        }
 
         if (genderId == -1) {
             Toast.makeText(requireContext(), "Vui lòng chọn giới tính", Toast.LENGTH_SHORT).show();
             return;
         }
-        String gender = ((RadioButton) requireView().findViewById(genderId)).getText().toString();
+        String gender = ((RadioButton) requireView().findViewById(genderId))
+                .getText().toString();
 
         if (!isEditMode && selectedImageUri == null) {
             Toast.makeText(requireContext(), "Vui lòng chọn ảnh", Toast.LENGTH_SHORT).show();
             return;
         }
-        
-        // Show progress
-        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+
+        progressBar.setVisibility(View.VISIBLE);
         submitButton.setEnabled(false);
 
         if (isEditMode) {
-            viewModel.updatePerson(currentPerson.getPeopleId(), name, identificationId, gender, birthday, hasSelectedNewImage? selectedImageUri : null)
-                    .observe(getViewLifecycleOwner(), this::handleResult);
+            viewModel.updatePerson(
+                    currentPerson.getPeopleId(),
+                    name, id, gender, bday,
+                    hasSelectedNewImage ? selectedImageUri : null
+            ).observe(getViewLifecycleOwner(), this::handleResult);
         } else {
-            viewModel.addPerson(name, identificationId, gender, birthday, selectedImageUri)
-                    .observe(getViewLifecycleOwner(), this::handleResult);
+            viewModel.addPerson(
+                    name, id, gender, bday, selectedImageUri
+            ).observe(getViewLifecycleOwner(), this::handleResult);
         }
     }
+
 
     private void confirmDelete() {
         if (currentPerson == null) return;
